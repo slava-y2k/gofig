@@ -41,7 +41,7 @@ func (gfg *Gofig) Load(provider Provider) error {
 
 	gfg.rwMutex.Lock()
 	defer gfg.rwMutex.Unlock()
-	gfg.init()
+	gfg.ensureMapInit()
 	mergeMaps(gfg.kvMap, DeepCopyMap(keyValues))
 
 	return nil
@@ -70,7 +70,7 @@ func (gfg *Gofig) Get(parts ...string) (any, bool) {
 func (gfg *Gofig) Set(parts []string, value any) *Gofig {
 	gfg.rwMutex.Lock()
 	defer gfg.rwMutex.Unlock()
-	gfg.init()
+	gfg.ensureMapInit()
 
 	if len(parts) == 0 {
 		if newConf, ok := value.(map[string]any); ok {
@@ -112,7 +112,8 @@ func (gfg *Gofig) Merge(other *Gofig) *Gofig {
 
 	gfg.rwMutex.Lock()
 	defer gfg.rwMutex.Unlock()
-	gfg.init()
+
+	gfg.ensureMapInit()
 	mergeMaps(gfg.kvMap, other.snapshot())
 
 	return gfg
@@ -124,7 +125,7 @@ func (gfg *Gofig) Merge(other *Gofig) *Gofig {
 func (gfg *Gofig) MergeMap(keyValues map[string]any) *Gofig {
 	gfg.rwMutex.Lock()
 	defer gfg.rwMutex.Unlock()
-	gfg.init()
+	gfg.ensureMapInit()
 	mergeMaps(gfg.kvMap, DeepCopyMap(keyValues))
 
 	return gfg
@@ -151,12 +152,13 @@ func (gfg *Gofig) snapshot() map[string]any {
 	return DeepCopyMap(gfg.kvMap)
 }
 
-// init lazily initializes the configuration map so that the zero
+// ensureMapInit lazily initializes the configuration map so that the zero
 // value of Gofig is usable.
-func (gfg *Gofig) init() {
+func (gfg *Gofig) ensureMapInit() *Gofig {
 	if gfg.kvMap == nil {
 		gfg.kvMap = make(map[string]any)
 	}
+	return gfg
 }
 
 // setPath walks parts and stores value at the leaf, creating missing

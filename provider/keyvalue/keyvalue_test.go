@@ -7,7 +7,7 @@ import (
 	"github.com/slava-y2k/gofig"
 )
 
-// Type safety test
+// Compile-time check that *KeyValue implements gofig.Provider.
 var _ gofig.Provider = (*KeyValue)(nil)
 
 func TestReadReturnsMapAsIs(t *testing.T) {

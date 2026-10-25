@@ -20,7 +20,7 @@ classDiagram
         }
 
         class Gofig {
-            -conf map[string]any
+            -kvMap map[string]any
             +New() Gofig
             +Load(provider Provider) error
             +Merge(other Gofig) Gofig
@@ -49,6 +49,6 @@ classDiagram
     Provider <|.. KeyValue : implements
     Gofig ..> Provider : reads in Load()
 
-    note for Parser "A Parser only returns the key-value pair (map[string]any). Defined in the model; implementations will be standalone modules under parser/."
+    note for Parser "A Parser only returns the key-value pairs (map[string]any). Defined in the model; implementations will be standalone modules under parser/."
     note for Gofig "Key-value pair manager: fluent interface — Merge, MergeMap, Set, Delete return the Gofig itself."
 ```

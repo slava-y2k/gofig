@@ -8,7 +8,7 @@ modules.
 
 ## Modules
 
-The repository is a multi-module repository: each provider and each parser is
+The repository is multi-module: each provider and each parser is
 a separate module, so every piece can be referenced and versioned
 independently while staying in one repository. `go.work` ties all modules
 together for local development.
@@ -32,7 +32,7 @@ Rules:
 - Providers depend on the core module to assert the real `Provider`
   interface (`var _ gofig.Provider`) — their `go.mod` requires the core with a
   `replace` to the local directory (see `provider/keyvalue/go.mod`).
-- Importing one provider or parser never pulls in the other leaves.
+- Importing one provider or parser never pulls in the others.
 - Consumers reference each module independently:
   `go get github.com/slava-y2k/gofig` or
   `go get github.com/slava-y2k/gofig/provider/keyvalue`.

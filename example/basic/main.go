@@ -22,7 +22,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	// MergeMap overrides, Set and Delete keys fluently.
+	// MergeMap overrides existing values; Set and Delete then modify keys fluently.
 	g.MergeMap(map[string]any{"db": map[string]any{"port": 5433}}).
 		Set([]string{"app", "mode"}, "dev").
 		Delete("app", "debug")

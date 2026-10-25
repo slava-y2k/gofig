@@ -3,7 +3,7 @@ package keyvalue
 import "github.com/slava-y2k/gofig"
 
 // KeyValue is a simple Provider that supplies values from the provided map.
-// deepCopy makes a deep copy on every read.
+// When deepCopy is enabled, Read makes a deep copy on every read.
 type KeyValue struct {
 	keyValues map[string]any
 	deepCopy  bool

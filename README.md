@@ -7,8 +7,8 @@ merges and manages them.
 ## Development
 
 The repository is a multi-module Go workspace — the core library, one module
-per provider (and later per parser), and runnable examples, all in one repo
-but independently referenceable:
+per provider (and later per parser), and runnable examples, independently
+referenceable:
 
 | Module       | Import path                                |
 | ------------ | ------------------------------------------ |

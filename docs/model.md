@@ -1,18 +1,22 @@
 # Gofig
 
-Gofig is a simple library to deal with configuration in Go.
 Gofig is shorthand for Go and Config.
-It is a simplified and reworked library similar to koanf.
+Gofig is a library to deal with configuration in Go.
 
-## Idea
+It has similar ideas to the koanf configuration library.
 
-The config library was implemented with the following principles:
-- A flexible connection between the raw key-value pairs and config structs
-- Composable key-value configuration with overriding and a defined order of application
-- An extensible set of configuration sources
+# Terms
+Terms are introduced so there is exactly one term for each entity/focus.
+
+- **KeyValue(s)** - refers to the configuration key-value pair or pairs.
+- **ConfigStruct** - a struct marked with the struct tag `gofig`.
+- **Gofig** - refers to the Gofig struct and its functions.
+- **Provider** - an agnostic source of KeyValue(s) for Gofig.
 
 
 ## Model
+
+Gofig is intended to handle multilevel configurations.
 
 The model is visualized in [parser.md](parser.md) - a Mermaid class diagram.
 
@@ -29,14 +33,14 @@ The model is visualized in [parser.md](parser.md) - a Mermaid class diagram.
 ### Provider
 
 The main source of key-value pairs is the `Provider`.
-Any source can implement the `Provider` interface, which in general consists of a single method:
+Any source can implement the `Provider` interface, which consists of a single method:
 `Provider.Read() (map[string]any, error)`
 
 
 ### Parser
 
-A `Parser` is an auxiliary package that only returns the key-value pair.
-Its contract is a single method:
+A `Parser` is an auxiliary package that only returns the key-value pairs
+(`map[string]any`). Its contract is a single method:
 
 `Parser.Parse(m map[string]any) (map[string]any, error)`
 

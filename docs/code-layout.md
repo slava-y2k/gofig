@@ -17,7 +17,6 @@ together for local development.
 | ---------------- | ----------------------------------------------------------------------- | --------------- |
 | Core             | `go.mod` — `github.com/slava-y2k/gofig`                                 | `gofig`         |
 | Key-value provider | `provider/keyvalue/go.mod` — `github.com/slava-y2k/gofig/provider/keyvalue` | `keyvalue`   |
-| Maps utility     | `maps/go.mod` — `github.com/slava-y2k/gofig/maps`                       | `maps`        |
 | Examples         | `example/go.mod` — `github.com/slava-y2k/gofig/example`                 | `main` per example |
 
 Rules:
@@ -72,8 +71,9 @@ Operational notes:
 - `go.work` is committed so every developer and CI gets the same build-all view.
 - **Register every new module in `go.work`** (`go work use ./provider/<name>`);
   otherwise it is invisible to the workspace.
-- Shared map helpers live in the `maps` module (`maps.DeepCopyMap`); the core
-  and the providers import it instead of duplicating them.
+- Shared map helpers live in `gofig_util.go` of the core module
+  (`gofig.DeepCopyMap`); the keyvalue provider imports the core instead of
+  duplicating them.
 - Inside the workspace the `replace` directives are dormant (workspace
   resolution wins); they keep each module buildable standalone
   (`GOWORK=off go test ./...` inside the module directory).
@@ -91,10 +91,8 @@ gofig/                        # repository root
 ├── gofig.go                  # package gofig — the Gofig container
 ├── gofig_test.go             # tests for the Gofig container
 ├── provider.go               # package gofig — Provider interface
-├── go.work                   # workspace: use (., ./provider/keyvalue, ./maps, ./example)
-├── maps/                     # module github.com/slava-y2k/gofig/maps — shared map helpers
-│   ├── go.mod
-│   └── maps.go               # package maps — DeepCopyMap and other map helpers
+├── gofig_util.go             # package gofig — DeepCopyMap and other shared helpers
+├── go.work                   # workspace: use (., ./provider/keyvalue, ./example)
 ├── parser/                   # Parser modules (one module per parser, none yet)
 ├── provider/                 # Provider modules (one module per provider)
 │   └── keyvalue/
@@ -123,7 +121,7 @@ Provider ──Read()──► map[string]any ──Load()──► Gofig      (
 
 | Type       | File                            | Kind      | Purpose |
 | ---------- | ------------------------------- | --------- | ------- |
-| `Gofig`    | `gofig.go`                      | struct    | Central key-value pair manager. `Load` reads a `Provider` and merges its output; `Merge` merges another `Gofig`, `MergeMap` merges a map, and `Set`/`Delete` mutate keys (they return `*Gofig`, enabling a fluent interface); `Get` and `Raw` read. `Get` reads by path parts (`g.Get("db", "host")`), `Set` writes by path parts (`g.Set([]string{"db"}, v)`); `Delete` takes path parts as a variadic list (no parts clear the whole configuration). |
+| `Gofig`    | `gofig.go`                      | struct    | Central key-value pair manager. `Load` reads a `Provider` and folds in its output; `Merge` takes another `Gofig`, `MergeMap` takes a map, and `Set`/`Delete` mutate keys (they return `*Gofig`, enabling a fluent interface); `Get` and `Raw` read. `Get` reads by path parts (`g.Get("db", "host")`), `Set` writes by path parts (`g.Set([]string{"db"}, v)`); `Delete` takes path parts as a variadic list (no parts clear the whole configuration). |
 | `Provider` | `provider.go`                   | interface | A configuration source. `Read()` returns the configuration as key-value pairs. |
 | `KeyValue` | `provider/keyvalue/keyvalue.go` | struct    | Provider serving an in-memory map of key-value pairs. Built with `keyvalue.New(m)`; a nil map is served as an empty map; `WithDeepCopy(true)` makes `Read` return a deep copy on every call. |
 
@@ -134,8 +132,8 @@ Conventions:
 
 - Interfaces are small and consumer-shaped (one method each).
 - All configuration data crosses boundaries as `(map[string]any, error)`.
-- Compile-time interface checks (`var _ gofig.Provider = (*KeyValue)(nil)`) in
-  every implementation.
+- Compile-time interface checks: the keyvalue provider asserts the real
+  `Provider` interface (`var _ gofig.Provider`) in its tests.
 - Public methods of `Gofig` are safe for concurrent use (guarded by `sync.RWMutex`).
 
 ## Planned
@@ -143,5 +141,4 @@ Conventions:
 - Parser modules under `parser/`, each its own module (JSON, YAML, TOML need a
   byte-source path in the model first).
 - More provider modules under `provider/` (files, env vars, remote sources).
-- More shared helpers in the `maps` module (map merge, flatten) as the need
-  arises.
+- More shared helpers in `gofig_util.go` (map merge, flatten) as the need arises.

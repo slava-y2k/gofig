@@ -1,5 +1,4 @@
-// Package maps provides helpers for working with key-value maps.
-package maps
+package gofig
 
 // DeepCopyMap returns a deep copy of m: nested maps are copied
 // recursively, all other values are shared.

@@ -1,11 +1,11 @@
 # General instructions
 
-Use English (american dialect) only
+Use English (American dialect) only
 
 ## Info
 - skill directory location: `.agents/skills/`
 - ignore files and directories specified in `.gitignore` file
-- when user mentions root directory treat root directory where this file locates
+- When the user mentions the root directory, treat it as the directory where this file is located.
 
 
 ## Ignore .vscode/skill-example.md

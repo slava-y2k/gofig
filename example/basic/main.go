@@ -4,6 +4,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/slava-y2k/gofig"
 	"github.com/slava-y2k/gofig/provider/keyvalue"
@@ -18,10 +19,10 @@ func main() {
 	// Load from a key-value provider. WithDeepCopy makes Read return a copy
 	// on every call, so the served map is never mutated.
 	if err := g.Load(keyvalue.New(src).WithDeepCopy(true)); err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
-	// Merge overrides, set and delete keys fluently.
+	// MergeMap overrides, Set and Delete keys fluently.
 	g.MergeMap(map[string]any{"db": map[string]any{"port": 5433}}).
 		Set([]string{"app", "mode"}, "dev").
 		Delete("app", "debug")

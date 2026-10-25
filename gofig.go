@@ -3,8 +3,6 @@ package gofig
 import (
 	"errors"
 	"sync"
-
-	"github.com/slava-y2k/gofig/maps"
 )
 
 // ErrNilProvider is returned by Load when the given provider is nil.
@@ -24,13 +22,11 @@ type Gofig struct {
 	kvMap   map[string]any
 }
 
-// New returns an empty Gofig using "." as the key path delimiter.
 func New() *Gofig {
 	return &Gofig{kvMap: make(map[string]any)}
 }
 
-// Load reads the provider and merges its output into the
-// configuration.
+// Load reads the provider and merges its output into the configuration.
 func (gfg *Gofig) Load(provider Provider) error {
 	if provider == nil {
 		return ErrNilProvider
@@ -46,7 +42,7 @@ func (gfg *Gofig) Load(provider Provider) error {
 	gfg.rwMutex.Lock()
 	defer gfg.rwMutex.Unlock()
 	gfg.init()
-	mergeMaps(gfg.kvMap, maps.DeepCopyMap(keyValues))
+	mergeMaps(gfg.kvMap, DeepCopyMap(keyValues))
 
 	return nil
 }
@@ -78,12 +74,30 @@ func (gfg *Gofig) Set(parts []string, value any) *Gofig {
 
 	if len(parts) == 0 {
 		if newConf, ok := value.(map[string]any); ok {
-			gfg.kvMap = maps.DeepCopyMap(newConf)
+			gfg.kvMap = DeepCopyMap(newConf)
 		}
 		return gfg
 	}
 
 	setPath(gfg.kvMap, parts, value)
+
+	return gfg
+}
+
+// Delete removes the value at the given path parts. Without parts,
+// Delete clears the whole configuration. Missing paths are ignored.
+func (gfg *Gofig) Delete(parts ...string) *Gofig {
+	gfg.rwMutex.Lock()
+	defer gfg.rwMutex.Unlock()
+
+	if len(parts) == 0 {
+		gfg.kvMap = make(map[string]any)
+		return gfg
+	}
+
+	if gfg.kvMap != nil {
+		deletePath(gfg.kvMap, parts)
+	}
 
 	return gfg
 }
@@ -111,25 +125,7 @@ func (gfg *Gofig) MergeMap(keyValues map[string]any) *Gofig {
 	gfg.rwMutex.Lock()
 	defer gfg.rwMutex.Unlock()
 	gfg.init()
-	mergeMaps(gfg.kvMap, maps.DeepCopyMap(keyValues))
-
-	return gfg
-}
-
-// Delete removes the value at the given path parts. Without parts,
-// Delete clears the whole configuration. Missing paths are ignored.
-func (gfg *Gofig) Delete(parts ...string) *Gofig {
-	gfg.rwMutex.Lock()
-	defer gfg.rwMutex.Unlock()
-
-	if len(parts) == 0 {
-		gfg.kvMap = make(map[string]any)
-		return gfg
-	}
-
-	if gfg.kvMap != nil {
-		deletePath(gfg.kvMap, parts)
-	}
+	mergeMaps(gfg.kvMap, DeepCopyMap(keyValues))
 
 	return gfg
 }
@@ -152,7 +148,7 @@ func (gfg *Gofig) snapshot() map[string]any {
 	gfg.rwMutex.RLock()
 	defer gfg.rwMutex.RUnlock()
 
-	return maps.DeepCopyMap(gfg.kvMap)
+	return DeepCopyMap(gfg.kvMap)
 }
 
 // init lazily initializes the configuration map so that the zero
@@ -178,7 +174,7 @@ func setPath(kvMap map[string]any, parts []string, value any) {
 
 	last := parts[len(parts)-1]
 	if valueMap, ok := value.(map[string]any); ok {
-		kvMap[last] = maps.DeepCopyMap(valueMap)
+		kvMap[last] = DeepCopyMap(valueMap)
 		return
 	}
 	kvMap[last] = value

@@ -26,16 +26,16 @@ The model is visualized in [parser.md](parser.md) - a Mermaid class diagram.
 - An extension point for working with key-value pairs.
 
 
-### Provider package
+### Provider
 
 The main source of key-value pairs is the `Provider`.
 Any source can implement the `Provider` interface, which in general consists of a single method:
 `Provider.Read() (map[string]any, error)`
 
 
-### Parser package
+### Parser
 
-A `Parser` is an auxiliary package which only returns the key-value pair.
+A `Parser` is an auxiliary package that only returns the key-value pair.
 Its contract is a single method:
 
 `Parser.Parse(m map[string]any) (map[string]any, error)`
@@ -49,7 +49,7 @@ is a separate module. The full rules live in [code-layout.md](code-layout.md).
 
 
 ## Gofig internal storage
-config is a nested map 
+The internal storage of `Gofig` is a nested `map[string]any`.
 
 
 

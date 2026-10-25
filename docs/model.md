@@ -14,7 +14,7 @@ The config library was implemented with the following principles:
 
 ## Model
 
-The model is visualized in [parser.puml](parser.puml) - a PlantUML file.
+The model is visualized in [parser.md](parser.md) - a Mermaid class diagram.
 
 
 ### Gofig

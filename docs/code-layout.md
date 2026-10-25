@@ -108,7 +108,7 @@ gofig/                        # repository root
 ├── docs/                     # design documentation
 │   ├── code-layout.md        # this file
 │   ├── model.md              # data model notes
-│   └── parser.puml           # PlantUML class diagram of the configuration model
+│   └── parser.md             # Mermaid class diagram of the configuration model
 └── opencode.jsonc            # OpenCode config (skill permissions, commands)
 ```
 

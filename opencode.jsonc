@@ -1,0 +1,23 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  // Disable the built-in "report" skill for this project: hide it from the
+  // model's skill list and reject explicit loads (e.g. @report).
+  "permissions": [
+    {
+      //https://github.com/anomalyco/opencode/blob/dev/packages/core/src/plugin/skill/report.md
+      "action": "skill", "resource": "report", "effect": "deny"
+    },
+    {
+      //https://github.com/huggingface/skills/blob/main/skills/hf-cli/SKILL.md
+      "action": "skill", "resource": "hf-cli", "effect": "deny"
+    }
+  ],
+  // Slash command that runs the git-commit skill's workflow (same pattern as
+  // the built-in /review: a command delegates, the skill holds the instructions).
+  "commands": {
+    "git-commit": {
+      "description": "create a git commit using the git-commit skill",
+      "template": "Create a git commit for the current changes. $ARGUMENTS\n\nFollow the git-commit skill for the commit type, the message format, and the project-structure body."
+    }
+  }
+}

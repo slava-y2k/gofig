@@ -27,7 +27,7 @@ func New() *Gofig {
 }
 
 // Load reads the provider and merges its output into the configuration.
-func (gfg *Gofig) Load(provider Provider) error {
+func Load(provider Provider) (error, *Gofig) {
 	if provider == nil {
 		return ErrNilProvider
 	}
@@ -141,6 +141,13 @@ func (gfg *Gofig) Raw() map[string]any {
 	}
 
 	return raw
+}
+
+// Read returns a deep copy of the whole configuration and satisfies
+// the Provider interface: a Gofig can serve as a Provider for another
+// Gofig.
+func (gfg *Gofig) Read() (map[string]any, error) {
+	return gfg.Raw(), nil
 }
 
 // snapshot returns a deep copy of the configuration map, reading it

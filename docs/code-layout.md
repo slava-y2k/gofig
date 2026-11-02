@@ -105,6 +105,7 @@ gofig/                        # repository root
 │       └── main.go           # runnable example: core + key-value provider
 ├── docs/                     # design documentation
 │   ├── code-layout.md        # this file
+│   ├── inconsistencies.md    # model-vs-code divergences, maintained by /model-consistency-check
 │   ├── model.md              # data model notes
 │   └── parser.md             # Mermaid class diagram of the configuration model
 └── opencode.jsonc            # OpenCode config (skill permissions, commands)
@@ -121,7 +122,7 @@ Provider ──Read()──► map[string]any ──Load()──► Gofig      (
 
 | Type       | File                            | Kind      | Purpose |
 | ---------- | ------------------------------- | --------- | ------- |
-| `Gofig`    | `gofig.go`                      | struct    | Central key-value pair manager. `Load` reads a `Provider` and folds in its output; `Merge` takes another `Gofig`, `MergeMap` takes a map, and `Set`/`Delete` mutate keys (they return `*Gofig`, enabling a fluent interface); `Get` and `Raw` read. `Get` reads by path parts (`g.Get("db", "host")`), `Set` writes by path parts (`g.Set([]string{"db"}, v)`); `Delete` takes path parts as a variadic list (no parts clear the whole configuration). |
+| `Gofig`    | `gofig.go`                      | struct    | Central key-value pair manager. `Load` reads a `Provider` and folds in its output; `Merge` takes another `Gofig`, `MergeMap` takes a map, and `Set`/`Delete` mutate keys (they return `*Gofig`, enabling a fluent interface); `Get` and `Raw` read. `Read` returns a deep copy of the whole configuration and makes a Gofig itself a `Provider` (one Gofig can be loaded from another). `Get` reads by path parts (`g.Get("db", "host")`), `Set` writes by path parts (`g.Set([]string{"db"}, v)`); `Delete` takes path parts as a variadic list (no parts clear the whole configuration). |
 | `Provider` | `provider.go`                   | interface | A configuration source. `Read()` returns the configuration as key-value pairs. |
 | `KeyValue` | `provider/keyvalue/keyvalue.go` | struct    | Provider serving an in-memory map of key-value pairs. Built with `keyvalue.New(m)`; a nil map is served as an empty map; `WithDeepCopy(true)` makes `Read` return a deep copy on every call. |
 

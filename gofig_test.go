@@ -338,3 +338,73 @@ func TestLoadNilProvider(t *testing.T) {
 		t.Error("Load(nil provider) error = nil, want error")
 	}
 }
+
+// Compile-time check that *Gofig implements Provider.
+var _ Provider = (*Gofig)(nil)
+
+func TestReadReturnsDeepCopy(t *testing.T) {
+	var gfg *Gofig = New().Set([]string{"a"}, map[string]any{"b": 1})
+
+	var actualValues map[string]any
+	var err error
+	actualValues, err = gfg.Read()
+	if err != nil {
+		t.Fatalf("Read() error = %v, want nil", err)
+	}
+
+	actualValues["a"].(map[string]any)["b"] = 99
+	actualValues["new"] = true
+
+	var got any
+	var ok bool
+	got, ok = gfg.Get("a", "b")
+
+	if !ok || got != 1 {
+		t.Errorf("Get(a.b) = %v, %v; want 1, true (Read must return a copy)", got, ok)
+	}
+
+	_, ok = gfg.Get("new")
+	if ok {
+		t.Error("Get(new) reported found after mutating the Read result")
+	}
+}
+
+func TestReadEmptyConfigReturnsEmptyMap(t *testing.T) {
+	var gfg Gofig
+
+	var actualValues map[string]any
+	var err error
+	actualValues, err = gfg.Read()
+	if err != nil {
+		t.Fatalf("Read() error = %v, want nil", err)
+	}
+
+	if actualValues == nil {
+		t.Fatal("Read() = nil, want an empty map")
+	}
+	if len(actualValues) != 0 {
+		t.Errorf("Read() = %v, want an empty map", actualValues)
+	}
+}
+
+func TestGofigServesAsProvider(t *testing.T) {
+	var parent *Gofig = New().Set([]string{"db", "host"}, "localhost").Set([]string{"app"}, "gofig")
+	var child *Gofig = New().Set([]string{"db", "port"}, 5432)
+
+	var err error
+	err = child.Load(parent)
+	if err != nil {
+		t.Fatalf("Load(parent) error = %v, want nil", err)
+	}
+
+	want := map[string]any{
+		"app": "gofig",
+		"db":  map[string]any{"host": "localhost", "port": 5432},
+	}
+
+	var actualValues map[string]any = child.Raw()
+
+	if !reflect.DeepEqual(actualValues, want) {
+		t.Errorf("Raw() = %v, want %v", actualValues, want)
+	}
+}

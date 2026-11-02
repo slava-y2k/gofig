@@ -1,7 +1,6 @@
 package gofig
 
-// DeepCopyMap returns a deep copy of m: nested maps are copied
-// recursively, all other values are shared.
+// DeepCopyMap returns a deep copy of m.
 func DeepCopyMap(m map[string]any) map[string]any {
 	if m == nil {
 		return nil

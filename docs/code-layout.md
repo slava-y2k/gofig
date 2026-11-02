@@ -117,12 +117,12 @@ directories; the first parser module will bring it under version control.
 ## Core abstractions
 
 ```text
-Provider ──Read()──► map[string]any ──Load()──► Gofig      (merge & manage)
+Provider ──Read()──► map[string]any ──NewWith*()──► Gofig      (merge & manage)
 ```
 
 | Type       | File                            | Kind      | Purpose |
 | ---------- | ------------------------------- | --------- | ------- |
-| `Gofig`    | `gofig.go`                      | struct    | Central key-value pair manager. `Load` reads a `Provider` and folds in its output; `Merge` takes another `Gofig`, `MergeMap` takes a map, and `Set`/`Delete` mutate keys (they return `*Gofig`, enabling a fluent interface); `Get` and `Raw` read. `Read` returns a deep copy of the whole configuration and makes a Gofig itself a `Provider` (one Gofig can be loaded from another). `Get` reads by path parts (`g.Get("db", "host")`), `Set` writes by path parts (`g.Set([]string{"db"}, v)`); `Delete` takes path parts as a variadic list (no parts clear the whole configuration). |
+| `Gofig`    | `gofig.go`                      | struct    | Central key-value pair manager. The `NewWith*` constructors (`NewWithProvider`, `NewWithMap`, `NewWithGofig`) every time create a new Gofig loaded from a source and return `(*Gofig, error)`; `Merge` takes another `Gofig` and `MergeMap` takes a map, folding them into an existing instance, and `Set`/`Delete` mutate keys (they return `*Gofig`, enabling a fluent interface); `Get` and `Raw` read. A Gofig itself is not a `Provider`; `NewWithGofig` and `Merge` take another Gofig directly. `Get` reads by path parts (`g.Get("db", "host")`), `Set` writes by path parts (`g.Set([]string{"db"}, v)`); `Delete` takes path parts as a variadic list (no parts clear the whole configuration). |
 | `Provider` | `provider.go`                   | interface | A configuration source. `Read()` returns the configuration as key-value pairs. |
 | `KeyValue` | `provider/keyvalue/keyvalue.go` | struct    | Provider serving an in-memory map of key-value pairs. Built with `keyvalue.New(m)`; a nil map is served as an empty map; `WithDeepCopy(true)` makes `Read` return a deep copy on every call. |
 

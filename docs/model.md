@@ -17,7 +17,8 @@ An interface that has only one simple method `Read() (map[string]any, error)`.
 
 
 ## Gofig
-Main key-value collection manager, which server for the following responsibilities for key-value collection :
+Main key-value collection manager, which server for the following responsibilities for key-value collection:
+* NewWithXXX - where XXX is the source suffix and
 * merge - collect key-values from different sources
 * writing - write to different type of sources
 
@@ -41,7 +42,7 @@ classDiagram
     namespace Gonfig_Lib {
         class Gonfig["Gonfig"] {
             -kvMap map[string]any
-            +LoadXXX()$ error, Gofig
+            +NewWithXXX()$ error, Gofig
             +MergeXXX(other Gofig) Gofig
             +Set(parts []string, value any) Gofig
             +Delete(parts ...string) Gofig

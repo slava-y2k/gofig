@@ -6,8 +6,7 @@ description: Use when creating or editing .go code files.
 
 ## Documentation style rules
 Use short explanation what happens. If the explanation can be found in the module prefer to use
-short explanation and refer to the model.  
-
+short explanation and refer to the model.
 
 
 ## Code style rules

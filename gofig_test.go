@@ -289,7 +289,8 @@ func TestFluentChaining(t *testing.T) {
 	}
 }
 
-// stubProvider is a Provider returning a fixed result, for Load tests.
+// stubProvider is a Provider returning a fixed result, for NewWith*
+// tests.
 type stubProvider struct {
 	keyValues map[string]any
 	err       error
@@ -297,17 +298,17 @@ type stubProvider struct {
 
 func (sp stubProvider) Read() (map[string]any, error) { return sp.keyValues, sp.err }
 
-func TestLoadMergesProviderOutput(t *testing.T) {
-	var gfg *Gofig = New().Set([]string{"keep"}, true)
+func TestNewWithProviderMergesProviderOutput(t *testing.T) {
 	provider := stubProvider{keyValues: map[string]any{"a": 1}}
 
+	var gfg *Gofig
 	var err error
-	err = gfg.Load(provider)
+	gfg, err = NewWithProvider(provider)
 	if err != nil {
-		t.Fatalf("Load() error = %v, want nil", err)
+		t.Fatalf("NewWithProvider() error = %v, want nil", err)
 	}
 
-	want := map[string]any{"keep": true, "a": 1}
+	want := map[string]any{"a": 1}
 
 	var actualValues map[string]any = gfg.Raw()
 
@@ -316,95 +317,108 @@ func TestLoadMergesProviderOutput(t *testing.T) {
 	}
 }
 
-func TestLoadReturnsProviderError(t *testing.T) {
+func TestNewWithProviderReturnsProviderError(t *testing.T) {
 	var wantErr error = errors.New("boom")
-	var gfg *Gofig = New()
 
+	var gfg *Gofig
 	var err error
-	err = gfg.Load(stubProvider{err: wantErr})
+	gfg, err = NewWithProvider(stubProvider{err: wantErr})
 
 	if !errors.Is(err, wantErr) {
-		t.Errorf("Load() error = %v, want %v", err, wantErr)
+		t.Errorf("NewWithProvider() error = %v, want %v", err, wantErr)
+	}
+	if gfg != nil {
+		t.Errorf("NewWithProvider() = %v, want nil Gofig on error", gfg)
 	}
 }
 
-func TestLoadNilProvider(t *testing.T) {
-	var gfg *Gofig = New()
-
+func TestNewWithProviderNilProvider(t *testing.T) {
+	var gfg *Gofig
 	var err error
-	err = gfg.Load(nil)
+	gfg, err = NewWithProvider(nil)
 
-	if err == nil {
-		t.Error("Load(nil provider) error = nil, want error")
+	if !errors.Is(err, ErrNilProvider) {
+		t.Errorf("NewWithProvider(nil) error = %v, want %v", err, ErrNilProvider)
+	}
+	if gfg != nil {
+		t.Errorf("NewWithProvider(nil) = %v, want nil Gofig", gfg)
 	}
 }
 
-// Compile-time check that *Gofig implements Provider.
-var _ Provider = (*Gofig)(nil)
+func TestNewWithMapCopiesSourceMap(t *testing.T) {
+	var src map[string]any = map[string]any{"db": map[string]any{"host": "localhost"}}
 
-func TestReadReturnsDeepCopy(t *testing.T) {
-	var gfg *Gofig = New().Set([]string{"a"}, map[string]any{"b": 1})
-
-	var actualValues map[string]any
+	var gfg *Gofig
 	var err error
-	actualValues, err = gfg.Read()
+	gfg, err = NewWithMap(src)
 	if err != nil {
-		t.Fatalf("Read() error = %v, want nil", err)
+		t.Fatalf("NewWithMap() error = %v, want nil", err)
 	}
 
-	actualValues["a"].(map[string]any)["b"] = 99
-	actualValues["new"] = true
+	src["db"].(map[string]any)["host"] = "changed"
+
+	var got any
+	var ok bool
+	got, ok = gfg.Get("db", "host")
+
+	if !ok || got != "localhost" {
+		t.Errorf("Get(db.host) = %v, %v; want localhost, true (NewWithMap must copy the source map)", got, ok)
+	}
+}
+
+func TestNewWithMapNilIsEmpty(t *testing.T) {
+	var gfg *Gofig
+	var err error
+	gfg, err = NewWithMap(nil)
+	if err != nil {
+		t.Fatalf("NewWithMap(nil) error = %v, want nil", err)
+	}
+
+	var actualValues map[string]any = gfg.Raw()
+
+	if len(actualValues) != 0 {
+		t.Errorf("Raw() = %v, want empty map", actualValues)
+	}
+}
+
+func TestNewWithGofigSnapshotsSource(t *testing.T) {
+	var other *Gofig = New().Set([]string{"a"}, map[string]any{"b": 1})
+
+	var gfg *Gofig
+	var err error
+	gfg, err = NewWithGofig(other)
+	if err != nil {
+		t.Fatalf("NewWithGofig() error = %v, want nil", err)
+	}
+
+	other.Set([]string{"a", "b"}, 99)
+	other.Set([]string{"new"}, true)
 
 	var got any
 	var ok bool
 	got, ok = gfg.Get("a", "b")
 
 	if !ok || got != 1 {
-		t.Errorf("Get(a.b) = %v, %v; want 1, true (Read must return a copy)", got, ok)
+		t.Errorf("Get(a.b) = %v, %v; want 1, true (NewWithGofig must snapshot the source Gofig)", got, ok)
 	}
 
 	_, ok = gfg.Get("new")
 	if ok {
-		t.Error("Get(new) reported found after mutating the Read result")
+		t.Error("Get(new) reported found after the source Gofig changed")
 	}
 }
 
-func TestReadEmptyConfigReturnsEmptyMap(t *testing.T) {
-	var gfg Gofig
-
-	var actualValues map[string]any
+func TestNewWithGofigNilIsEmpty(t *testing.T) {
+	var gfg *Gofig
 	var err error
-	actualValues, err = gfg.Read()
+	gfg, err = NewWithGofig(nil)
 	if err != nil {
-		t.Fatalf("Read() error = %v, want nil", err)
+		t.Fatalf("NewWithGofig(nil) error = %v, want nil", err)
 	}
 
-	if actualValues == nil {
-		t.Fatal("Read() = nil, want an empty map")
-	}
+	var actualValues map[string]any = gfg.Raw()
+
 	if len(actualValues) != 0 {
-		t.Errorf("Read() = %v, want an empty map", actualValues)
-	}
-}
-
-func TestGofigServesAsProvider(t *testing.T) {
-	var parent *Gofig = New().Set([]string{"db", "host"}, "localhost").Set([]string{"app"}, "gofig")
-	var child *Gofig = New().Set([]string{"db", "port"}, 5432)
-
-	var err error
-	err = child.Load(parent)
-	if err != nil {
-		t.Fatalf("Load(parent) error = %v, want nil", err)
-	}
-
-	want := map[string]any{
-		"app": "gofig",
-		"db":  map[string]any{"host": "localhost", "port": 5432},
-	}
-
-	var actualValues map[string]any = child.Raw()
-
-	if !reflect.DeepEqual(actualValues, want) {
-		t.Errorf("Raw() = %v, want %v", actualValues, want)
+		t.Errorf("Raw() = %v, want empty map", actualValues)
 	}
 }

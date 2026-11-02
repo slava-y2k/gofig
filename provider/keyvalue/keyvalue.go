@@ -10,7 +10,6 @@ type KeyValue struct {
 }
 
 // New returns a KeyValue serving the given key-value pairs.
-// A nil map is replaced with an empty map.
 func New(keyValues map[string]any) *KeyValue {
 	if keyValues == nil {
 		keyValues = make(map[string]any)
@@ -25,7 +24,7 @@ func (kv *KeyValue) WithDeepCopy(isEnabled bool) *KeyValue {
 	return kv
 }
 
-// Read returns the underlying map. Refer to WithDeepCopy for the details.
+// Read returns the underlying map, deep-copied when configured.
 func (kv *KeyValue) Read() (map[string]any, error) {
 	if !kv.deepCopy {
 		return kv.keyValues, nil

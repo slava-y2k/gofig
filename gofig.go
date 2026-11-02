@@ -5,18 +5,11 @@ import (
 	"sync"
 )
 
-// ErrNilProvider is returned by Load when the given provider is nil.
+// ErrNilProvider is returned by NewWithProvider when the given provider
+// is nil.
 var ErrNilProvider = errors.New("gofig: nil provider")
 
-// Gofig is a key-value pair manager. It loads key-value pairs from
-// Providers, merges them into a single map, and provides methods to
-// read, add, and remove keys.
-//
-// Get, Set, and Delete address nested maps through path parts: Get
-// and Delete take the parts as a variadic list, Set as a slice.
-//
-// Methods that cannot fail (Merge, MergeMap, Set, Delete) return the
-// Gofig itself, enabling a fluent interface.
+// Gofig is a key-value pair manager which provides
 type Gofig struct {
 	rwMutex sync.RWMutex
 	kvMap   map[string]any
@@ -26,30 +19,44 @@ func New() *Gofig {
 	return &Gofig{kvMap: make(map[string]any)}
 }
 
-// Load reads the provider and merges its output into the configuration.
-func Load(provider Provider) (error, *Gofig) {
+// NewWithMap creates a new Gofig loaded with a deep copy of the given
+// key-value pairs.
+func NewWithMap(keyValues map[string]any) (*Gofig, error) {
+	var gfg *Gofig = New()
+	mergeMaps(gfg.kvMap, DeepCopyMap(keyValues))
+
+	return gfg, nil
+}
+
+// NewWithProvider creates a new Gofig populated from the supplied
+// Provider.
+func NewWithProvider(provider Provider) (*Gofig, error) {
 	if provider == nil {
-		return ErrNilProvider
+		return nil, ErrNilProvider
 	}
 
 	var keyValues map[string]any
 	var err error
 	keyValues, err = provider.Read()
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	gfg.rwMutex.Lock()
-	defer gfg.rwMutex.Unlock()
-	gfg.ensureMapInitialized()
-	mergeMaps(gfg.kvMap, DeepCopyMap(keyValues))
-
-	return nil
+	return NewWithMap(keyValues)
 }
 
-// Get returns the value at the given path parts. The second result
-// reports whether the key was found. Without parts, Get returns the
-// whole configuration.
+// NewWithGofig creates a new Gofig loaded with a deep copy of the other
+// Gofig's configuration.
+func NewWithGofig(other *Gofig) (*Gofig, error) {
+	if other == nil {
+		return New(), nil
+	}
+
+	return NewWithMap(other.Raw())
+}
+
+// Get returns the value at the given path parts, reporting whether the
+// key was found.
 func (gfg *Gofig) Get(parts ...string) (any, bool) {
 	gfg.rwMutex.RLock()
 	defer gfg.rwMutex.RUnlock()
@@ -65,8 +72,7 @@ func (gfg *Gofig) Get(parts ...string) (any, bool) {
 }
 
 // Set stores value at the given path parts, creating missing
-// intermediate maps. Without parts, Set replaces the whole
-// configuration when value is a map[string]any.
+// intermediate maps.
 func (gfg *Gofig) Set(parts []string, value any) *Gofig {
 	gfg.rwMutex.Lock()
 	defer gfg.rwMutex.Unlock()
@@ -84,8 +90,8 @@ func (gfg *Gofig) Set(parts []string, value any) *Gofig {
 	return gfg
 }
 
-// Delete removes the value at the given path parts. Without parts,
-// Delete clears the whole configuration. Missing paths are ignored.
+// Delete removes the value at the given path parts. Missing paths are
+// ignored.
 func (gfg *Gofig) Delete(parts ...string) *Gofig {
 	gfg.rwMutex.Lock()
 	defer gfg.rwMutex.Unlock()
@@ -102,26 +108,28 @@ func (gfg *Gofig) Delete(parts ...string) *Gofig {
 	return gfg
 }
 
-// Merge deep-merges the configuration of another Gofig into this one:
-// nested maps are merged recursively, every other value overwrites the
-// existing one. A nil Gofig is ignored.
+// Merge deep-merges the configuration of another Gofig into this one.
 func (gfg *Gofig) Merge(other *Gofig) *Gofig {
 	if other == nil {
 		return gfg
 	}
 
+	var otherMap map[string]any
+	other.rwMutex.RLock()
+	otherMap = DeepCopyMap(other.kvMap)
+	other.rwMutex.RUnlock()
+
 	gfg.rwMutex.Lock()
 	defer gfg.rwMutex.Unlock()
 
 	gfg.ensureMapInitialized()
-	mergeMaps(gfg.kvMap, other.snapshot())
+	mergeMaps(gfg.kvMap, otherMap)
 
 	return gfg
 }
 
 // MergeMap deep-merges the given key-value pairs into the
-// configuration: nested maps are merged recursively, every other value
-// overwrites the existing one.
+// configuration.
 func (gfg *Gofig) MergeMap(keyValues map[string]any) *Gofig {
 	gfg.rwMutex.Lock()
 	defer gfg.rwMutex.Unlock()
@@ -131,11 +139,12 @@ func (gfg *Gofig) MergeMap(keyValues map[string]any) *Gofig {
 	return gfg
 }
 
-// Raw returns a deep copy of the whole configuration map, so callers
-// cannot mutate the internal state. Nested maps are copied; all other
-// values are shared.
+// Raw returns a deep copy of the whole configuration map.
 func (gfg *Gofig) Raw() map[string]any {
-	var raw map[string]any = gfg.snapshot()
+	gfg.rwMutex.RLock()
+	defer gfg.rwMutex.RUnlock()
+
+	var raw map[string]any = DeepCopyMap(gfg.kvMap)
 	if raw == nil {
 		raw = make(map[string]any)
 	}
@@ -143,23 +152,7 @@ func (gfg *Gofig) Raw() map[string]any {
 	return raw
 }
 
-// Read returns a deep copy of the whole configuration and satisfies
-// the Provider interface: a Gofig can serve as a Provider for another
-// Gofig.
-func (gfg *Gofig) Read() (map[string]any, error) {
-	return gfg.Raw(), nil
-}
-
-// snapshot returns a deep copy of the configuration map, reading it
-// under the read lock.
-func (gfg *Gofig) snapshot() map[string]any {
-	gfg.rwMutex.RLock()
-	defer gfg.rwMutex.RUnlock()
-
-	return DeepCopyMap(gfg.kvMap)
-}
-
-// ensureMapInitialized
+// ensureMapInitialized makes sure kvMap is non-nil.
 func (gfg *Gofig) ensureMapInitialized() *Gofig {
 	if gfg.kvMap == nil {
 		gfg.kvMap = make(map[string]any)
@@ -168,8 +161,7 @@ func (gfg *Gofig) ensureMapInitialized() *Gofig {
 }
 
 // setPath walks parts and stores value at the leaf, creating missing
-// intermediate maps. A non-map value on the path is overwritten with
-// a new map.
+// intermediate maps.
 func setPath(kvMap map[string]any, parts []string, value any) {
 	for _, part := range parts[:len(parts)-1] {
 		next, ok := kvMap[part].(map[string]any)

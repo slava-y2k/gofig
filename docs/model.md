@@ -13,21 +13,28 @@ Key value collection is represented by `key:string, value:any`.
 will be normalized to a string type.
 
 ## Provider
-An interface that has only one simple method `Read() (map[string]any, error)`. 
+An interface that has only one simple method `Read() (map[string]any, error)`. To return 
+a copy or a reference form the map is the providers responsibility depending on its own. 
 
 
 ## Gofig
 Main key-value collection manager, which server for the following responsibilities for key-value collection:
-* NewWithXXX - where XXX is the source suffix and
+* New<WithXXX> - where XXX is the source suffix - a constructor methods, which performs a deep copy 
+for the provided key-value collection
 * merge - collect key-values from different sources
 * writing - write to different type of sources
+
+
+## Gofig implementation details
+Gofig provides bound safety. All methods that accepts a key-value collection creates an internal copy.
+same approach is applied to the outbound methods - every method makes a copy.
 
 
 # Architecture
 
 Library is implemented with modular approach: 
 * Every provider is a separate module, which is included only when it is needed.
-* Cor module has only a std lib dependency
+* Core module has only a std lib dependency
   
 
 # Diagram

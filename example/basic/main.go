@@ -1,5 +1,4 @@
-// Command basic demonstrates loading key-value pairs from a key-value
-// provider into gofig and reading them back.
+// Command basic demonstrates loading, modifying, and reading configuration.
 package main
 
 import (
@@ -15,8 +14,6 @@ func main() {
 		"app": map[string]any{"name": "gofig", "debug": true},
 		"db":  map[string]any{"host": "localhost", "port": 5432},
 	}
-	// Create a Gofig from a key-value provider. WithDeepCopy makes Read
-	// return a copy on every call, so the served map is never mutated.
 	var g *gofig.Gofig
 	var err error
 	g, err = gofig.NewWithProvider(keyvalue.New(src).WithDeepCopy(true))
@@ -24,7 +21,6 @@ func main() {
 		log.Fatal(err)
 	}
 
-	// MergeMap overrides existing values; Set and Delete then modify keys fluently.
 	g.MergeMap(map[string]any{"db": map[string]any{"port": 5433}}).
 		Set([]string{"app", "mode"}, "dev").
 		Delete("app", "debug")

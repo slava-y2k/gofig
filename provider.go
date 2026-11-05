@@ -1,7 +1,7 @@
 package gofig
 
-// Provider represents a configuration provider that can read
-// configuration data and return it as a map of key-value pairs.
+// Provider is the pluggable source of configuration key-value pairs; the
+// provider decides whether Read returns its own storage or a copy.
 type Provider interface {
 	Read() (map[string]any, error)
 }

@@ -422,3 +422,24 @@ func TestNewWithGofigNilIsEmpty(t *testing.T) {
 		t.Errorf("Raw() = %v, want empty map", actualValues)
 	}
 }
+
+func TestRawNeverReturnsNil(t *testing.T) {
+	var gfg Gofig
+
+	var raw map[string]any = gfg.Raw()
+
+	if raw == nil {
+		t.Fatal("Raw() = nil, want an empty map")
+	}
+}
+
+func TestDeepCopyMapSharesSlices(t *testing.T) {
+	src := map[string]any{"list": []string{"a"}}
+	var copied map[string]any = DeepCopyMap(src)
+
+	src["list"].([]string)[0] = "b"
+
+	if got := copied["list"].([]string)[0]; got != "b" {
+		t.Errorf("copied slice = %q, want shared mutation %q", got, "b")
+	}
+}

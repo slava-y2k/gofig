@@ -1,6 +1,5 @@
 package gofig
 
-// DeepCopyMap returns a deep copy of m.
 func DeepCopyMap(m map[string]any) map[string]any {
 	if m == nil {
 		return nil

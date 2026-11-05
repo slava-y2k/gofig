@@ -9,8 +9,7 @@ import (
 // ErrNilProvider separates a wiring mistake from a source failure.
 var ErrNilProvider = errors.New("gofig: nil provider")
 
-// Gofig is a concurrency-safe hierarchical key-value container.
-// Its zero value is ready to use.
+// Gofig is a concurrency-safe hierarchical key-value container. Its zero value is ready to use.
 type Gofig struct {
 	rwMutex sync.RWMutex
 	kvMap   map[string]any
@@ -92,8 +91,8 @@ func (gfg *Gofig) Set(parts []string, value any) *Gofig {
 	return gfg
 }
 
-// Delete removes a key by path parts; missing paths and non-map segments
-// are ignored, so callers need no existence check.
+// Delete removes a key by path parts;
+// missing paths and non-map segments are ignored, so callers need no existence check.
 func (gfg *Gofig) Delete(parts ...string) *Gofig {
 	gfg.rwMutex.Lock()
 	defer gfg.rwMutex.Unlock()
@@ -110,8 +109,7 @@ func (gfg *Gofig) Delete(parts ...string) *Gofig {
 	return gfg
 }
 
-// Merge copies the source before locking the receiver; lock order
-// therefore cannot deadlock.
+// Merge copies the source before locking the receiver; lock order therefore cannot deadlock.
 func (gfg *Gofig) Merge(other *Gofig) *Gofig {
 	if other == nil {
 		return gfg
@@ -131,8 +129,8 @@ func (gfg *Gofig) Merge(other *Gofig) *Gofig {
 	return gfg
 }
 
-// MergeMap lets later sources win on conflicts and recursively merges
-// nested maps; the argument is copied, so the caller keeps it.
+// MergeMap lets later sources win on conflicts and recursively merges nested maps;
+// the argument is copied, so the caller keeps it.
 func (gfg *Gofig) MergeMap(keyValues map[string]any) *Gofig {
 	gfg.rwMutex.Lock()
 	defer gfg.rwMutex.Unlock()
@@ -142,8 +140,7 @@ func (gfg *Gofig) MergeMap(keyValues map[string]any) *Gofig {
 	return gfg
 }
 
-// Raw returns a deep copy, never nil; a snapshot is safe to mutate.
-// Empty state needs no nil check.
+// Raw returns a deep copy, never nil; a snapshot is safe to mutate. Empty state needs no nil check.
 func (gfg *Gofig) Raw() map[string]any {
 	gfg.rwMutex.RLock()
 	defer gfg.rwMutex.RUnlock()
@@ -156,6 +153,7 @@ func (gfg *Gofig) Raw() map[string]any {
 	return raw
 }
 
+// ensureMapInitialized allocates the root map on demand; callers hold the write lock.
 func (gfg *Gofig) ensureMapInitialized() *Gofig {
 	if gfg.kvMap == nil {
 		gfg.kvMap = make(map[string]any)
@@ -163,8 +161,8 @@ func (gfg *Gofig) ensureMapInitialized() *Gofig {
 	return gfg
 }
 
-// setPath replaces a non-map value that blocks the path; a nested write
-// therefore discards whatever that position held before.
+// setPath replaces a non-map value that blocks the path;
+// a nested write therefore discards whatever that position held before.
 func setPath(kvMap map[string]any, parts []string, value any) {
 	for _, part := range parts[:len(parts)-1] {
 		next, ok := kvMap[part].(map[string]any)
@@ -183,6 +181,7 @@ func setPath(kvMap map[string]any, parts []string, value any) {
 	kvMap[last] = value
 }
 
+// deletePath stops at a non-map segment; setPath would replace it instead.
 func deletePath(kvMap map[string]any, parts []string) {
 	for _, part := range parts[:len(parts)-1] {
 		next, ok := kvMap[part].(map[string]any)
@@ -194,6 +193,7 @@ func deletePath(kvMap map[string]any, parts []string) {
 	delete(kvMap, parts[len(parts)-1])
 }
 
+// getPath stops at a non-map segment and reports the key as not found.
 func getPath(kvMap map[string]any, parts []string) (any, bool) {
 	for _, part := range parts[:len(parts)-1] {
 		next, ok := kvMap[part].(map[string]any)

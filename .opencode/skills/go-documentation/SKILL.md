@@ -20,6 +20,10 @@ nor model documentation, test documentation and other project documentation.
 
 Do not do unnecessary line breaks and keep line to 110 symbols length. 
 
+If struct implements some interface, the whole contact, then specify implemented interface in the
+documentation on the struct level.
+If there is a partial then specify implemented methods in brackets.
+
 
 <llm-debug> For each step save the found context into the file go-documentation.YYYY-MM-DD_HH-mm-ss.sss.md where
 ss - seconds

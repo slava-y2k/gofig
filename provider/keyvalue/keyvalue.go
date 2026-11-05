@@ -4,12 +4,13 @@ package keyvalue
 import "github.com/slava-y2k/gofig"
 
 // KeyValue is an in-memory Provider over a caller-supplied key-value map;
-// copying on Read is opt-in through WithDeepCopy.
+// copying on Read is opt-in through WithDeepCopy. It implements gofig.Provider.
 type KeyValue struct {
 	keyValues map[string]any
 	deepCopy  bool
 }
 
+// New stores the given map by reference; nil becomes an empty map.
 func New(keyValues map[string]any) *KeyValue {
 	if keyValues == nil {
 		keyValues = make(map[string]any)
@@ -25,6 +26,7 @@ func (kv *KeyValue) WithDeepCopy(isEnabled bool) *KeyValue {
 	return kv
 }
 
+// Read never fails; the error result only keeps the Provider signature.
 func (kv *KeyValue) Read() (map[string]any, error) {
 	if !kv.deepCopy {
 		return kv.keyValues, nil

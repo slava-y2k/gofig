@@ -289,8 +289,7 @@ func TestFluentChaining(t *testing.T) {
 	}
 }
 
-// stubProvider is a Provider returning a fixed result, for NewWith*
-// tests.
+// stubProvider is a Provider returning a fixed result, for NewWith* tests.
 type stubProvider struct {
 	keyValues map[string]any
 	err       error

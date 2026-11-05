@@ -1,4 +1,4 @@
-package gofig
+package gonfig
 
 // DeepCopyMap copies nested map levels; other values are shared as is. A nil input returns nil.
 func DeepCopyMap(m map[string]any) map[string]any {

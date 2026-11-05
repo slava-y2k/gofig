@@ -1,7 +1,7 @@
-# gofig
+# gonfig
 
 Go configuration library. Configuration is represented as key-value pairs
-(`map[string]any`): providers feed them in, and the `Gofig` container
+(`map[string]any`): providers feed them in, and the `Gonfig` container
 merges and manages them.
 
 ## Development
@@ -12,15 +12,15 @@ referenceable:
 
 | Module       | Import path                                |
 | ------------ | ------------------------------------------ |
-| Core         | `github.com/slava-y2k/gofig`               |
-| Key-value provider | `github.com/slava-y2k/gofig/provider/keyvalue` |
-| Examples     | `github.com/slava-y2k/gofig/example`       |
+| Core         | `github.com/slava-y2k/gonfig`               |
+| Key-value provider | `github.com/slava-y2k/gonfig/provider/keyvalue` |
+| Examples     | `github.com/slava-y2k/gonfig/example`       |
 
 Build, test, and run everything from the repository root:
 
 ```sh
-go build github.com/slava-y2k/gofig/...
-go test github.com/slava-y2k/gofig/...
+go build github.com/slava-y2k/gonfig/...
+go test github.com/slava-y2k/gonfig/...
 go run ./example/basic
 ```
 

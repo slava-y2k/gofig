@@ -8,7 +8,7 @@ description: Use when creating or editing go code in compilable go files.
 ## Code style rules
 - use explicit type declaration where it is possible.
 - Naming: `MixedCaps`, no underscores.
-- Avoid package/name stutter at call sites; prefer `gofig.New()` over `gofig.NewGofig()`.
+- Avoid package/name stutter at call sites; prefer `gonfig.New()` over `gonfig.NewGonfig()`.
 - specify types explicitly for the variables, except obvious cases, when type can be inferred from the line 
 - As the receiver use 2-3 chars.
 - Don't use single char for arguments and variables naming, use more meaningful names

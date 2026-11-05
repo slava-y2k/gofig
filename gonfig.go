@@ -1,5 +1,5 @@
-// Package gofig provides hierarchical key-value configuration.
-package gofig
+// Package gonfig provides hierarchical key-value configuration.
+package gonfig
 
 import (
 	"errors"
@@ -7,23 +7,23 @@ import (
 )
 
 // ErrNilProvider separates a wiring mistake from a source failure.
-var ErrNilProvider = errors.New("gofig: nil provider")
+var ErrNilProvider = errors.New("gonfig: nil provider")
 
-// Gofig is a concurrency-safe hierarchical key-value container. Its zero value is ready to use.
-type Gofig struct {
+// Gonfig is a concurrency-safe hierarchical key-value container. Its zero value is ready to use.
+type Gonfig struct {
 	rwMutex sync.RWMutex
 	kvMap   map[string]any
 }
 
-// New returns an empty Gofig for symmetry with the NewWithXXX family.
+// New returns an empty Gonfig for symmetry with the NewWithXXX family.
 // The zero value is already usable, so it is optional.
-func New() *Gofig {
-	return &Gofig{kvMap: make(map[string]any)}
+func New() *Gonfig {
+	return &Gonfig{kvMap: make(map[string]any)}
 }
 
 // NewWithMap never fails; the error result only keeps signatures uniform.
-func NewWithMap(keyValues map[string]any) (*Gofig, error) {
-	var gfg *Gofig = New()
+func NewWithMap(keyValues map[string]any) (*Gonfig, error) {
+	var gfg *Gonfig = New()
 	var mapCopy map[string]any = DeepCopyMap(keyValues)
 	mergeMaps(gfg.kvMap, mapCopy)
 	return gfg, nil
@@ -31,7 +31,7 @@ func NewWithMap(keyValues map[string]any) (*Gofig, error) {
 
 // NewWithProvider copies the result no matter the provider's own policy,
 // so a provider's aliasing choice cannot reach the new container.
-func NewWithProvider(provider Provider) (*Gofig, error) {
+func NewWithProvider(provider Provider) (*Gonfig, error) {
 	if provider == nil {
 		return nil, ErrNilProvider
 	}
@@ -46,9 +46,9 @@ func NewWithProvider(provider Provider) (*Gofig, error) {
 	return NewWithMap(keyValues)
 }
 
-// NewWithGofig snapshots another Gofig; nil yields an empty container,
+// NewWithGonfig snapshots another Gonfig; nil yields an empty container,
 // so optional parents need no call-site guard.
-func NewWithGofig(other *Gofig) (*Gofig, error) {
+func NewWithGonfig(other *Gonfig) (*Gonfig, error) {
 	if other == nil {
 		return New(), nil
 	}
@@ -58,7 +58,7 @@ func NewWithGofig(other *Gofig) (*Gofig, error) {
 
 // Get returns live configuration values: no parts give the whole map,
 // and a map-valued key comes back by reference, so do not mutate results.
-func (gfg *Gofig) Get(parts ...string) (any, bool) {
+func (gfg *Gonfig) Get(parts ...string) (any, bool) {
 	gfg.rwMutex.RLock()
 	defer gfg.rwMutex.RUnlock()
 
@@ -74,7 +74,7 @@ func (gfg *Gofig) Get(parts ...string) (any, bool) {
 
 // Set writes along the key path parts. With no parts it replaces the root;
 // only a map is accepted, because the root must stay a map.
-func (gfg *Gofig) Set(parts []string, value any) *Gofig {
+func (gfg *Gonfig) Set(parts []string, value any) *Gonfig {
 	gfg.rwMutex.Lock()
 	defer gfg.rwMutex.Unlock()
 	gfg.ensureMapInitialized()
@@ -93,7 +93,7 @@ func (gfg *Gofig) Set(parts []string, value any) *Gofig {
 
 // Delete removes a key by path parts;
 // missing paths and non-map segments are ignored, so callers need no existence check.
-func (gfg *Gofig) Delete(parts ...string) *Gofig {
+func (gfg *Gonfig) Delete(parts ...string) *Gonfig {
 	gfg.rwMutex.Lock()
 	defer gfg.rwMutex.Unlock()
 
@@ -110,7 +110,7 @@ func (gfg *Gofig) Delete(parts ...string) *Gofig {
 }
 
 // Merge copies the source before locking the receiver; lock order therefore cannot deadlock.
-func (gfg *Gofig) Merge(other *Gofig) *Gofig {
+func (gfg *Gonfig) Merge(other *Gonfig) *Gonfig {
 	if other == nil {
 		return gfg
 	}
@@ -131,7 +131,7 @@ func (gfg *Gofig) Merge(other *Gofig) *Gofig {
 
 // MergeMap lets later sources win on conflicts and recursively merges nested maps;
 // the argument is copied, so the caller keeps it.
-func (gfg *Gofig) MergeMap(keyValues map[string]any) *Gofig {
+func (gfg *Gonfig) MergeMap(keyValues map[string]any) *Gonfig {
 	gfg.rwMutex.Lock()
 	defer gfg.rwMutex.Unlock()
 	gfg.ensureMapInitialized()
@@ -141,7 +141,7 @@ func (gfg *Gofig) MergeMap(keyValues map[string]any) *Gofig {
 }
 
 // Raw returns a deep copy, never nil; a snapshot is safe to mutate. Empty state needs no nil check.
-func (gfg *Gofig) Raw() map[string]any {
+func (gfg *Gonfig) Raw() map[string]any {
 	gfg.rwMutex.RLock()
 	defer gfg.rwMutex.RUnlock()
 
@@ -154,7 +154,7 @@ func (gfg *Gofig) Raw() map[string]any {
 }
 
 // ensureMapInitialized allocates the root map on demand; callers hold the write lock.
-func (gfg *Gofig) ensureMapInitialized() *Gofig {
+func (gfg *Gonfig) ensureMapInitialized() *Gonfig {
 	if gfg.kvMap == nil {
 		gfg.kvMap = make(map[string]any)
 	}

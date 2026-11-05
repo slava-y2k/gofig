@@ -1,10 +1,10 @@
 // Package keyvalue provides an in-memory configuration provider.
 package keyvalue
 
-import "github.com/slava-y2k/gofig"
+import "github.com/slava-y2k/gonfig"
 
 // KeyValue is an in-memory Provider over a caller-supplied key-value map;
-// copying on Read is opt-in through WithDeepCopy. It implements gofig.Provider.
+// copying on Read is opt-in through WithDeepCopy. It implements gonfig.Provider.
 type KeyValue struct {
 	keyValues map[string]any
 	deepCopy  bool
@@ -31,5 +31,5 @@ func (kv *KeyValue) Read() (map[string]any, error) {
 	if !kv.deepCopy {
 		return kv.keyValues, nil
 	}
-	return gofig.DeepCopyMap(kv.keyValues), nil
+	return gonfig.DeepCopyMap(kv.keyValues), nil
 }

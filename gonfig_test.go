@@ -1,4 +1,4 @@
-package gofig
+package gonfig
 
 import (
 	"errors"
@@ -7,7 +7,7 @@ import (
 )
 
 func TestNewReturnsEmptyConfig(t *testing.T) {
-	var gfg *Gofig = New()
+	var gfg *Gonfig = New()
 
 	var actualValues map[string]any = gfg.Raw()
 
@@ -23,7 +23,7 @@ func TestNewReturnsEmptyConfig(t *testing.T) {
 }
 
 func TestZeroValueIsUsable(t *testing.T) {
-	var gfg Gofig
+	var gfg Gonfig
 	gfg.Set([]string{"a"}, 1) // must not panic on nil map
 
 	var got any
@@ -36,19 +36,19 @@ func TestZeroValueIsUsable(t *testing.T) {
 }
 
 func TestMergeDeepMergesNestedMaps(t *testing.T) {
-	var gfg *Gofig = New()
+	var gfg *Gonfig = New()
 	gfg.MergeMap(map[string]any{
-		"app":  "gofig",
+		"app":  "gonfig",
 		"db":   map[string]any{"host": "localhost", "port": 5432},
 		"tags": []string{"a", "b"},
 	})
 	gfg.MergeMap(map[string]any{
-		"app": "gofig2",
+		"app": "gonfig2",
 		"db":  map[string]any{"port": 5433, "user": "admin"},
 	})
 
 	want := map[string]any{
-		"app":  "gofig2",
+		"app":  "gonfig2",
 		"db":   map[string]any{"host": "localhost", "port": 5433, "user": "admin"},
 		"tags": []string{"a", "b"},
 	}
@@ -61,7 +61,7 @@ func TestMergeDeepMergesNestedMaps(t *testing.T) {
 }
 
 func TestMergeDoesNotAliasSourceMap(t *testing.T) {
-	var gfg *Gofig = New()
+	var gfg *Gonfig = New()
 	src := map[string]any{"db": map[string]any{"host": "localhost"}}
 	gfg.MergeMap(src)
 
@@ -75,9 +75,9 @@ func TestMergeDoesNotAliasSourceMap(t *testing.T) {
 	}
 }
 
-func TestMergeMergesGofigConfig(t *testing.T) {
-	var other *Gofig = New().Set([]string{"db", "host"}, "remote").Set([]string{"db", "port"}, 3306)
-	var gfg *Gofig = New().Set([]string{"db"}, map[string]any{"host": "localhost", "user": "admin"})
+func TestMergeMergesGonfigConfig(t *testing.T) {
+	var other *Gonfig = New().Set([]string{"db", "host"}, "remote").Set([]string{"db", "port"}, 3306)
+	var gfg *Gonfig = New().Set([]string{"db"}, map[string]any{"host": "localhost", "user": "admin"})
 	gfg.Merge(other)
 
 	want := map[string]any{"db": map[string]any{"host": "remote", "port": 3306, "user": "admin"}}
@@ -89,9 +89,9 @@ func TestMergeMergesGofigConfig(t *testing.T) {
 	}
 }
 
-func TestMergeDoesNotAliasSourceGofig(t *testing.T) {
-	var other *Gofig = New().Set([]string{"a"}, map[string]any{"b": 1})
-	var gfg *Gofig = New()
+func TestMergeDoesNotAliasSourceGonfig(t *testing.T) {
+	var other *Gonfig = New().Set([]string{"a"}, map[string]any{"b": 1})
+	var gfg *Gonfig = New()
 	gfg.Merge(other)
 
 	other.Set([]string{"a", "b"}, 99)
@@ -102,17 +102,17 @@ func TestMergeDoesNotAliasSourceGofig(t *testing.T) {
 	got, ok = gfg.Get("a", "b")
 
 	if !ok || got != 1 {
-		t.Errorf("Get(a.b) = %v, %v; want 1, true (Merge must snapshot the source Gofig)", got, ok)
+		t.Errorf("Get(a.b) = %v, %v; want 1, true (Merge must snapshot the source Gonfig)", got, ok)
 	}
 
 	_, ok = gfg.Get("new")
 	if ok {
-		t.Error("Get(new) reported found after the source Gofig changed")
+		t.Error("Get(new) reported found after the source Gonfig changed")
 	}
 }
 
-func TestMergeNilGofigIsNoop(t *testing.T) {
-	var gfg *Gofig = New().Set([]string{"a"}, 1)
+func TestMergeNilGonfigIsNoop(t *testing.T) {
+	var gfg *Gonfig = New().Set([]string{"a"}, 1)
 	gfg.Merge(nil)
 
 	want := map[string]any{"a": 1}
@@ -125,7 +125,7 @@ func TestMergeNilGofigIsNoop(t *testing.T) {
 }
 
 func TestSetCreatesNestedMaps(t *testing.T) {
-	var gfg *Gofig = New()
+	var gfg *Gonfig = New()
 	gfg.Set([]string{"a", "b", "c"}, 1)
 
 	want := map[string]any{"a": map[string]any{"b": map[string]any{"c": 1}}}
@@ -138,7 +138,7 @@ func TestSetCreatesNestedMaps(t *testing.T) {
 }
 
 func TestSetOverwritesNonMapOnPath(t *testing.T) {
-	var gfg *Gofig = New()
+	var gfg *Gonfig = New()
 	gfg.Set([]string{"a"}, "scalar")
 	gfg.Set([]string{"a", "b"}, 2)
 
@@ -152,7 +152,7 @@ func TestSetOverwritesNonMapOnPath(t *testing.T) {
 }
 
 func TestSetCopiesMapValue(t *testing.T) {
-	var gfg *Gofig = New()
+	var gfg *Gonfig = New()
 	value := map[string]any{"b": 1}
 	gfg.Set([]string{"a"}, value)
 
@@ -167,7 +167,7 @@ func TestSetCopiesMapValue(t *testing.T) {
 }
 
 func TestSetEmptyKeyReplacesConfig(t *testing.T) {
-	var gfg *Gofig = New().Set([]string{"old"}, 1)
+	var gfg *Gonfig = New().Set([]string{"old"}, 1)
 	gfg.Set(nil, map[string]any{"new": 2})
 
 	want := map[string]any{"new": 2}
@@ -180,7 +180,7 @@ func TestSetEmptyKeyReplacesConfig(t *testing.T) {
 }
 
 func TestSetEmptyKeyWithNonMapIsNoop(t *testing.T) {
-	var gfg *Gofig = New().Set([]string{"old"}, 1)
+	var gfg *Gonfig = New().Set([]string{"old"}, 1)
 	gfg.Set(nil, 42)
 
 	want := map[string]any{"old": 1}
@@ -193,7 +193,7 @@ func TestSetEmptyKeyWithNonMapIsNoop(t *testing.T) {
 }
 
 func TestGetDotPath(t *testing.T) {
-	var gfg *Gofig = New().Set([]string{"a", "b", "c"}, "deep")
+	var gfg *Gonfig = New().Set([]string{"a", "b", "c"}, "deep")
 
 	var got any
 	var ok bool
@@ -215,7 +215,7 @@ func TestGetDotPath(t *testing.T) {
 }
 
 func TestDeleteRemovesNestedKey(t *testing.T) {
-	var gfg *Gofig = New().Set([]string{"a", "b"}, 1).Set([]string{"a", "c"}, 2)
+	var gfg *Gonfig = New().Set([]string{"a", "b"}, 1).Set([]string{"a", "c"}, 2)
 	gfg.Delete("a", "b")
 
 	var got any
@@ -233,7 +233,7 @@ func TestDeleteRemovesNestedKey(t *testing.T) {
 }
 
 func TestDeleteMissingPathIsNoop(t *testing.T) {
-	var gfg *Gofig = New().Set([]string{"a"}, 1)
+	var gfg *Gonfig = New().Set([]string{"a"}, 1)
 	gfg.Delete("x", "y", "z") // must not panic
 
 	var got any
@@ -246,7 +246,7 @@ func TestDeleteMissingPathIsNoop(t *testing.T) {
 }
 
 func TestDeleteEmptyKeyClearsConfig(t *testing.T) {
-	var gfg *Gofig = New().Set([]string{"a"}, 1)
+	var gfg *Gonfig = New().Set([]string{"a"}, 1)
 	gfg.Delete()
 
 	var actualValues map[string]any = gfg.Raw()
@@ -257,7 +257,7 @@ func TestDeleteEmptyKeyClearsConfig(t *testing.T) {
 }
 
 func TestRawReturnsCopy(t *testing.T) {
-	var gfg *Gofig = New().Set([]string{"a"}, map[string]any{"b": 1})
+	var gfg *Gonfig = New().Set([]string{"a"}, map[string]any{"b": 1})
 
 	var actualValues map[string]any = gfg.Raw()
 	actualValues["a"].(map[string]any)["b"] = 99
@@ -278,7 +278,7 @@ func TestRawReturnsCopy(t *testing.T) {
 }
 
 func TestFluentChaining(t *testing.T) {
-	var gfg *Gofig = New().Set([]string{"a"}, 1).MergeMap(map[string]any{"b": 2}).Delete("a")
+	var gfg *Gonfig = New().Set([]string{"a"}, 1).MergeMap(map[string]any{"b": 2}).Delete("a")
 
 	want := map[string]any{"b": 2}
 
@@ -300,7 +300,7 @@ func (sp stubProvider) Read() (map[string]any, error) { return sp.keyValues, sp.
 func TestNewWithProviderMergesProviderOutput(t *testing.T) {
 	provider := stubProvider{keyValues: map[string]any{"a": 1}}
 
-	var gfg *Gofig
+	var gfg *Gonfig
 	var err error
 	gfg, err = NewWithProvider(provider)
 	if err != nil {
@@ -319,7 +319,7 @@ func TestNewWithProviderMergesProviderOutput(t *testing.T) {
 func TestNewWithProviderReturnsProviderError(t *testing.T) {
 	var wantErr error = errors.New("boom")
 
-	var gfg *Gofig
+	var gfg *Gonfig
 	var err error
 	gfg, err = NewWithProvider(stubProvider{err: wantErr})
 
@@ -327,12 +327,12 @@ func TestNewWithProviderReturnsProviderError(t *testing.T) {
 		t.Errorf("NewWithProvider() error = %v, want %v", err, wantErr)
 	}
 	if gfg != nil {
-		t.Errorf("NewWithProvider() = %v, want nil Gofig on error", gfg)
+		t.Errorf("NewWithProvider() = %v, want nil Gonfig on error", gfg)
 	}
 }
 
 func TestNewWithProviderNilProvider(t *testing.T) {
-	var gfg *Gofig
+	var gfg *Gonfig
 	var err error
 	gfg, err = NewWithProvider(nil)
 
@@ -340,14 +340,14 @@ func TestNewWithProviderNilProvider(t *testing.T) {
 		t.Errorf("NewWithProvider(nil) error = %v, want %v", err, ErrNilProvider)
 	}
 	if gfg != nil {
-		t.Errorf("NewWithProvider(nil) = %v, want nil Gofig", gfg)
+		t.Errorf("NewWithProvider(nil) = %v, want nil Gonfig", gfg)
 	}
 }
 
 func TestNewWithMapCopiesSourceMap(t *testing.T) {
 	var src map[string]any = map[string]any{"db": map[string]any{"host": "localhost"}}
 
-	var gfg *Gofig
+	var gfg *Gonfig
 	var err error
 	gfg, err = NewWithMap(src)
 	if err != nil {
@@ -366,7 +366,7 @@ func TestNewWithMapCopiesSourceMap(t *testing.T) {
 }
 
 func TestNewWithMapNilIsEmpty(t *testing.T) {
-	var gfg *Gofig
+	var gfg *Gonfig
 	var err error
 	gfg, err = NewWithMap(nil)
 	if err != nil {
@@ -380,14 +380,14 @@ func TestNewWithMapNilIsEmpty(t *testing.T) {
 	}
 }
 
-func TestNewWithGofigSnapshotsSource(t *testing.T) {
-	var other *Gofig = New().Set([]string{"a"}, map[string]any{"b": 1})
+func TestNewWithGonfigSnapshotsSource(t *testing.T) {
+	var other *Gonfig = New().Set([]string{"a"}, map[string]any{"b": 1})
 
-	var gfg *Gofig
+	var gfg *Gonfig
 	var err error
-	gfg, err = NewWithGofig(other)
+	gfg, err = NewWithGonfig(other)
 	if err != nil {
-		t.Fatalf("NewWithGofig() error = %v, want nil", err)
+		t.Fatalf("NewWithGonfig() error = %v, want nil", err)
 	}
 
 	other.Set([]string{"a", "b"}, 99)
@@ -398,21 +398,21 @@ func TestNewWithGofigSnapshotsSource(t *testing.T) {
 	got, ok = gfg.Get("a", "b")
 
 	if !ok || got != 1 {
-		t.Errorf("Get(a.b) = %v, %v; want 1, true (NewWithGofig must snapshot the source Gofig)", got, ok)
+		t.Errorf("Get(a.b) = %v, %v; want 1, true (NewWithGonfig must snapshot the source Gonfig)", got, ok)
 	}
 
 	_, ok = gfg.Get("new")
 	if ok {
-		t.Error("Get(new) reported found after the source Gofig changed")
+		t.Error("Get(new) reported found after the source Gonfig changed")
 	}
 }
 
-func TestNewWithGofigNilIsEmpty(t *testing.T) {
-	var gfg *Gofig
+func TestNewWithGonfigNilIsEmpty(t *testing.T) {
+	var gfg *Gonfig
 	var err error
-	gfg, err = NewWithGofig(nil)
+	gfg, err = NewWithGonfig(nil)
 	if err != nil {
-		t.Fatalf("NewWithGofig(nil) error = %v, want nil", err)
+		t.Fatalf("NewWithGonfig(nil) error = %v, want nil", err)
 	}
 
 	var actualValues map[string]any = gfg.Raw()
@@ -423,7 +423,7 @@ func TestNewWithGofigNilIsEmpty(t *testing.T) {
 }
 
 func TestRawNeverReturnsNil(t *testing.T) {
-	var gfg Gofig
+	var gfg Gonfig
 
 	var raw map[string]any = gfg.Raw()
 

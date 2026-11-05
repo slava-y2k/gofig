@@ -4,11 +4,11 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/slava-y2k/gofig"
+	"github.com/slava-y2k/gonfig"
 )
 
-// Compile-time check that *KeyValue implements gofig.Provider.
-var _ gofig.Provider = (*KeyValue)(nil)
+// Compile-time check that *KeyValue implements gonfig.Provider.
+var _ gonfig.Provider = (*KeyValue)(nil)
 
 func TestReadReturnsMapAsIs(t *testing.T) {
 	testValues := map[string]any{"key": "value"}

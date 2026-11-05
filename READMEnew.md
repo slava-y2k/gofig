@@ -1,6 +1,6 @@
-# Gofig
+# Gonfig
 
-Gofig (Go + config) is an extensible micromodule library to deal with configuration in Go.
+Gonfig (Go + config) is an extensible micromodule library to deal with configuration in Go.
 
 # The Design  
 
@@ -28,16 +28,16 @@ config example
 Terms are introduced so there is exactly one term for each entity/focus.
 
 - **KeyValue(s)** - refers to the configuration key-value pair or pairs.
-- **ConfigStruct** - a struct marked with the struct tag `gofig` (planned; not implemented yet).
-- **Gofig** - refers to the `Gofig` struct and its functions.
-- **Provider** - an abstraction of a KeyValue collection for Gofig.
+- **ConfigStruct** - a struct marked with the struct tag `gonfig` (planned; not implemented yet).
+- **Gonfig** - refers to the `Gonfig` struct and its functions.
+- **Provider** - an abstraction of a KeyValue collection for Gonfig.
 
 
 ## The Design
 
 The library is multi-module to reduce coupling and to use only the modules it needs.
 
-- `Gofig` is the core module for working with KeyValues and defines the `Provider`
+- `Gonfig` is the core module for working with KeyValues and defines the `Provider`
   interface for KeyValues.
 - `Providers` modules - each data provider is a separate module and uses only the
   dependencies it needs.
@@ -47,7 +47,7 @@ See the model diagram in [docs/parser.md](docs/parser.md).
 
 # Module details
 
-## Gofig (core) module
+## Gonfig (core) module
 
 Supports add, remove, modify, and merge operations.
 Defines the `Provider` interface.
@@ -55,25 +55,25 @@ Defines the `Provider` interface.
 ### API
 
 ```go
-func New() *Gofig
-func (gfg *Gofig) Load(provider Provider) error
-func (gfg *Gofig) Get(parts ...string) (any, bool)
-func (gfg *Gofig) Set(parts []string, value any) *Gofig
-func (gfg *Gofig) Delete(parts ...string) *Gofig
-func (gfg *Gofig) Merge(other *Gofig) *Gofig
-func (gfg *Gofig) MergeMap(keyValues map[string]any) *Gofig
-func (gfg *Gofig) Raw() map[string]any
+func New() *Gonfig
+func (gfg *Gonfig) Load(provider Provider) error
+func (gfg *Gonfig) Get(parts ...string) (any, bool)
+func (gfg *Gonfig) Set(parts []string, value any) *Gonfig
+func (gfg *Gonfig) Delete(parts ...string) *Gonfig
+func (gfg *Gonfig) Merge(other *Gonfig) *Gonfig
+func (gfg *Gonfig) MergeMap(keyValues map[string]any) *Gonfig
+func (gfg *Gonfig) Raw() map[string]any
 func DeepCopyMap(m map[string]any) map[string]any
 ```
 
 | Method | Behavior |
 | ------ | -------- |
-| `New` | Creates a `Gofig` with an empty configuration. |
+| `New` | Creates a `Gonfig` with an empty configuration. |
 | `Load` | Reads a `Provider` and deep-merges its output into the configuration. Returns `ErrNilProvider` for a nil provider; otherwise returns the provider's error. |
 | `Get` | Returns the value at the given path parts and whether it was found. Without parts, returns the whole configuration. |
 | `Set` | Stores `value` at the given path parts, creating missing intermediate maps. Without parts, replaces the whole configuration when `value` is a `map[string]any` (a non-map value is ignored). |
 | `Delete` | Removes the value at the given path parts; missing paths are ignored. Without parts, clears the whole configuration. |
-| `Merge` | Deep-merges another `Gofig` into this one. A nil `Gofig` is ignored. |
+| `Merge` | Deep-merges another `Gonfig` into this one. A nil `Gonfig` is ignored. |
 | `MergeMap` | Deep-merges the given key-value pairs into the configuration. |
 | `Raw` | Returns a deep copy of the whole configuration map, so callers cannot mutate the internal state. |
 | `DeepCopyMap` | Returns a deep copy of a map: nested maps are copied recursively, all other values are shared. |
@@ -86,11 +86,11 @@ a slice.
 `Set` deep-copies map values, and `Load`/`Merge`/`MergeMap` snapshot their sources,
 so the internal configuration never aliases caller-owned maps.
 
-Methods that cannot fail (`Merge`, `MergeMap`, `Set`, `Delete`) return the `Gofig`
-itself, enabling a fluent interface. All public methods of `Gofig` are safe for
+Methods that cannot fail (`Merge`, `MergeMap`, `Set`, `Delete`) return the `Gonfig`
+itself, enabling a fluent interface. All public methods of `Gonfig` are safe for
 concurrent use (guarded by a `sync.RWMutex`).
 
-The zero value of `Gofig` is usable.
+The zero value of `Gonfig` is usable.
 
 ## Provider interface
 
@@ -103,7 +103,7 @@ type Provider interface {
 }
 ```
 
-Any source can implement `Provider` to feed KeyValues into `Gofig`.
+Any source can implement `Provider` to feed KeyValues into `Gonfig`.
 
 ### Key-value provider
 
@@ -119,7 +119,7 @@ func (kv *KeyValue) Read() (map[string]any, error)
 - `WithDeepCopy` enables/disables deep copying. When enabled, every `Read` returns
   a fresh deep copy, so the served map is never mutated by the caller. When
   disabled, `Read` returns the served map itself.
-- `KeyValue` implements `gofig.Provider` (asserted at compile time in its tests).
+- `KeyValue` implements `gonfig.Provider` (asserted at compile time in its tests).
 
 
 ## Parser
@@ -141,9 +141,9 @@ Code is represented as a multi-module structure: each Provider and each Parser
 is a separate module. The full rules live in [docs/code-layout.md](docs/code-layout.md).
 
 
-## Gofig internal storage
+## Gonfig internal storage
 
-The internal storage of `Gofig` is a nested `map[string]any`, guarded by a
+The internal storage of `Gonfig` is a nested `map[string]any`, guarded by a
 `sync.RWMutex`.
 
 
@@ -156,16 +156,16 @@ import (
   "fmt"
   "log"
 
-  "github.com/slava-y2k/gofig"
-  "github.com/slava-y2k/gofig/provider/keyvalue"
+  "github.com/slava-y2k/gonfig"
+  "github.com/slava-y2k/gonfig/provider/keyvalue"
 )
 
 func main() {
   src := map[string]any{
-    "app": map[string]any{"name": "gofig", "debug": true},
+    "app": map[string]any{"name": "gonfig", "debug": true},
     "db":  map[string]any{"host": "localhost", "port": 5432},
   }
-  g := gofig.New()
+  g := gonfig.New()
   // Load from a key-value provider. WithDeepCopy makes Read return a copy
   // on every call, so the served map is never mutated.
   if err := g.MergeProvider(keyvalue.New(src).WithDeepCopy(true)); err != nil {
@@ -200,19 +200,19 @@ referenceable:
 
 | Module            | Import path                                        |
 | ----------------- | -------------------------------------------------- |
-| Core              | `github.com/slava-y2k/gofig`                       |
-| Key-value provider | `github.com/slava-y2k/gofig/provider/keyvalue`    |
-| Examples          | `github.com/slava-y2k/gofig/example`               |
+| Core              | `github.com/slava-y2k/gonfig`                       |
+| Key-value provider | `github.com/slava-y2k/gonfig/provider/keyvalue`    |
+| Examples          | `github.com/slava-y2k/gonfig/example`               |
 
 Build, test, and run everything from the repository root:
 
 ```sh
-go build github.com/slava-y2k/gofig/...
-go test github.com/slava-y2k/gofig/...
-go vet github.com/slava-y2k/gofig/...
+go build github.com/slava-y2k/gonfig/...
+go test github.com/slava-y2k/gonfig/...
+go vet github.com/slava-y2k/gonfig/...
 go run ./example/basic
 ```
 
 
-Gofig is shorthand for Go and Config.
+Gonfig is shorthand for Go and Config.
 The library design is similar to the koanf library, with a cleaner design.

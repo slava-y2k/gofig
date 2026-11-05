@@ -5,18 +5,18 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/slava-y2k/gofig"
-	"github.com/slava-y2k/gofig/provider/keyvalue"
+	"github.com/slava-y2k/gonfig"
+	"github.com/slava-y2k/gonfig/provider/keyvalue"
 )
 
 func main() {
 	src := map[string]any{
-		"app": map[string]any{"name": "gofig", "debug": true},
+		"app": map[string]any{"name": "gonfig", "debug": true},
 		"db":  map[string]any{"host": "localhost", "port": 5432},
 	}
-	var g *gofig.Gofig
+	var g *gonfig.Gonfig
 	var err error
-	g, err = gofig.NewWithProvider(keyvalue.New(src).WithDeepCopy(true))
+	g, err = gonfig.NewWithProvider(keyvalue.New(src).WithDeepCopy(true))
 	if err != nil {
 		log.Fatal(err)
 	}

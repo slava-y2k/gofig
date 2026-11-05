@@ -3,8 +3,8 @@
 
 There main entities are:
  * Provider - main supplier of key-value collection.
- * Gofig - main struct with number of methods that provides a management functionality for the configuration
- * gofig tag - marks the struct field
+ * Gonfig - main struct with number of methods that provides a management functionality for the configuration
+ * gonfig tag - marks the struct field
 
 
 ## Key-value collection
@@ -17,7 +17,7 @@ An interface that has only one simple method `Read() (map[string]any, error)`. T
 a copy or a reference form the map is the providers responsibility depending on its own. 
 
 
-## Gofig
+## Gonfig
 Main key-value collection manager, which server for the following responsibilities for key-value collection:
 * New<WithXXX> - where XXX is the source suffix - a constructor methods, which performs a deep copy 
 for the provided key-value collection
@@ -25,8 +25,8 @@ for the provided key-value collection
 * writing - write to different type of sources
 
 
-## Gofig implementation details
-Gofig provides bound safety. All methods that accepts a key-value collection creates an internal copy.
+## Gonfig implementation details
+Gonfig provides bound safety. All methods that accepts a key-value collection creates an internal copy.
 same approach is applied to the outbound methods - every method makes a copy.
 
 
@@ -49,10 +49,10 @@ classDiagram
     namespace Gonfig_Lib {
         class Gonfig["Gonfig"] {
             -kvMap map[string]any
-            +NewWithXXX()$ error, Gofig
-            +MergeXXX(other Gofig) Gofig
-            +Set(parts []string, value any) Gofig
-            +Delete(parts ...string) Gofig
+            +NewWithXXX()$ error, Gonfig
+            +MergeXXX(other Gonfig) Gonfig
+            +Set(parts []string, value any) Gonfig
+            +Delete(parts ...string) Gonfig
             +Get(parts ...string) any
             +Raw() map[string]any
         }

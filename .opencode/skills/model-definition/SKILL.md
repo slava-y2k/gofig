@@ -8,7 +8,7 @@ description: Extracts the canonical model definition from the project's design d
 ## Purpose
 
 Build the model inventory: the single authoritative statement of what the
-gofig project is supposed to be, taken from the design docs. The inventory
+gonfig project is supposed to be, taken from the design docs. The inventory
 is the reference against which both the docs themselves (design review) and
 the implementation (code implementation review) are checked.
 

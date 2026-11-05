@@ -8,9 +8,9 @@ agent prepares the entries, the session that ran the check appends them.
 
 ## Rules
 
-- IDs are sequential (`IC-001`, `IC-002`, …) and never reused.
-- Entries are never deleted. When a divergence is resolved, set its status
-  to `resolved` and note how.
+- IDs are sequential (`IC-001`, `IC-002`, …) and never reused, even after
+  the entry is removed.
+- Resolved entries are removed once the fix or the resolution is agreed.
 - A repeated finding updates the existing open entry instead of adding a
   duplicate.
 
@@ -21,7 +21,7 @@ agent prepares the entries, the session that ran the check appends them.
 
 - Severity: Critical | Major | Minor
 - Kind: idea-inconsistency | undocumented-code | unimplemented-model | contradiction
-- Status: open | resolved
+- Status: open
 - Model says: docs/…:line — quote or reference
 - Reality: file…:line — quote, diagram, or verification result
 - Prepared change: the concrete edit — to the docs, the code, or both —
@@ -29,26 +29,6 @@ agent prepares the entries, the session that ran the check appends them.
 ```
 
 ## Findings
-
-### [IC-001] Load method broken; workspace does not build
-
-- Severity: Critical
-- Kind: contradiction
-- Status: resolved
-- Model says: docs/code-layout.md:125 — "`Load` reads a `Provider` and folds in its output" (a `Gonfig` method); callers use it as `g.Load(provider)` returning `error` (gonfig_test.go:305,324,335,395; example/basic/main.go:21).
-- Reality: gonfig.go:30 — `func Load(provider Provider) (error, *Gonfig)` is a free function whose body uses the undefined identifier `gfg` (gonfig.go:42-45) and returns one value where two are declared (gonfig.go:32,39,47). Verified: `go build/vet/test github.com/slava-y2k/gonfig/...` all fail with "undefined: gfg" and "not enough return values"; every module reports `[build failed]`.
-- Prepared change: In gonfig.go replace the free function with the method `func (gfg *Gonfig) Load(provider Provider) error`, returning `ErrNilProvider` when the provider is nil, the provider's error when `Read()` fails, and `nil` after merging `DeepCopyMap(keyValues)` into `gfg.kvMap` under the write lock. Also update the model.md:44 diagram to `+Load(provider) error`.
-- Resolution: superseded — the model was renamed to the `NewFrom*` constructor family (model.md:44, `+NewFromXXX()$ error, Gonfig`): every constructor creates a new instance, `Merge` stays an in-place method. The broken free function was replaced by `NewFromProvider`/`NewFromMap`/`NewFromGonfig` returning `(*Gonfig, error)`; `Load` was removed; tests and the example updated; `go build/vet/test ./...` pass across the workspace.
-
-### [IC-002] Core struct name drift between model and code
-
-- Severity: Major
-- Kind: idea-inconsistency
-- Status: resolved
-- Model says: docs/model.md:36 (title "Gonfig library design"), :41 (`namespace Gonfig_Lib`), :42 (`class Gonfig["Gonfig"]`), :63 (`Gonfig --> IProvider`).
-- Reality: docs/model.md:6, docs/code-layout.md:125 and README.md:4 all call the type "Gonfig".
-- Prepared change: In model.md, rename the diagram to `Gonfig` (`class Gonfig["Gonfig"]`, `namespace Gonfig_Lib`, title "Gonfig library design", relation `Gonfig --> IProvider` at :63).
-- Resolution: resolved the other way — the whole project was renamed to `gonfig`, so the model and the code now agree; no diagram edit is needed.
 
 ### [IC-003] Parser contract referenced but not defined in model.md
 
@@ -139,13 +119,3 @@ agent prepares the entries, the session that ran the check appends them.
 - Model says: docs/model.md:44 — `+NewFromXXX()$ error, Gonfig` (error first); docs/code-layout.md:125 — the constructors "return `(*Gonfig, error)`".
 - Reality: The two model documents disagree on the constructor result order; the implementation follows code-layout.md (gonfig.go:33 `func NewFromProvider(provider Provider) (*Gonfig, error)`; also gonfig.go:52, gonfig.go:61).
 - Prepared change: Update the model.md diagram to `+NewFromXXX()$ (Gonfig, error)`, matching code-layout.md:125 and the implementation.
-
-### [IC-013] Read and snapshot methods deleted; workspace does not build
-
-- Severity: Critical
-- Kind: contradiction
-- Status: resolved
-- Model says: docs/code-layout.md:125 — "`Read` returns a deep copy of the whole configuration and makes a Gonfig itself a `Provider` (one Gonfig can serve as a source for another)"; docs/code-layout.md:120 — `Provider ──Read()──► map[string]any ──NewFrom*()──► Gonfig`; docs/code-layout.md:136-137 — compile-time Provider checks.
-- Reality: gonfig.go has no `Read` or `snapshot` method (grep for `func (gfg *Gonfig)` lists Get, Set, Delete, Merge, MergeMap, Raw, ensureMapInitialized only), yet `Merge` calls `other.snapshot()` (gonfig.go:136) and `Raw` calls `gfg.snapshot()` (gonfig.go:157); git diff shows both methods were deleted from the working tree while their call sites remained. Tests still require the contract: gonfig_test.go:427 (`var _ Provider = (*Gonfig)(nil)`), gonfig_test.go:434, gonfig_test.go:461 (`gfg.Read()`). Verified: `go build/vet/test github.com/slava-y2k/gonfig/...` all fail ("other.snapshot undefined" gonfig.go:136, "gfg.snapshot undefined" gonfig.go:157; "*Gonfig does not implement Provider (missing method Read)"); every module reports `[build failed]`.
-- Prepared change: Restore the deleted methods in gonfig.go: `func (gfg *Gonfig) snapshot() map[string]any` (RLock + DeepCopyMap) and `func (gfg *Gonfig) Read() (map[string]any, error)` (return `gfg.Raw(), nil`), as documented in code-layout.md:125; then re-verify `go build/vet/test github.com/slava-y2k/gonfig/...` from the repository root.
-- Resolution: resolved the other way — the removal was confirmed intentional. The code keeps `Read`/`snapshot` deleted: `Raw` deep-copies under the read lock inline, `Merge` and `NewFromGonfig` read the source Gonfig directly (`NewFromGonfig` via `other.Raw()`, no longer delegating to `NewFromProvider`); the Gonfig-as-`Provider` contract was dropped — the compile-time check and `TestReadReturnsDeepCopy`, `TestReadEmptyConfigReturnsEmptyMap`, `TestGonfigServesAsProvider` were removed; code-layout.md:125 no longer claims a Gonfig is a `Provider`. `go build/vet/test github.com/slava-y2k/gonfig/...` pass.

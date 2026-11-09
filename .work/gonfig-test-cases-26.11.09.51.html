@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>gonfig — Unit Test Case Collection (go-test skill)</title>
+<style>
+  :root {
+    --bg: #f5f7fa;
+    --surface: #ffffff;
+    --surface-alt: #eef2f7;
+    --text: #172029;
+    --muted: #5b6b7c;
+    --border: #d9e1ea;
+    --accent: #146c94;
+    --accent-soft: #e2f0f7;
+    --ok-bg: #e5f5ea;
+    --ok-fg: #176b34;
+    --gap-bg: #fdeaea;
+    --gap-fg: #a32020;
+    --bug-bg: #fff3d6;
+    --bug-fg: #815600;
+    --shadow: 0 1px 2px rgba(16, 24, 40, .05), 0 6px 18px rgba(16, 24, 40, .045);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0f141a;
+      --surface: #182029;
+      --surface-alt: #202b36;
+      --text: #e7edf3;
+      --muted: #9aa9b8;
+      --border: #2d3b49;
+      --accent: #6fc3e8;
+      --accent-soft: #17313e;
+      --ok-bg: #15301f;
+      --ok-fg: #8ad9a1;
+      --gap-bg: #351a1a;
+      --gap-fg: #ff9d9d;
+      --bug-bg: #352b13;
+      --bug-fg: #f3c96e;
+      --shadow: 0 1px 2px rgba(0, 0, 0, .35), 0 6px 18px rgba(0, 0, 0, .25);
+    }
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font: 15px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+
+  .wrap {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  .page-header {
+    padding-top: 48px;
+    padding-bottom: 8px;
+  }
+
+  .eyebrow {
+    margin: 0 0 6px;
+    color: var(--accent);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+  }
+
+  h1 {
+    margin: 0;
+    font-size: 35px;
+    line-height: 1.15;
+    letter-spacing: -.022em;
+  }
+
+  .lede {
+    max-width: 820px;
+    margin: 12px 0 0;
+    color: var(--muted);
+    font-size: 16px;
+  }
+
+  .meta {
+    margin: 12px 0 0;
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  .summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+    gap: 12px;
+    margin-top: 24px;
+  }
+
+  .card {
+    padding: 16px 18px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 11px;
+    box-shadow: var(--shadow);
+  }
+
+  .card .value {
+    display: block;
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1.1;
+  }
+
+  .card .label {
+    display: block;
+    margin-top: 4px;
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+  }
+
+  .card.ok .value { color: var(--ok-fg); }
+  .card.gap .value { color: var(--gap-fg); }
+  .card.bug .value { color: var(--bug-fg); }
+
+  .callout {
+    margin-top: 20px;
+    padding: 16px 18px;
+    background: var(--surface-alt);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--accent);
+    border-radius: 9px;
+    font-size: 14px;
+  }
+
+  .callout h2 {
+    margin: 0 0 8px;
+    font-size: 14px;
+    letter-spacing: .03em;
+    text-transform: uppercase;
+  }
+
+  .callout ul { margin: 0; padding-left: 20px; }
+  .callout li { margin: 4px 0; }
+  .callout p { margin: 0; }
+  .callout p + p { margin-top: 8px; }
+
+  .toc {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 20px 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .toc a {
+    display: inline-block;
+    padding: 5px 11px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: var(--surface);
+    color: var(--muted);
+    font-size: 13px;
+    text-decoration: none;
+  }
+
+  .toc a:hover { color: var(--accent); border-color: var(--accent); }
+
+  main { padding-top: 8px; padding-bottom: 64px; }
+
+  section { margin-top: 38px; }
+
+  h2.section-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0 0 14px;
+    font-size: 21px;
+    letter-spacing: -.012em;
+  }
+
+  h2.section-title .num {
+    display: inline-grid;
+    place-items: center;
+    width: 29px;
+    height: 29px;
+    border-radius: 8px;
+    background: var(--accent);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .method {
+    margin: 18px 0 0;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 11px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+
+  .method-head {
+    padding: 16px 18px 13px;
+    background: var(--accent-soft);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .method-head h3 {
+    margin: 0;
+    font-size: 18px;
+    letter-spacing: -.01em;
+  }
+
+  .method-head .signature {
+    margin: 4px 0 0;
+    color: var(--muted);
+    font: 13px/1.5 ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  }
+
+  .contract {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .contract > div {
+    padding: 14px 18px;
+    border-right: 1px solid var(--border);
+  }
+
+  .contract > div:last-child { border-right: 0; }
+
+  .contract h4 {
+    margin: 0 0 6px;
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+  }
+
+  .contract ul { margin: 0; padding-left: 17px; }
+  .contract li { margin: 3px 0; font-size: 13px; }
+  .contract p { margin: 0; font-size: 13px; }
+
+  .table-wrap { overflow-x: auto; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+
+  thead th {
+    padding: 10px 14px;
+    background: var(--surface-alt);
+    border-bottom: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .07em;
+    text-align: left;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  tbody td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+
+  tbody tr:last-child td { border-bottom: 0; }
+  tbody tr:hover { background: var(--surface-alt); }
+
+  td.idx {
+    width: 76px;
+    color: var(--muted);
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  td.scenario { width: 46%; }
+  td.expect { width: 34%; }
+  td.status { width: 175px; white-space: nowrap; }
+
+  code {
+    padding: 1px 5px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: var(--surface-alt);
+    font: 13px/1.4 ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 2px 9px;
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .badge.ok { background: var(--ok-bg); color: var(--ok-fg); }
+  .badge.gap { background: var(--gap-bg); color: var(--gap-fg); }
+  .badge.bug { background: var(--bug-bg); color: var(--bug-fg); }
+
+  .priority ol {
+    margin: 0;
+    padding: 20px 24px 20px 46px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 11px;
+    box-shadow: var(--shadow);
+  }
+
+  .priority li { margin: 9px 0; }
+  .priority li:first-child { margin-top: 0; }
+  .priority li:last-child { margin-bottom: 0; }
+
+  .coverage td:last-child {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  footer {
+    padding-bottom: 48px;
+    color: var(--muted);
+    font-size: 12px;
+  }
+
+  @media (max-width: 720px) {
+    h1 { font-size: 28px; }
+    .contract > div { border-right: 0; border-bottom: 1px solid var(--border); }
+    .contract > div:last-child { border-bottom: 0; }
+  }
+
+  @media print {
+    body { background: #fff; }
+    .toc { display: none; }
+    .card, .method, .priority ol { box-shadow: none; }
+    .method, section { break-inside: avoid; }
+    thead th { position: static; }
+  }
+</style>
+</head>
+<body>
+
+<header class="page-header wrap">
+  <p class="eyebrow">go-test skill &middot; method-level collection</p>
+  <h1>gonfig — Unit Test Case Collection</h1>
+  <p class="lede">
+    Test cases collected per Go unit (file plus receiver), following the go-test skill:
+    trace each method's call stack, state its preconditions, postconditions, and type
+    invariants, and keep one test pack per public method so hidden helpers are covered
+    through their callers.
+  </p>
+  <p class="meta">
+    Generated 2026-11-09 22:16:51 &middot; commit <code>21f81e7</code> &middot;
+    core coverage 98.1% &middot; keyvalue coverage 100% &middot; 12 units &middot; 78 cases
+  </p>
+
+  <section class="summary" aria-label="Summary">
+    <div class="card"><span class="value">78</span><span class="label">Test cases</span></div>
+    <div class="card ok"><span class="value">39</span><span class="label">Covered</span></div>
+    <div class="card gap"><span class="value">39</span><span class="label">Gaps incl. bugs</span></div>
+    <div class="card bug"><span class="value">2</span><span class="label">Suspected bugs</span></div>
+    <div class="card"><span class="value">12</span><span class="label">Units</span></div>
+  </section>
+
+  <div class="callout">
+    <h2>How this collection was built</h2>
+    <ul>
+      <li><strong>Unit boundary:</strong> a Go file with the same receiver. Helpers in the same file are not separate units.</li>
+      <li><strong>Stack trace first:</strong> every method's call footprint inside the module was traced before deriving cases.</li>
+      <li><strong>Contract per method:</strong> preconditions, postconditions, and the type invariants that must hold before and after the call.</li>
+      <li><strong>Temporary invariant breaks:</strong> intermediate states where a method makes an invariant false (for example, <code>Set</code> replacing a scalar to open a path, or <code>Merge</code> copying a source before taking the receiver lock) are called out and tested.</li>
+      <li><strong>No duplicate hidden testing:</strong> <code>getPath</code>, <code>setPath</code>, <code>deletePath</code>, <code>mergeMaps</code>, and <code>ensureMapInitialized</code> are asserted through their public callers only. <code>DeepCopyMap</code> is public, so it has its own pack.</li>
+      <li><strong>Pre/post checked once or omitted:</strong> trivial always-true preconditions are stated but not turned into standalone tests.</li>
+    </ul>
+  </div>
+
+  <div class="callout">
+    <h2>Verification run</h2>
+    <p><code>go test -race ./...</code> &mdash; passed. <code>go vet ./...</code> &mdash; clean.</p>
+    <p>
+      Core module: 98.1% of statements. <code>Get</code> is the only function below 100%
+      (71.4%, two uncovered branches); all other core functions and every
+      <code>keyvalue</code> function are at 100%.
+    </p>
+  </div>
+
+  <nav aria-label="Sections">
+    <ul class="toc">
+      <li><a href="#unit-map">Unit map</a></li>
+      <li><a href="#constructors">Constructors</a></li>
+      <li><a href="#get">Get</a></li>
+      <li><a href="#set">Set</a></li>
+      <li><a href="#delete">Delete</a></li>
+      <li><a href="#merge">Merge</a></li>
+      <li><a href="#mergemap">MergeMap</a></li>
+      <li><a href="#raw">Raw</a></li>
+      <li><a href="#deepcopy">DeepCopyMap</a></li>
+      <li><a href="#concurrency">Concurrency</a></li>
+      <li><a href="#keyvalue">keyvalue</a></li>
+      <li><a href="#priority">Priority</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main class="wrap">
+
+<section id="unit-map">
+  <h2 class="section-title"><span class="num">0</span> Unit map and stack traces</h2>
+  <div class="method">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Unit</th><th>File / receiver</th><th>Internal stack trace</th><th>Test pack strategy</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Constructors</td><td><code>gonfig.go</code> / <code>*Gonfig</code></td><td><code>New</code>; <code>NewWithMap &rarr; New, DeepCopyMap, mergeMaps</code>; <code>NewWithProvider &rarr; Provider.Read, NewWithMap</code>; <code>NewWithGonfig &rarr; Raw, NewWithMap</code></td><td>One pack per constructor; aliasing asserted once per source kind.</td></tr>
+          <tr><td><code>Get</code></td><td><code>gonfig.go</code> / <code>*Gonfig</code></td><td><code>RLock &rarr; getPath</code></td><td>Public pack; <code>getPath</code> covered through it.</td></tr>
+          <tr><td><code>Set</code></td><td><code>gonfig.go</code> / <code>*Gonfig</code></td><td><code>Lock &rarr; ensureMapInitialized &rarr; [DeepCopyMap | setPath &rarr; DeepCopyMap]</code></td><td>Public pack covers helper branches; nil-map invariant is separate.</td></tr>
+          <tr><td><code>Delete</code></td><td><code>gonfig.go</code> / <code>*Gonfig</code></td><td><code>Lock &rarr; [make | deletePath]</code></td><td>Public pack; <code>deletePath</code> covered through it.</td></tr>
+          <tr><td><code>Merge</code></td><td><code>gonfig.go</code> / <code>*Gonfig</code></td><td><code>other.RLock &rarr; DeepCopyMap &rarr; other.RUnlock &rarr; Lock &rarr; ensureMapInitialized &rarr; mergeMaps</code></td><td>Public pack plus concurrent both-directions case.</td></tr>
+          <tr><td><code>MergeMap</code></td><td><code>gonfig.go</code> / <code>*Gonfig</code></td><td><code>Lock &rarr; ensureMapInitialized &rarr; DeepCopyMap &rarr; mergeMaps</code></td><td>Public pack; <code>mergeMaps</code> covered once across <code>Merge</code>/<code>MergeMap</code>.</td></tr>
+          <tr><td><code>Raw</code></td><td><code>gonfig.go</code> / <code>*Gonfig</code></td><td><code>RLock &rarr; DeepCopyMap &rarr; nil normalization</code></td><td>Public pack; copy boundary tested at map and slice levels.</td></tr>
+          <tr><td><code>DeepCopyMap</code></td><td><code>gonfig_util.go</code> / package helper</td><td><code>DeepCopyMap</code> recursive</td><td>Own pack because it is exported and reused by providers.</td></tr>
+          <tr><td><code>KeyValue.New</code></td><td><code>provider/keyvalue/keyvalue.go</code> / <code>*KeyValue</code></td><td><code>make</code></td><td>One pack covering nil normalization and aliasing.</td></tr>
+          <tr><td><code>KeyValue.WithDeepCopy</code></td><td><code>keyvalue.go</code> / <code>*KeyValue</code></td><td>flag assignment</td><td>Toggle and fluent-return cases.</td></tr>
+          <tr><td><code>KeyValue.Read</code></td><td><code>keyvalue.go</code> / <code>*KeyValue</code></td><td><code>[true: DeepCopyMap]</code></td><td>Both policy branches and the shared-slice invariant.</td></tr>
+          <tr><td>Concurrency</td><td>cross-method</td><td>RWMutex on <code>Gonfig</code>; source copy before receiver lock</td><td>Race-detector pack for lock and snapshot invariants.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section id="constructors">
+  <h2 class="section-title"><span class="num">1</span> Constructors</h2>
+
+  <article class="method">
+    <div class="method-head">
+      <h3><code>New</code></h3>
+      <p class="signature">func New() *Gonfig</p>
+    </div>
+    <div class="contract">
+      <div><h4>Stack trace</h4><p>None; allocates the receiver and the root map.</p></div>
+      <div><h4>Preconditions</h4><p>None. Callable in any package state.</p></div>
+      <div><h4>Postconditions</h4><ul><li>Non-nil receiver.</li><li><code>kvMap</code> is a non-nil empty map.</li></ul></div>
+      <div><h4>Invariants</h4><ul><li>Instances share no storage.</li><li>Zero value and <code>New()</code> are behaviorally interchangeable.</li></ul></div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>ID</th><th>Case</th><th>Expected</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td class="idx">TC-01</td><td class="scenario"><code>New()</code> returns an empty, usable config</td><td class="expect"><code>Raw()</code> is empty; <code>Get("missing")</code> is <code>false</code></td><td class="status"><span class="badge ok">Covered</span></td></tr>
+          <tr><td class="idx">TC-02</td><td class="scenario">Zero value <code>Gonfig{}</code> is usable</td><td class="expect"><code>Set</code> initializes storage without a constructor</td><td class="status"><span class="badge ok">Covered</span></td></tr>
+          <tr><td class="idx">TC-03</td><td class="scenario">Two <code>New()</code> instances are independent</td><td class="expect">Mutating one is invisible in the other</td><td class="status"><span class="badge gap">Gap</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </article>
+
+  <article class="method">
+    <div class="method-head">
+      <h3><code>NewWithMap</code></h3>
+      <p class="signature">func NewWithMap(keyValues map[string]any) (*Gonfig, error)</p>
+    </div>
+    <div class="contract">
+      <div><h4>Stack trace</h4><p><code>New &rarr; DeepCopyMap &rarr; mergeMaps</code></p></div>
+      <div><h4>Preconditions</h4><p><code>keyValues</code> may be nil; values may be any type.</p></div>
+      <div><h4>Postconditions</h4><ul><li>Non-nil config and <code>nil</code> error in all cases.</li><li>Nil input yields an empty config.</li><li>Map levels are deep-copied; non-map values are shared.</li></ul></div>
+      <div><h4>Invariants</h4><ul><li>The result never aliases the caller's map at map level.</li><li>Root remains a non-nil <code>map[string]any</code>.</li></ul></div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>ID</th><th>Case</th><th>Expected</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td class="idx">TC-04</td><td class="scenario">Nested source maps are copied</td><td class="expect">Mutating the source after construction is invisible</td><td class="status"><span class="badge ok">Covered</span></td></tr>
+          <tr><td class="idx">TC-05</td><td class="scenario"><code>NewWithMap(nil)</code></td><td class="expect">Empty config, <code>nil</code> error</td><td class="status"><span class="badge ok">Covered</span></td></tr>
+          <tr><td class="idx">TC-06</td><td class="scenario">Root argument is a typed nil map</td><td class="expect">Empty, usable config, <code>nil</code> error</td><td class="status"><span class="badge gap">Gap</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </article>
+
+  <article class="method">
+    <div class="method-head">
+      <h3><code>NewWithProvider</code></h3>
+      <p class="signature">func NewWithProvider(provider Provider) (*Gonfig, error)</p>
+    </div>
+    <div class="contract">
+      <div><h4>Stack trace</h4><p><code>Provider.Read &rarr; NewWithMap &rarr; New &rarr; DeepCopyMap &rarr; mergeMaps</code></p></div>
+      <div><h4>Preconditions</h4><p><code>provider</code> must be non-nil.</p></div>
+      <div><h4>Postconditions</h4><ul><li>Success: independent copy of the provider's output.</li><li>Provider error: <code>nil</code> config and the provider's error.</li><li>Nil provider: <code>ErrNilProvider</code>.</li></ul></div>
+      <div><h4>Invariants</h4><ul><li>A provider's aliasing choice cannot reach the new config.</li><li>Config is never partially initialized on error.</li></ul></div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>ID</th><th>Case</th><th>Expected</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td class="idx">TC-07</td><td class="scenario">Provider output is merged</td><td class="expect">Values are readable through <code>Get</code></td><td class="status"><span class="badge ok">Covered</span></td></tr>
+          <tr><td class="idx">TC-08</td><td class="scenario">Provider returns an error</td><td class="expect"><code>errors.Is</code> matches; config is <code>nil</code></td><td class="status"><span class="badge ok">Covered</span></td></tr>
+          <tr><td class="idx">TC-09</td><td class="scenario">Nil provider</td><td class="expect"><code>ErrNilProvider</code>; config is <code>nil</code></td><td class="status"><span class="badge ok">Covered</span></td></tr>
+          <tr><td class="idx">TC-10</td><td class="scenario">Provider returns a nil map</td><td class="expect">Empty config, <code>nil</code> error</td><td class="status"><span class="badge gap">Gap</span></td></tr>
+          <tr><td class="idx">TC-11</td><td class="scenario">Provider output is not aliased</td><td class="expect">Mutating the provider's storage later is invisible</td><td class="status"><span class="badge gap">Gap</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </article>
+
+  <article class="method">
+    <div class="method-head">
+      <h3><code>NewWithGonfig</code></h3>
+      <p class="signature">func NewWithGonfig(other *Gonfig) (*Gonfig, error)</p>
+    </div>
+    <div class="contract">
+      <div><h4>Stack trace</h4><p><code>other.Raw &rarr; DeepCopyMap &rarr; NewWithMap</code></p></div>
+      <div><h4>Preconditions</h4><p><code>other</code> may be nil; self is allowed.</p></div>
+      <div><h4>Postconditions</h4><ul><li>Nil source yields an empty config.</li><li>Non-nil source yields an independent snapshot.</li><li>Always returns <code>nil</code> error.</li></ul></div>
+      <div><h4>Invariants</h4><ul><li>Snapshot is isolated from later source writes.</li><li><code>Raw</code> holds the source read lock during copying.</li></ul></div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>ID</th><th>Case</th><th>Expected</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td class="idx">TC-12</td><td class="scenario">Source snapshot is independent</td><td class="expect">Later source mutations are invisible</td><td class="status"><span class="badge ok">Covered</span></td></tr>
+          <tr><td class="idx">TC-13</td><td class="scenario"><code>NewWithGonfig(nil)</code></td><td class="expect">Empty config, <code>nil</code> error</td><td class="status"><span class="badge ok">Covered</span></td></tr>
+          <tr><td class="idx">TC-14</td><td class="scenario">Snapshot of the receiver itself</td><td class="expect">Independent snapshot, no deadlock</td><td class="status"><span class="badge gap">Gap</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </article>
+</section>
+
+<section id="get">
+  <h2 class="section-title"><span class="num">2</span> Get</h2>
+  <article class="method">
+    <div class="method-head">
+      <h3><code>Get</code></h3>
+      <p class="signature">func (gfg *Gonfig) Get(parts ...string) (any, bool)</p>
+    </div>
+    <div class="contract">
+      <div><h4>Stack trace</h4><p><code>RLock &rarr; getPath</code></p></div>
+      <div><h4>Preconditions</h4><p>Receiver valid; <code>parts</code> may be empty. Parts are literal keys, not a dot-split path.</p></div>
+      <div><h4>Postconditions</h4><ul><li>No parts: root map and <code>true</code>; on a nil root, <code>nil, false</code>.</li><li>Present path: value and <code>true</code>, including a stored <code>nil</code>.</li><li>Missing or non-map segment: <code>nil, false</code>.</li><li>Map values are returned by reference.</li></ul></div>
+      <div><h4>Invariants</h4><ul><li>The lock is held for traversal only; the returned map is live after unlock, so the caller must not mutate it.</li><li>No path is created by a read.</li></ul></div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>ID</th><th>Case</th><th>Expected</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td class="idx">TC-15</td><td class="scenario">No parts on a populated config</td><td class="expect">Whole root map, <code>true</code></td><td class="status"><span class="badge gap">Gap</span></td></tr>
+          <tr><td class="idx">TC-16</td><td class="scenario">No parts on a zero-value config</td><td class="expect"><code>nil, false</code> (nil-map branch)</td><td class="status"><span class="badge gap">Gap</span></td></tr>
+          <tr><td class="idx">TC-17</td><td class="scenario">Key exists with a stored <code>nil</code></td><td class="expect"><code>nil, true</code>, distinct from missing</td><td class="status"><span class="badge gap">Gap</span></td></tr>
+          <tr><td class="idx">TC-18</td><td class="scenario">Missing key or missing intermediate segment</td><td class="expect"><code>nil, false</code></td><td class="status"><span class="badge ok">Covered</span></td></tr>
+          <tr><td class="idx">TC-19</td><td class="scenario">Intermediate segment is a scalar</td><td class="expect"><code>nil, false</code>, no panic</td><td class="status"><span class="badge ok">Covered</span></td></tr>
+          <tr><td class="idx">TC-20</td><td class="scenario">Map-valued key is returned by reference</td><td class="expect">Mutating the returned map changes the config</td><td class="status"><span class="badge gap">Gap</span></td></tr>
+          <tr><td class="idx">TC-21</td><td class="scenario">No-parts result is the live root map</td><td class="expect">Adding a key through the result is visible to later <code>Get</code></td><td class="status"><span class="badge gap">Gap</span></td></tr>
+          <tr><td class="idx">TC-22</td><td class="scenario">Key contains a dot</td><td class="expect">Literal key only; <code>Get("a","b")</code> does not find <code>"a.b"</code></td><td class="status"><span class="badge gap">Gap</span></td></tr>
+          <tr><td class="idx">TC-23</td><td class="scenario">Empty-string key</td><td class="expect"><code>Set("")</code> then <code>Get("")</code> returns the value</td><td class="status"><span class="badge gap">Gap</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </article>
+</section>
+
+<section id="set">
+  <h2 class="section-title"><span class="num">3</span> Set</h2>
+  <article class="method">
+    <div class="method-head">
+      <h3><code>Set</code></h3>
+      <p class="signature">func (gfg *Gonfig) Set(parts []string, value any) *Gonfig</p>
+    </div>
+    <div class="contract">
+      <div><h4>Stack trace</h4><p><code>Lock &rarr; ensureMapInitialized &rarr; [root: DeepCopyMap | path: setPath &rarr; DeepCopyMap]</code></p></div>
+      <div><h4>Preconditions</h4><p><code>parts</code> may be nil or empty; <code>value</code> may be any type; receiver may be the zero value.</p></div>
+      <div><h4>Postconditions</h4><ul><li>Path exists with <code>value</code>; missing intermediate maps are created.</li><li>Map values are deep-copied at map level.</li><li>Empty parts with a map replaces the root; a non-map is ignored.</li><li>Returns the receiver for chaining.</li></ul></div>
+      <div><h4>Invariants</h4><ul><li>Root remains a non-nil <code>map[string]any</code> after the call.</li><li>Temporary break: a scalar blocking the path is replaced, so its old value is lost.</li><li>Typed nil maps violate the intermediate-map invariant and are the highest-risk edge.</li></ul></div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>ID</th><th>Case</th><th>Expected</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td class="idx">TC-24</td><td class="scenario">Creates missing intermediate maps</td><td class="expect">Nested structure is produced</td><td class="status"><span class="badge ok">Covered</span></td></tr>
+          <tr><td class="idx">TC-25</td><td class="scenario">Overwrites a scalar blocking the path</td><td class="expect">Parent becomes a map; old scalar is lost</td><td class="status"><span class="badge ok">Covered</span></td></tr>
+          <tr><td class="idx">TC-26</td><td class="scenario">Map value is deep-copied</td><td class="expect">Later caller mutation is invisible</td><td class="status"><span class="badge ok">Covered</span></td></tr>
+          <tr><td class="idx">TC-27</td><td class="scenario">Slice inside a map value is shared</td><td class="expect">Mutating the source slice is visible (documented copy depth)</td><td class="status"><span class="badge gap">Gap</span></td></tr>
+          <tr><td class="idx">TC-28</td><td class="scenario">Empty parts with a map replaces the root</td><td class="expect">Old keys are gone</td><td class="status"><span class="badge ok">Covered</span></td></tr>
+          <tr><td class="idx">TC-29</td><td class="scenario">Empty parts with a nested map deep-copies levels</td><td class="expect">Nested caller mutation is invisible</td><td class="status"><span class="badge gap">Gap</span></td></tr>
+          <tr><td class="idx">TC-30</td><td class="scenario">Empty parts with a non-map is a no-op</td><td class="expect">Existing config is unchanged</td><td class="status"><span class="badge ok">Covered</span></td></tr>
+          <tr><td class="idx">TC-31</td><td class="scenario">Empty parts as <code>nil</code> vs <code>[]string{}</code></td><td class="expect">Identical behavior</td><td class="status"><span class="badge gap">Gap</span></td></tr>
+          <tr><td class="idx">TC-32</td><td class="scenario">Set on a zero-value receiver</td><td class="expect">Initializes storage, no panic</td><td class="status"><span class="badge ok">Covered</span></td></tr>
+          <tr><td class="idx">TC-33</td><td class="scenario">Typed nil map on the path, then write beneath it</td><td class="expect">Must not panic; currently likely <em>assignment to entry in nil map</em></td><td class="status"><span class="badge gap">Gap</span> <span class="badge bug">Bug</span></td></tr>
+          <tr><td class="idx">TC-34</td><td class="scenario">Root set to a typed nil map</td><td class="expect">Define whether this clears the root; currently <code>Get()</code> reports not found while <code>Raw()</code> is empty</td><td class="status"><span class="badge gap">Gap</span> <span class="badge bug">Bug</span></td></tr>
+          <tr><td class="idx">TC-35</td><td class="scenario">Fluent chaining returns the receiver</td><td class="expect"><code>Set(...).MergeMap(...).Delete(...)</code> works</td><td class="status"><span class="badge ok">Covered</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </article>
+</section>
+
+<section id="delete">
+  <h2 class="section-title"><span class="num">4</span> Delete</h2>
+  <article class="method">
+    <div class="method-head">
+      <h3><code>Delete</code></h3>
+      <p class="signature">func (gfg *Gonfig) Delete(parts ...string) *Gonfig</p>
+    </div>
+    <div class="contract">
+      <div><h4>Stack trace</h4><p><code>Lock &rarr; [empty parts: make | path: deletePath]</code></p></div>
+      <div><h4>Preconditions</h4><p><code>parts</code> may be empty; any receiver state, including zero value.</p></div>
+      <div><h4>Postconditions</h4><ul><li>Leaf key is removed when reachable.</li><li>Missing path and non-map segment are ignored.</li><li>Empty parts clears the root to an empty map.</li><li>Returns the receiver for chaining.</li></ul></div>
+      <div><h4>Invariants</h4><ul><li>No panic on absent paths.</li><li>Parent maps are not pruned; empty ancestors remain.</li><li>Unlike <code>Set</code>, a non-map segment is not replaced.</li></ul></div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>ID</th><th>Case</th><th>Expected</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td class="idx">TC-36</td><td class="scenario">Nested key is removed, sibling survives</td><td class="expect">Sibling remains readable</td><td class="status"><span class="badge ok">Covered</span></td></tr>
+          <tr><td class="idx">TC-37</td><td class="scenario">Missing path is a no-op</td><td class="expect">State unchanged, no panic</td><td class="status"><span class="badge ok">Covered</span></td></tr>
+          <tr><td class="idx">TC-38</td><td class="scenario">Intermediate segment is a scalar</td><td class="expect">No-op, no panic, scalar untouched</td><td class="status"><span class="badge gap">Gap</span></td></tr>
+          <tr><td class="idx">TC-39</td><td class="scenario">Empty parts clears the config</td><td class="expect"><code>Raw()</code> is empty</td><td class="status"><span class="badge ok">Covered</span></td></tr>
+          <tr><td class="idx">TC-40</td><td class="scenario">Empty parts on a zero-value config</td><td class="expect">Empty non-nil root, no panic</td><td class="status"><span class="badge gap">Gap</span></td></tr>
+          <tr><td class="idx">TC-41</td><td class="scenario">Deleting the only child leaves an empty parent</td><td class="expect">Parent still exists as an empty map</td><td class="status"><span class="badge gap">Gap</span></td></tr>
+          <tr><td class="idx">TC-42</td><td class="scenario">Fluent receiver is returned</td><td class="expect">Chaining works</td><td class="status"><span class="badge ok">Covered</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </article>
+</section>
+
+<section id="merge">
+  <h2 class="section-title"><span class="num">5</span> Merge</h2>
+  <article class="method">
+    <div class="method-head">
+      <h3><code>Merge</code></h3>
+      <p class="signature">func (gfg *Gonfig) Merge(other *Gonfig) *Gonfig</p>
+    </div>
+    <div class="contract">
+      <div><h4>Stack trace</h4><p><code>other.RLock &rarr; DeepCopyMap &rarr; other.RUnlock &rarr; Lock &rarr; ensureMapInitialized &rarr; mergeMaps</code></p></div>
+      <div><h4>Preconditions</h4><p><code>other</code> may be nil; self-merge is allowed.</p></div>
+      <div><h4>Postconditions</h4><ul><li>Deep union; the source wins on conflicts.</li><li>Nil source is a no-op.</li><li>Source is snapshotted before the receiver is changed.</li><li>Returns the receiver for chaining.</li></ul></div>
+      <div><h4>Invariants</h4><ul><li>Source copy happens before taking the receiver write lock, so lock order cannot deadlock.</li><li>Temporary break: the receiver is unlocked while the copied source is applied.</li></ul></div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>ID</th><th>Case</th><th>Expected</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td class="idx">TC-43</td><td class="scenario">Nested maps merge recursively</td><td class="expect">Unrelated nested keys are preserved</td><td class="status"><span class="badge ok">Covered</span></td></tr>
+          <tr><td class="idx">TC-44</td><td class="scenario">Later source wins on a scalar conflict</td><td class="expect">Source scalar overwrites the receiver's</td><td class="status"><span class="badge ok">Covered</span></td></tr>
+          <tr><td class="idx">TC-45</td><td class="scenario">Receiver scalar is replaced by a source map</td><td class="expect">Source map wins at that key</td><td class="status"><span class="badge gap">Gap</span></td></tr>
+          <tr><td class="idx">TC-46</td><td class="scenario">Source map is not aliased</td><td class="expect">Mutating the caller's map is invisible</td><td class="status"><span class="badge ok">Covered</span></td></tr>
+          <tr><td class="idx">TC-47</td><td class="scenario">Source <code>Gonfig</code> is snapshotted</td><td class="expect">Later source mutations are invisible</td><td class="status"><span class="badge ok">Covered</span></td></tr>
+          <tr><td class="idx">TC-48</td><td class="scenario"><code>Merge(nil)</code></td><td class="expect">No-op, state unchanged</td><td class="status"><span class="badge ok">Covered</span></td></tr>
+          <tr><td class="idx">TC-49</td><td class="scenario">Merge into a zero-value receiver</td><td class="expect">Storage is initialized; source is applied</td><td class="status"><span class="badge gap">Gap</span></td></tr>
+          <tr><td class="idx">TC-50</td><td class="scenario"><code>g.Merge(g)</code> self-merge</td><td class="expect">No panic or deadlock; data preserved</td><td class="status"><span class="badge gap">Gap</span></td></tr>
+          <tr><td class="idx">TC-51</td><td class="scenario">Two configs merge into each other concurrently</td><td class="expect">No deadlock (lock-order invariant)</td><td class="status"><span class="badge gap">Gap</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </article>
+</section>
+
+<section id="mergemap">
+  <h2 class="section-title"><span class="num">6</span> MergeMap</h2>
+  <article class="method">
+    <div class="method-head">
+      <h3><code>MergeMap</code></h3>
+      <p class="signature">func (gfg *Gonfig) MergeMap(keyValues map[string]any) *Gonfig</p>
+    </div>
+    <div class="contract">
+      <div><h4>Stack trace</h4><p><code>Lock &rarr; ensureMapInitialized &rarr; DeepCopyMap &rarr; mergeMaps</code></p></div>
+      <div><h4>Preconditions</h4><p><code>keyValues</code> may be nil.</p></div>
+      <div><h4>Postconditions</h4><ul><li>Deep union; the argument wins on conflicts.</li><li>Nil argument is a no-op.</li><li>Argument is copied before merging.</li><li>Returns the receiver for chaining.</li></ul></div>
+      <div><h4>Invariants</h4><ul><li>Caller keeps ownership of the argument.</li><li>Root map is initialized on demand.</li></ul></div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>ID</th><th>Case</th><th>Expected</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td class="idx">TC-52</td><td class="scenario">Nested maps deep-merge; later source wins</td><td class="expect">Unrelated keys preserved, conflicts overwritten</td><td class="status"><span class="badge ok">Covered</span></td></tr>
+          <tr><td class="idx">TC-53</td><td class="scenario"><code>MergeMap(nil)</code></td><td class="expect">No-op, state unchanged</td><td class="status"><span class="badge gap">Gap</span></td></tr>
+          <tr><td class="idx">TC-54</td><td class="scenario">MergeMap into a zero-value receiver</td><td class="expect">Storage is initialized; source is applied</td><td class="status"><span class="badge gap">Gap</span></td></tr>
+          <tr><td class="idx">TC-55</td><td class="scenario">Source map is not aliased</td><td class="expect">Mutating the argument later is invisible</td><td class="status"><span class="badge ok">Covered</span></td></tr>
+          <tr><td class="idx">TC-56</td><td class="scenario">Non-map slice value is overwritten</td><td class="expect">Source slice replaces the receiver's slice</td><td class="status"><span class="badge gap">Gap</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </article>
+</section>
+
+<section id="raw">
+  <h2 class="section-title"><span class="num">7</span> Raw</h2>
+  <article class="method">
+    <div class="method-head">
+      <h3><code>Raw</code></h3>
+      <p class="signature">func (gfg *Gonfig) Raw() map[string]any</p>
+    </div>
+    <div class="contract">
+      <div><h4>Stack trace</h4><p><code>RLock &rarr; DeepCopyMap &rarr; nil normalization</code></p></div>
+      <div><h4>Preconditions</h4><p>Any receiver state.</p></div>
+      <div><h4>Postconditions</h4><ul><li>Never returns <code>nil</code>; an empty config yields an empty map.</li><li>Nested maps are copied; non-map values are shared.</li></ul></div>
+      <div><h4>Invariants</h4><ul><li>Caller cannot mutate config through map levels.</li><li>Slices and typed maps remain shared by design.</li></ul></div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>ID</th><th>Case</th><th>Expected</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td class="idx">TC-57</td><td class="scenario">Nested maps are deep-copied</td><td class="expect">Mutating the result at top or nested level is invisible</td><td class="status"><span class="badge ok">Covered</span></td></tr>
+          <tr><td class="idx">TC-58</td><td class="scenario">Zero-value receiver</td><td class="expect">Non-nil empty map</td><td class="status"><span class="badge ok">Covered</span></td></tr>
+          <tr><td class="idx">TC-59</td><td class="scenario">Slice value is shared in the snapshot</td><td class="expect">Mutating the slice through <code>Raw()</code> changes the config</td><td class="status"><span class="badge gap">Gap</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </article>
+</section>
+
+<section id="deepcopy">
+  <h2 class="section-title"><span class="num">8</span> DeepCopyMap</h2>
+  <article class="method">
+    <div class="method-head">
+      <h3><code>DeepCopyMap</code></h3>
+      <p class="signature">func DeepCopyMap(m map[string]any) map[string]any</p>
+    </div>
+    <div class="contract">
+      <div><h4>Stack trace</h4><p><code>DeepCopyMap</code> recurses on <code>map[string]any</code> values.</p></div>
+      <div><h4>Preconditions</h4><p><code>m</code> may be nil.</p></div>
+      <div><h4>Postconditions</h4><ul><li>Nil input returns <code>nil</code>.</li><li>Non-nil input returns a new map with all map levels copied.</li><li>Other values are assigned as is.</li></ul></div>
+      <div><h4>Invariants</h4><ul><li>No alias at map levels.</li><li>Alias is intentional for slices and non-<code>map[string]any</code> values.</li></ul></div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>ID</th><th>Case</th><th>Expected</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td class="idx">TC-60</td><td class="scenario"><code>DeepCopyMap(nil)</code></td><td class="expect"><code>nil</code></td><td class="status"><span class="badge gap">Gap</span></td></tr>
+          <tr><td class="idx">TC-61</td><td class="scenario">Empty map input</td><td class="expect">Non-nil empty map</td><td class="status"><span class="badge gap">Gap</span></td></tr>
+          <tr><td class="idx">TC-62</td><td class="scenario">Nested maps are copied recursively</td><td class="expect">Nested mutation is independent</td><td class="status"><span class="badge ok">Covered</span></td></tr>
+          <tr><td class="idx">TC-63</td><td class="scenario">Slice value is shared</td><td class="expect">Shared mutation is visible</td><td class="status"><span class="badge ok">Covered</span></td></tr>
+          <tr><td class="idx">TC-64</td><td class="scenario">Typed map such as <code>map[string]string</code> is shared</td><td class="expect">Not deep-copied (only <code>map[string]any</code> levels are)</td><td class="status"><span class="badge gap">Gap</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </article>
+</section>
+
+<section id="concurrency">
+  <h2 class="section-title"><span class="num">9</span> Cross-method concurrency</h2>
+  <article class="method">
+    <div class="method-head">
+      <h3>Concurrency invariants</h3>
+      <p class="signature">All exported <code>Gonfig</code> methods are guarded by <code>sync.RWMutex</code>.</p>
+    </div>
+    <div class="contract">
+      <div><h4>Stack trace</h4><p>Every public method takes the receiver lock; <code>Merge</code> additionally takes the source read lock before the receiver write lock.</p></div>
+      <div><h4>Preconditions</h4><p>Callers must not mutate maps returned by <code>Get</code>; <code>Raw</code> returns an independent copy.</p></div>
+      <div><h4>Postconditions</h4><p>No data race, panic, or deadlock under the race detector.</p></div>
+      <div><h4>Invariants</h4><ul><li>Source snapshot is taken before the receiver lock, preventing lock-order inversion.</li><li>Read paths never create keys.</li></ul></div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>ID</th><th>Case</th><th>Expected</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td class="idx">TC-65</td><td class="scenario">Concurrent <code>Get</code> and <code>Set</code> under <code>-race</code></td><td class="expect">No data race, no panic</td><td class="status"><span class="badge gap">Gap</span></td></tr>
+          <tr><td class="idx">TC-66</td><td class="scenario">Concurrent <code>Get</code> and <code>Delete</code> under <code>-race</code></td><td class="expect">No data race, no panic</td><td class="status"><span class="badge gap">Gap</span></td></tr>
+          <tr><td class="idx">TC-67</td><td class="scenario">Concurrent <code>Raw</code> and <code>Set</code> under <code>-race</code></td><td class="expect">Snapshots are consistent and race-free</td><td class="status"><span class="badge gap">Gap</span></td></tr>
+          <tr><td class="idx">TC-68</td><td class="scenario">Two configs concurrently merge into each other</td><td class="expect">No deadlock</td><td class="status"><span class="badge gap">Gap</span></td></tr>
+          <tr><td class="idx">TC-69</td><td class="scenario"><code>NewWithGonfig</code> snapshots a source that is being written</td><td class="expect">Snapshot succeeds under the read lock, no race</td><td class="status"><span class="badge gap">Gap</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </article>
+</section>
+
+<section id="keyvalue">
+  <h2 class="section-title"><span class="num">10</span> keyvalue provider unit</h2>
+
+  <article class="method">
+    <div class="method-head">
+      <h3><code>KeyValue.New</code></h3>
+      <p class="signature">func New(keyValues map[string]any) *KeyValue</p>
+    </div>
+    <div class="contract">
+      <div><h4>Stack trace</h4><p><code>make</code> when the argument is nil.</p></div>
+      <div><h4>Preconditions</h4><p><code>keyValues</code> may be nil.</p></div>
+      <div><h4>Postconditions</h4><ul><li>Non-nil provider with a non-nil served map.</li><li>Source map is aliased by default; copying is opt-in.</li><li><code>deepCopy</code> starts as <code>false</code>.</li></ul></div>
+      <div><h4>Invariants</h4><ul><li>Served map is never nil.</li><li>Provider owns no copy until <code>WithDeepCopy</code> is enabled.</li></ul></div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>ID</th><th>Case</th><th>Expected</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td class="idx">TC-70</td><td class="scenario"><code>New(nil)</code> serves an empty non-nil map</td><td class="expect">Empty map, no error</td><td class="status"><span class="badge ok">Covered</span></td></tr>
+          <tr><td class="idx">TC-71</td><td class="scenario">Source map is stored by reference</td><td class="expect">Later source mutation is visible through <code>Read</code></td><td class="status"><span class="badge ok">Covered</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </article>
+
+  <article class="method">
+    <div class="method-head">
+      <h3><code>KeyValue.WithDeepCopy</code></h3>
+      <p class="signature">func (kv *KeyValue) WithDeepCopy(isEnabled bool) *KeyValue</p>
+    </div>
+    <div class="contract">
+      <div><h4>Stack trace</h4><p>Sets the flag and returns the receiver.</p></div>
+      <div><h4>Preconditions</h4><p>Receiver is initialized; any bool.</p></div>
+      <div><h4>Postconditions</h4><ul><li>Flag reflects the argument.</li><li>Same receiver is returned for chaining.</li></ul></div>
+      <div><h4>Invariants</h4><ul><li>The flag affects only <code>Read</code>.</li><li>The toggle works in both directions.</li></ul></div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>ID</th><th>Case</th><th>Expected</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td class="idx">TC-72</td><td class="scenario">Enable then disable copying</td><td class="expect">After <code>false</code>, <code>Read</code> aliases the served map again</td><td class="status"><span class="badge gap">Gap</span></td></tr>
+          <tr><td class="idx">TC-73</td><td class="scenario">Fluent return value</td><td class="expect">Returned pointer equals the receiver</td><td class="status"><span class="badge gap">Gap</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </article>
+
+  <article class="method">
+    <div class="method-head">
+      <h3><code>KeyValue.Read</code></h3>
+      <p class="signature">func (kv *KeyValue) Read() (map[string]any, error)</p>
+    </div>
+    <div class="contract">
+      <div><h4>Stack trace</h4><p><code>[deepCopy == true: DeepCopyMap]</code></p></div>
+      <div><h4>Preconditions</h4><p>Receiver created by <code>New</code> (nil map already normalized).</p></div>
+      <div><h4>Postconditions</h4><ul><li>Returns the served map and <code>nil</code> when copying is off.</li><li>Returns a fresh map when copying is on.</li><li>Map levels are copied; slices are shared.</li></ul></div>
+      <div><h4>Invariants</h4><ul><li><code>Read</code> never mutates storage.</li><li>Every call with copying on produces an independent top-level map.</li></ul></div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>ID</th><th>Case</th><th>Expected</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td class="idx">TC-74</td><td class="scenario">Copying off returns the served map</td><td class="expect">Mutating the result mutates the source</td><td class="status"><span class="badge ok">Covered</span></td></tr>
+          <tr><td class="idx">TC-75</td><td class="scenario">Copying on returns a fresh copy each call</td><td class="expect">Mutations from the first copy are absent in the second</td><td class="status"><span class="badge ok">Covered</span></td></tr>
+          <tr><td class="idx">TC-76</td><td class="scenario">Copying on copies nested maps</td><td class="expect">Nested mutation is isolated from the source</td><td class="status"><span class="badge ok">Covered</span></td></tr>
+          <tr><td class="idx">TC-77</td><td class="scenario">Copying on still shares slices</td><td class="expect">Slice mutation leaks through (documented copy depth)</td><td class="status"><span class="badge gap">Gap</span></td></tr>
+          <tr><td class="idx">TC-78</td><td class="scenario">Compile-time <code>gonfig.Provider</code> compliance</td><td class="expect">Interface assertion compiles</td><td class="status"><span class="badge ok">Covered</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </article>
+</section>
+
+<section id="coverage">
+  <h2 class="section-title"><span class="num">%</span> Coverage snapshot</h2>
+  <div class="method">
+    <div class="table-wrap">
+      <table class="coverage">
+        <thead><tr><th>Function</th><th>Statements</th></tr></thead>
+        <tbody>
+          <tr><td><code>New</code>, <code>NewWithMap</code>, <code>NewWithProvider</code>, <code>NewWithGonfig</code></td><td>100%</td></tr>
+          <tr><td><code>Get</code></td><td>71.4%</td></tr>
+          <tr><td><code>Set</code>, <code>Delete</code>, <code>Merge</code>, <code>MergeMap</code>, <code>Raw</code></td><td>100%</td></tr>
+          <tr><td><code>ensureMapInitialized</code>, <code>setPath</code>, <code>deletePath</code>, <code>getPath</code>, <code>mergeMaps</code></td><td>100%</td></tr>
+          <tr><td><code>DeepCopyMap</code></td><td>100%</td></tr>
+          <tr><td>Core module total</td><td>98.1%</td></tr>
+          <tr><td><code>keyvalue</code> module total</td><td>100%</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section id="priority" class="priority">
+  <h2 class="section-title"><span class="num">!</span> Highest-value gaps to close first</h2>
+  <ol>
+    <li><strong>Typed nil maps in <code>Set</code></strong> (TC-33, TC-34) &mdash; the intermediate case likely panics with <em>assignment to entry in nil map</em>; the root case has undefined <code>Get</code>/<code>Raw</code> semantics. Resolve before writing the assertion.</li>
+    <li><strong>The two uncovered <code>Get</code> branches</strong> (TC-15, TC-16) plus the stored-<code>nil</code> distinction (TC-17) &mdash; the only statements the suite does not reach.</li>
+    <li><strong>Concurrency pack</strong> (TC-65&ndash;TC-69) &mdash; the documented mutex and lock-order guarantees have no direct tests; run the pack under <code>-race</code>.</li>
+    <li><strong>Aliasing invariants</strong> (TC-11, TC-27, TC-29, TC-59, TC-64, TC-77) &mdash; confirm the deliberate shallow-copy boundary for slices and typed maps so it is documented as behavior, not accidental.</li>
+    <li><strong>Zero-value receivers</strong> (TC-40, TC-49, TC-54) and <strong>nil inputs</strong> (TC-53) &mdash; cheap regression guards for wiring mistakes.</li>
+    <li><strong>Merge replacement branch</strong> (TC-45) and <strong>slice overwrite</strong> (TC-56) &mdash; pin the <code>mergeMaps</code> default branch when the value types differ.</li>
+  </ol>
+</section>
+
+</main>
+
+<footer class="wrap">
+  gonfig unit-test collection built with the go-test skill &middot;
+  sources: <code>gonfig.go</code>, <code>gonfig_util.go</code>, <code>provider/keyvalue/*</code> &middot;
+  generated 2026-11-09 22:16:51 &middot; commit <code>21f81e7</code>.
+</footer>
+
+</body>
+</html>

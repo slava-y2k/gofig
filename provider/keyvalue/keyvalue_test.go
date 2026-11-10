@@ -107,3 +107,46 @@ func TestCreateKeyValueProvider(t *testing.T) {
 		t.Errorf("Read()[key] = %v, want %q", actualValues["key"], "value")
 	}
 }
+
+// TestWithDeepCopyToggleOffRestoresAliasing pins both toggle directions: after
+// switching copying off, Read serves the stored map again.
+func TestWithDeepCopyToggleOffRestoresAliasing(t *testing.T) {
+	sourceValues := map[string]any{"a": 1}
+	var keyValue *KeyValue = New(sourceValues).WithDeepCopy(true)
+
+	var copied map[string]any
+	var err error
+	copied, err = keyValue.Read()
+	if err != nil {
+		t.Fatalf("Read() error = %v, want nil", err)
+	}
+
+	copied["b"] = 2
+	if _, ok := sourceValues["b"]; ok {
+		t.Fatal("copying on must not reach the source map")
+	}
+
+	keyValue.WithDeepCopy(false)
+
+	var served map[string]any
+	served, err = keyValue.Read()
+	if err != nil {
+		t.Fatalf("Read() error = %v, want nil", err)
+	}
+
+	served["c"] = 3
+	if sourceValues["c"] != 3 {
+		t.Error("Read() must alias the served map again after copying is disabled")
+	}
+}
+
+// TestWithDeepCopyReturnsReceiver pins the fluent return value.
+func TestWithDeepCopyReturnsReceiver(t *testing.T) {
+	var keyValue *KeyValue = New(map[string]any{})
+
+	var got *KeyValue = keyValue.WithDeepCopy(true)
+
+	if got != keyValue {
+		t.Errorf("WithDeepCopy() = %p, want receiver %p", got, keyValue)
+	}
+}

@@ -82,6 +82,7 @@ func (gfg *Gonfig) Set(parts []string, value any) *Gonfig {
 	if len(parts) == 0 {
 		if newConf, ok := value.(map[string]any); ok {
 			gfg.kvMap = DeepCopyMap(newConf)
+			gfg.ensureMapInitialized()
 		}
 		return gfg
 	}
@@ -163,10 +164,11 @@ func (gfg *Gonfig) ensureMapInitialized() *Gonfig {
 
 // setPath replaces a non-map value that blocks the path;
 // a nested write therefore discards whatever that position held before.
+// A typed nil map counts as absent, so it is replaced instead of panicking.
 func setPath(kvMap map[string]any, parts []string, value any) {
 	for _, part := range parts[:len(parts)-1] {
 		next, ok := kvMap[part].(map[string]any)
-		if !ok {
+		if !ok || next == nil {
 			next = make(map[string]any)
 			kvMap[part] = next
 		}
@@ -175,7 +177,11 @@ func setPath(kvMap map[string]any, parts []string, value any) {
 
 	last := parts[len(parts)-1]
 	if valueMap, ok := value.(map[string]any); ok {
-		kvMap[last] = DeepCopyMap(valueMap)
+		copied := DeepCopyMap(valueMap)
+		if copied == nil {
+			copied = make(map[string]any)
+		}
+		kvMap[last] = copied
 		return
 	}
 	kvMap[last] = value
@@ -208,10 +214,16 @@ func getPath(kvMap map[string]any, parts []string) (any, bool) {
 }
 
 // mergeMaps does not copy src; callers pass a collection they already own.
+// A typed nil destination map is replaced before the recursion, so a merge
+// over a stored nil map cannot panic.
 func mergeMaps(dst, src map[string]any) {
 	for key, value := range src {
 		if srcMap, ok := value.(map[string]any); ok {
 			if dstMap, ok := dst[key].(map[string]any); ok {
+				if dstMap == nil {
+					dstMap = make(map[string]any)
+					dst[key] = dstMap
+				}
 				mergeMaps(dstMap, srcMap)
 				continue
 			}

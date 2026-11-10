@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>gonfig - Inconsistencies</title>
+<style>
+  :root { --ink:#1f2430; --muted:#5b6472; --line:#e3e7ee; --paper:#fff; --wash:#f6f8fb;
+           --accent:#2b6cb0; --ok:#2f855a; --temp:#b7791f; --plan:#6b46c1; --crit:#c53030; }
+  * { box-sizing:border-box; }
+  body { margin:0; font:15px/1.55 -apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; color:var(--ink); background:var(--wash); }
+  header { background:var(--paper); border-bottom:1px solid var(--line); padding:28px 0 22px; }
+  .wrap { max-width:1050px; margin:0 auto; padding:0 24px; }
+  h1 { margin:0 0 4px; font-size:24px; }
+  .sub { color:var(--muted); font-size:13.5px; }
+  code { font:12.5px ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; background:#eef2f7; border-radius:4px; padding:1px 5px; }
+  .cards { display:flex; flex-wrap:wrap; gap:12px; margin:18px 0 0; }
+  .card { background:var(--paper); border:1px solid var(--line); border-radius:8px; padding:12px 16px; min-width:120px; }
+  .card b { display:block; font-size:22px; }
+  .card span { color:var(--muted); font-size:12.5px; }
+  main { padding:26px 0 40px; }
+  section.block { background:var(--paper); border:1px solid var(--line); border-radius:8px; margin:0 0 18px; padding:16px; }
+  section.block h2 { margin:0 0 10px; font-size:17px; }
+  ul.bullets { margin:8px 0; padding-left:22px; }
+  ul.bullets li { margin:5px 0; }
+  pre { margin:10px 0; padding:14px; background:#0f172a; color:#e2e8f0; border-radius:8px; overflow-x:auto;
+         font:12.5px/1.6 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; }
+  pre code { background:none; padding:0; color:inherit; }
+  table { width:100%; border-collapse:collapse; font-size:13.5px; }
+  th,td { text-align:left; padding:8px 10px; border-bottom:1px solid var(--line); vertical-align:top; }
+  th { font-size:12px; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); background:#fafbfd; }
+  tr:last-child td { border-bottom:none; }
+  td.num { width:64px; }
+  td a { color:var(--accent); text-decoration:none; }
+  .tag { display:inline-block; border-radius:10px; padding:0 8px; font-size:11.5px; white-space:nowrap; }
+  .tag.sev-major { color:#9c4221; background:#fdf0e6; }
+  .tag.sev-minor { color:var(--muted); background:#eef0f4; }
+  .tag.sev-critical { color:var(--crit); background:#fde8e8; }
+  .tag.open { color:var(--plan); background:#f0eafc; }
+  .entry { background:var(--paper); border:1px solid var(--line); border-radius:8px; margin:0 0 14px; padding:14px 16px; }
+  .entry h3 { margin:0 0 10px; font-size:15.5px; }
+  .eid { font:600 12.5px ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; color:var(--muted);
+          background:#eef2f7; border-radius:4px; padding:2px 7px; margin-right:6px; }
+  ul.fields { list-style:none; margin:0; padding:0; }
+  ul.fields li { display:flex; gap:12px; padding:5px 0; border-top:1px dashed #eef1f6; }
+  ul.fields li:first-child { border-top:none; }
+  .k { flex:0 0 130px; color:var(--muted); font-size:12.5px; text-transform:uppercase; letter-spacing:.03em; }
+  .v { flex:1; min-width:0; }
+  footer { color:var(--muted); font-size:12.5px; padding:0 0 30px; }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1>gonfig - Inconsistencies</h1>
+    <p class="sub">Registry of divergences between the design model (<code>docs/</code>) and the implementation,
+      maintained by <code>/model-consistency-check</code> - generated 2026-11-11 00:42:11 -
+      file pattern <code>docs/inconsistencies.html</code></p>
+    <div class="cards"><div class="card"><b>14</b><span>open entries</span></div><div class="card"><b>6</b><span>major</span></div><div class="card"><b>8</b><span>minor</span></div><div class="card"><b>0</b><span>critical</span></div></div>
+  </div>
+</header>
+<main>
+<div class="wrap">
+  <section class="block">
+    <h2>Contents</h2>
+    <table>
+      <tr><th>ID</th><th>Title</th><th>Severity</th><th>Kind</th><th>Status</th></tr>
+      <tr><td class="num"><a href="#ic-003">IC-003</a></td><td>Parser contract referenced but not defined in model.md</td><td><span class="tag sev-major">Major</span></td><td><code>idea-inconsistency</code></td><td><span class="tag open">open</span></td></tr><tr><td class="num"><a href="#ic-004">IC-004</a></td><td>"gonfig tag" entity not implemented and not marked planned</td><td><span class="tag sev-major">Major</span></td><td><code>unimplemented-model</code></td><td><span class="tag open">open</span></td></tr><tr><td class="num"><a href="#ic-005">IC-005</a></td><td>Get signature in the model diagram omits the found result</td><td><span class="tag sev-minor">Minor</span></td><td><code>contradiction</code></td><td><span class="tag open">open</span></td></tr><tr><td class="num"><a href="#ic-006">IC-006</a></td><td>Provider method shown as lowercase <code>read()</code> in the diagram</td><td><span class="tag sev-minor">Minor</span></td><td><code>idea-inconsistency</code></td><td><span class="tag open">open</span></td></tr><tr><td class="num"><a href="#ic-007">IC-007</a></td><td>docs/parser.md is a stale reference</td><td><span class="tag sev-minor">Minor</span></td><td><code>idea-inconsistency</code></td><td><span class="tag open">open</span></td></tr><tr><td class="num"><a href="#ic-008">IC-008</a></td><td>parser/ directory listed as present but does not exist</td><td><span class="tag sev-minor">Minor</span></td><td><code>idea-inconsistency</code></td><td><span class="tag open">open</span></td></tr><tr><td class="num"><a href="#ic-009">IC-009</a></td><td>New() and ErrNilProvider are undocumented public surface</td><td><span class="tag sev-minor">Minor</span></td><td><code>undocumented-code</code></td><td><span class="tag open">open</span></td></tr><tr><td class="num"><a href="#ic-010">IC-010</a></td><td>Gonfig "writing" responsibility has no API and no Planned entry</td><td><span class="tag sev-major">Major</span></td><td><code>unimplemented-model</code></td><td><span class="tag open">open</span></td></tr><tr><td class="num"><a href="#ic-011">IC-011</a></td><td>Key normalization for nested non-string keys specified but unimplemented</td><td><span class="tag sev-major">Major</span></td><td><code>unimplemented-model</code></td><td><span class="tag open">open</span></td></tr><tr><td class="num"><a href="#ic-012">IC-012</a></td><td>Diagram shows constructor results as "error, Gonfig" instead of "(*Gonfig, error)"</td><td><span class="tag sev-minor">Minor</span></td><td><code>idea-inconsistency</code></td><td><span class="tag open">open</span></td></tr><tr><td class="num"><a href="#ic-013">IC-013</a></td><td>"Bound safety" copy claim contradicts Get references and map-level copy depth</td><td><span class="tag sev-major">Major</span></td><td><code>contradiction</code></td><td><span class="tag open">open</span></td></tr><tr><td class="num"><a href="#ic-014">IC-014</a></td><td>READMEnew.md documents a Load/MergeProvider API that does not exist</td><td><span class="tag sev-major">Major</span></td><td><code>unimplemented-model</code></td><td><span class="tag open">open</span></td></tr><tr><td class="num"><a href="#ic-015">IC-015</a></td><td>Raw "deep copy" wording ignores shared slices and typed maps</td><td><span class="tag sev-minor">Minor</span></td><td><code>contradiction</code></td><td><span class="tag open">open</span></td></tr><tr><td class="num"><a href="#ic-016">IC-016</a></td><td>Two competing READMEs with no canonical choice</td><td><span class="tag sev-minor">Minor</span></td><td><code>idea-inconsistency</code></td><td><span class="tag open">open</span></td></tr>
+    </table>
+  </section>
+  <section class="block">
+    <h1>Inconsistencies</h1>
+<p>The registry of divergences between the design model (<code>docs/</code>) and the implementation: what the model says, what the code or the other docs do instead, and the prepared change that resolves it. The <code>/model-consistency-check</code> command maintains this document — the reviewer agent prepares the entries, the session that ran the check appends them.</p>
+<h2>Rules</h2>
+<ul class="bullets">
+<li>IDs are sequential (<code>IC-001</code>, <code>IC-002</code>, …) and never reused, even after the entry is removed.</li>
+<li>Resolved entries are removed once the fix or the resolution is agreed.</li>
+<li>A repeated finding updates the existing open entry instead of adding a duplicate.</li>
+</ul>
+<h2>Entry format</h2>
+<pre><code>&lt;section class="entry" id="ic-###"&gt;
+&lt;h3&gt;&lt;span class="eid"&gt;[IC-###]&lt;/span&gt; Short title&lt;/h3&gt;
+&lt;ul class="fields"&gt;
+&lt;li&gt;&lt;span class="k"&gt;Severity&lt;/span&gt;&lt;span class="v"&gt;Critical | Major | Minor&lt;/span&gt;&lt;/li&gt;
+&lt;li&gt;&lt;span class="k"&gt;Kind&lt;/span&gt;&lt;span class="v"&gt;idea-inconsistency | undocumented-code | unimplemented-model | contradiction&lt;/span&gt;&lt;/li&gt;
+&lt;li&gt;&lt;span class="k"&gt;Status&lt;/span&gt;&lt;span class="v"&gt;open&lt;/span&gt;&lt;/li&gt;
+&lt;li&gt;&lt;span class="k"&gt;Model says&lt;/span&gt;&lt;span class="v"&gt;&lt;code&gt;docs/…:line&lt;/code&gt; — quote or reference&lt;/span&gt;&lt;/li&gt;
+&lt;li&gt;&lt;span class="k"&gt;Reality&lt;/span&gt;&lt;span class="v"&gt;&lt;code&gt;file:line&lt;/code&gt; — quote, diagram, or verification result&lt;/span&gt;&lt;/li&gt;
+&lt;li&gt;&lt;span class="k"&gt;Prepared change&lt;/span&gt;&lt;span class="v"&gt;the concrete edit — to the docs, the code, or both — that resolves the divergence&lt;/span&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/section&gt;</code></pre>
+  </section>
+  <h2 style="margin:26px 0 12px;font-size:18px;">Findings</h2>
+  <section class="entry" id="ic-003">
+<h3><span class="eid">[IC-003]</span> Parser contract referenced but not defined in model.md</h3>
+<ul class="fields">
+<li><span class="k">Severity</span><span class="v"><span class="tag sev-major">Major</span></span></li>
+<li><span class="k">Kind</span><span class="v"><code>idea-inconsistency</code></span></li>
+<li><span class="k">Status</span><span class="v"><span class="tag open">open</span></span></li>
+<li><span class="k">Model says</span><span class="v">docs/code-layout.md:129-130 — "The <code>Parser</code> contract (<code>Parse(m map[string]any) (map[string]any, error)</code>) is defined in <a href="model.md">model.md</a>".</span></li>
+<li><span class="k">Reality</span><span class="v">docs/model.md contains no <code>Parse</code>/<code>Parser</code> contract (grep for "Parse" returns no matches). The same contract is written out in READMEnew.md:127-132.</span></li>
+<li><span class="k">Prepared change</span><span class="v">Move the contract from READMEnew.md:127-132 into model.md, the stated source of truth; otherwise remove the "is defined in model.md" claim from code-layout.md:129-130 and point to the document that does define it.</span></li>
+</ul>
+</section>
+<section class="entry" id="ic-004">
+<h3><span class="eid">[IC-004]</span> "gonfig tag" entity not implemented and not marked planned</h3>
+<ul class="fields">
+<li><span class="k">Severity</span><span class="v"><span class="tag sev-major">Major</span></span></li>
+<li><span class="k">Kind</span><span class="v"><code>unimplemented-model</code></span></li>
+<li><span class="k">Status</span><span class="v"><span class="tag open">open</span></span></li>
+<li><span class="k">Model says</span><span class="v">docs/model.md:7 — "gonfig tag - marks the struct field" listed as a main entity.</span></li>
+<li><span class="k">Reality</span><span class="v">No struct-tag/reflection binding logic exists in any source file (gonfig.go, provider.go, gonfig_util.go, provider/keyvalue/*); docs/code-layout.md:140-145 (Planned) does not list struct-tag support.</span></li>
+<li><span class="k">Prepared change</span><span class="v">Either implement struct-tag binding (tag parsing + mapping into Gonfig), or move it into code-layout.md's Planned section and reword model.md:7 to present the gonfig tag as a future entity rather than a current main entity.</span></li>
+</ul>
+</section>
+<section class="entry" id="ic-005">
+<h3><span class="eid">[IC-005]</span> Get signature in the model diagram omits the found result</h3>
+<ul class="fields">
+<li><span class="k">Severity</span><span class="v"><span class="tag sev-minor">Minor</span></span></li>
+<li><span class="k">Kind</span><span class="v"><code>contradiction</code></span></li>
+<li><span class="k">Status</span><span class="v"><span class="tag open">open</span></span></li>
+<li><span class="k">Model says</span><span class="v">docs/model.md:56 — <code>+Get(parts ...string) any</code>.</span></li>
+<li><span class="k">Reality</span><span class="v">gonfig.go:61 — <code>func (gfg *Gonfig) Get(parts ...string) (any, bool)</code>; tests depend on the bool (gonfig_test.go:130 and :140).</span></li>
+<li><span class="k">Prepared change</span><span class="v">Update the model.md diagram to <code>+Get(parts ...string) (any, bool)</code>.</span></li>
+</ul>
+</section>
+<section class="entry" id="ic-006">
+<h3><span class="eid">[IC-006]</span> Provider method shown as lowercase <code>read()</code> in the diagram</h3>
+<ul class="fields">
+<li><span class="k">Severity</span><span class="v"><span class="tag sev-minor">Minor</span></span></li>
+<li><span class="k">Kind</span><span class="v"><code>idea-inconsistency</code></span></li>
+<li><span class="k">Status</span><span class="v"><span class="tag open">open</span></span></li>
+<li><span class="k">Model says</span><span class="v">docs/model.md:62 — <code>+read() map[string, any]</code> (lowercase <code>read</code>, no error result, malformed type).</span></li>
+<li><span class="k">Reality</span><span class="v">docs/model.md:16 and docs/code-layout.md:120 both state <code>Read() (map[string]any, error)</code>.</span></li>
+<li><span class="k">Prepared change</span><span class="v">Update the model.md diagram to <code>+Read() (map[string]any, error)</code>.</span></li>
+</ul>
+</section>
+<section class="entry" id="ic-007">
+<h3><span class="eid">[IC-007]</span> docs/parser.md is a stale reference</h3>
+<ul class="fields">
+<li><span class="k">Severity</span><span class="v"><span class="tag sev-minor">Minor</span></span></li>
+<li><span class="k">Kind</span><span class="v"><code>idea-inconsistency</code></span></li>
+<li><span class="k">Status</span><span class="v"><span class="tag open">open</span></span></li>
+<li><span class="k">Model says</span><span class="v">docs/code-layout.md:110 — lists <code>parser.md</code> under <code>docs/</code> in the directory tree.</span></li>
+<li><span class="k">Reality</span><span class="v"><code>docs/parser.md</code> is absent from disk (<code>ls docs</code> shows only <code>code/</code>, code-layout.md, inconsistencies.html, model.md) and its deletion is committed (git status no longer lists it); READMEnew.md:45 also links to <code>docs/parser.md</code>.</span></li>
+<li><span class="k">Prepared change</span><span class="v">Remove the <code>parser.md</code> line from the directory tree in code-layout.md and fix the link in READMEnew.md:45 (or fold READMEnew.md into README.md, see IC-016).</span></li>
+</ul>
+</section>
+<section class="entry" id="ic-008">
+<h3><span class="eid">[IC-008]</span> parser/ directory listed as present but does not exist</h3>
+<ul class="fields">
+<li><span class="k">Severity</span><span class="v"><span class="tag sev-minor">Minor</span></span></li>
+<li><span class="k">Kind</span><span class="v"><code>idea-inconsistency</code></span></li>
+<li><span class="k">Status</span><span class="v"><span class="tag open">open</span></span></li>
+<li><span class="k">Model says</span><span class="v">docs/code-layout.md:96 — directory tree shows <code>parser/</code>; :114-115 — "The empty <code>parser/</code> directory is a local placeholder".</span></li>
+<li><span class="k">Reality</span><span class="v"><code>parser/</code> does not exist on disk (<code>ls parser</code> → "No such file or directory") and is not tracked in git.</span></li>
+<li><span class="k">Prepared change</span><span class="v">Reword code-layout.md:96 and :114-115 to state that parser modules will live under <code>parser/</code> once the first parser module is added, and drop the claim that the directory currently exists.</span></li>
+</ul>
+</section>
+<section class="entry" id="ic-009">
+<h3><span class="eid">[IC-009]</span> New() and ErrNilProvider are undocumented public surface</h3>
+<ul class="fields">
+<li><span class="k">Severity</span><span class="v"><span class="tag sev-minor">Minor</span></span></li>
+<li><span class="k">Kind</span><span class="v"><code>undocumented-code</code></span></li>
+<li><span class="k">Status</span><span class="v"><span class="tag open">open</span></span></li>
+<li><span class="k">Model says</span><span class="v">docs/code-layout.md:125 — the <code>Gonfig</code> method table defines no <code>New</code> constructor and no <code>ErrNilProvider</code>; model.md lists neither.</span></li>
+<li><span class="k">Reality</span><span class="v">gonfig.go:20 <code>func New() *Gonfig</code> and gonfig.go:10 <code>var ErrNilProvider</code> are exported — <code>New</code> backs <code>NewWithMap</code> (gonfig.go:25-26) — and used by tests (e.g. gonfig_test.go:80), with no model definition; the example no longer uses <code>New</code> (example/basic/main.go:19 uses <code>NewWithProvider</code>).</span></li>
+<li><span class="k">Prepared change</span><span class="v">Document <code>New()</code> and <code>ErrNilProvider</code> in code-layout.md (Core abstractions table and/or Conventions) or in model.md.</span></li>
+</ul>
+</section>
+<section class="entry" id="ic-010">
+<h3><span class="eid">[IC-010]</span> Gonfig "writing" responsibility has no API and no Planned entry</h3>
+<ul class="fields">
+<li><span class="k">Severity</span><span class="v"><span class="tag sev-major">Major</span></span></li>
+<li><span class="k">Kind</span><span class="v"><code>unimplemented-model</code></span></li>
+<li><span class="k">Status</span><span class="v"><span class="tag open">open</span></span></li>
+<li><span class="k">Model says</span><span class="v">docs/model.md:25 — Gonfig serves "writing - write to different type of sources" as one of its two responsibilities (docs/model.md:21-25).</span></li>
+<li><span class="k">Reality</span><span class="v">No write-to-source API exists in any Go file (grep for "Write" returns no matches); <code>Set</code> (gonfig.go:89) writes into the in-memory configuration, not to a source. docs/code-layout.md:125 (Core abstractions) and docs/code-layout.md:140-145 (Planned) list no writing path.</span></li>
+<li><span class="k">Prepared change</span><span class="v">Either mark the writing responsibility as planned — add a write-to-source item to code-layout.md's Planned section and reword model.md:22 as future work — or drop the writing bullet from model.md:22 until a design exists.</span></li>
+</ul>
+</section>
+<section class="entry" id="ic-011">
+<h3><span class="eid">[IC-011]</span> Key normalization for nested non-string keys specified but unimplemented</h3>
+<ul class="fields">
+<li><span class="k">Severity</span><span class="v"><span class="tag sev-major">Major</span></span></li>
+<li><span class="k">Kind</span><span class="v"><code>unimplemented-model</code></span></li>
+<li><span class="k">Status</span><span class="v"><span class="tag open">open</span></span></li>
+<li><span class="k">Model says</span><span class="v">docs/model.md:11-13 — a value "may be also a nested map with type <code>key:any, value:any</code>, in this case keys will be normalized to a string type".</span></li>
+<li><span class="k">Reality</span><span class="v">No normalization code exists: <code>DeepCopyMap</code> (gonfig_util.go:4-19), <code>mergeMaps</code> (gonfig.go:219-233), and <code>setPath</code>/<code>getPath</code>/<code>deletePath</code> (gonfig.go:168-214) type-assert <code>map[string]any</code> only, so a nested map with non-string keys is stored as an opaque value, never normalized. Not listed in docs/code-layout.md:140-145 (Planned).</span></li>
+<li><span class="k">Prepared change</span><span class="v">Either implement key normalization (convert non-string nested-map keys to strings when loading and merging) or reword model.md:12-13 to present normalization as planned and add it to code-layout.md's Planned section.</span></li>
+</ul>
+</section>
+<section class="entry" id="ic-012">
+<h3><span class="eid">[IC-012]</span> Diagram shows constructor results as "error, Gonfig" instead of "(*Gonfig, error)"</h3>
+<ul class="fields">
+<li><span class="k">Severity</span><span class="v"><span class="tag sev-minor">Minor</span></span></li>
+<li><span class="k">Kind</span><span class="v"><code>idea-inconsistency</code></span></li>
+<li><span class="k">Status</span><span class="v"><span class="tag open">open</span></span></li>
+<li><span class="k">Model says</span><span class="v">docs/model.md:52 — <code>+NewWithXXX()$ error, Gonfig</code> (error first); docs/code-layout.md:125 — the constructors "return <code>(*Gonfig, error)</code>".</span></li>
+<li><span class="k">Reality</span><span class="v">The two model documents disagree on the constructor result order; the implementation follows code-layout.md (gonfig.go:25 <code>func NewWithMap(...) (*Gonfig, error)</code>, gonfig.go:34 <code>NewWithProvider</code>, gonfig.go:51 <code>NewWithGonfig</code>).</span></li>
+<li><span class="k">Prepared change</span><span class="v">Update the model.md diagram to <code>+NewWithXXX()$ (Gonfig, error)</code>, matching code-layout.md:125 and the implementation.</span></li>
+</ul>
+</section>
+<section class="entry" id="ic-013">
+<h3><span class="eid">[IC-013]</span> "Bound safety" copy claim contradicts Get references and map-level copy depth</h3>
+<ul class="fields">
+<li><span class="k">Severity</span><span class="v"><span class="tag sev-major">Major</span></span></li>
+<li><span class="k">Kind</span><span class="v"><code>contradiction</code></span></li>
+<li><span class="k">Status</span><span class="v"><span class="tag open">open</span></span></li>
+<li><span class="k">Model says</span><span class="v">docs/model.md:29-30 — "All methods that accepts a key-value collection creates an internal copy. same approach is applied to the outbound methods - every method makes a copy."</span></li>
+<li><span class="k">Reality</span><span class="v"><code>Get</code> returns live state — gonfig.go:59-60 documents "Get returns live configuration values ... a map-valued key comes back by reference, so do not mutate results", pinned by gonfig_test.go:140 (<code>TestGetWholeConfigReturnsLiveMap</code>) and :161 (<code>TestGetMapValueReturnsReference</code>). Inbound copying is also map-level only: <code>DeepCopyMap</code> copies <code>map[string]any</code> levels and shares every other value (gonfig_util.go:4-19; gonfig_test.go:748 and :761).</span></li>
+<li><span class="k">Prepared change</span><span class="v">Reword model.md:29-30 to the actual contract — constructors and merges copy map levels (other values shared); <code>Raw</code> returns a map-level copy; <code>Get</code> returns live references. Changing <code>Get</code> to copy would be a breaking API change and is not recommended.</span></li>
+</ul>
+</section>
+<section class="entry" id="ic-014">
+<h3><span class="eid">[IC-014]</span> READMEnew.md documents a Load/MergeProvider API that does not exist</h3>
+<ul class="fields">
+<li><span class="k">Severity</span><span class="v"><span class="tag sev-major">Major</span></span></li>
+<li><span class="k">Kind</span><span class="v"><code>unimplemented-model</code></span></li>
+<li><span class="k">Status</span><span class="v"><span class="tag open">open</span></span></li>
+<li><span class="k">Model says</span><span class="v">READMEnew.md:59 — <code>func (gfg *Gonfig) Load(provider Provider) error</code>; READMEnew.md:72 — "<code>Load</code> ... deep-merges its output"; READMEnew.md:171 — the quick start calls <code>g.MergeProvider(...)</code>.</span></li>
+<li><span class="k">Reality</span><span class="v">No <code>Load</code> or <code>MergeProvider</code> method exists in the core module (grep for both names returns no matches); the constructors are <code>NewWithMap</code> (gonfig.go:25), <code>NewWithProvider</code> (gonfig.go:34) and <code>NewWithGonfig</code> (gonfig.go:51), and READMEnew.md:58-66 omits all three. The quick start (READMEnew.md:152-189) does not compile; example/basic/main.go:19 uses <code>gonfig.NewWithProvider</code>.</span></li>
+<li><span class="k">Prepared change</span><span class="v">Replace <code>Load</code>/<code>MergeProvider</code> in READMEnew.md with the real constructor flow (<code>gonfig.NewWithProvider(keyvalue.New(src).WithDeepCopy(true))</code>); add the three <code>NewWith*</code> constructors to the API list; update the table row at :72 and the sentences at :81 and :86.</span></li>
+</ul>
+</section>
+<section class="entry" id="ic-015">
+<h3><span class="eid">[IC-015]</span> Raw "deep copy" wording ignores shared slices and typed maps</h3>
+<ul class="fields">
+<li><span class="k">Severity</span><span class="v"><span class="tag sev-minor">Minor</span></span></li>
+<li><span class="k">Kind</span><span class="v"><code>contradiction</code></span></li>
+<li><span class="k">Status</span><span class="v"><span class="tag open">open</span></span></li>
+<li><span class="k">Model says</span><span class="v">gonfig.go:144 — "Raw returns a deep copy, never nil; a snapshot is safe to mutate."; READMEnew.md:78 — "Returns a deep copy of the whole configuration map, so callers cannot mutate the internal state."</span></li>
+<li><span class="k">Reality</span><span class="v"><code>DeepCopyMap</code> copies <code>map[string]any</code> levels only and shares other values (gonfig_util.go:4-19); a slice obtained from <code>Raw</code> still points at the container's backing array (gonfig_test.go:691, <code>TestRawSliceSharesBackingArray</code>), and typed maps stay shared (gonfig_test.go:761).</span></li>
+<li><span class="k">Prepared change</span><span class="v">Reword gonfig.go:144 and READMEnew.md:78 to "map-level copy": nested maps are copied, slices and typed maps are shared.</span></li>
+</ul>
+</section>
+<section class="entry" id="ic-016">
+<h3><span class="eid">[IC-016]</span> Two competing READMEs with no canonical choice</h3>
+<ul class="fields">
+<li><span class="k">Severity</span><span class="v"><span class="tag sev-minor">Minor</span></span></li>
+<li><span class="k">Kind</span><span class="v"><code>idea-inconsistency</code></span></li>
+<li><span class="k">Status</span><span class="v"><span class="tag open">open</span></span></li>
+<li><span class="k">Model says</span><span class="v">README.md — short layout/development document that points to docs/code-layout.md and docs/model.md.</span></li>
+<li><span class="k">Reality</span><span class="v">READMEnew.md is a second, longer root document with a materially different API section (see IC-014), a broken docs/parser.md link (see IC-007) and a "new" suffix that reads as a process leftover; nothing states which file is canonical.</span></li>
+<li><span class="k">Prepared change</span><span class="v">Merge the still-accurate content of READMEnew.md into README.md and delete READMEnew.md, fixing IC-003/IC-007/IC-014 in the same pass.</span></li>
+</ul>
+</section>
+</div>
+</main>
+<footer>gonfig inconsistencies registry - 2026-11-11 00:42:11</footer>
+</body>
+</html>

@@ -105,7 +105,7 @@ gonfig/                        # repository root
 │       └── main.go           # runnable example: core + key-value provider
 ├── docs/                     # design documentation
 │   ├── code-layout.md        # this file
-│   ├── inconsistencies.md    # model-vs-code divergences, maintained by /model-consistency-check
+│   ├── inconsistencies.html  # model-vs-code divergences, maintained by /model-consistency-check
 │   ├── model.md              # data model notes
 │   └── parser.md             # Mermaid class diagram of the configuration model
 └── opencode.jsonc            # OpenCode config (skill permissions, commands)

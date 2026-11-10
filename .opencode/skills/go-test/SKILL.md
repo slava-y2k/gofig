@@ -4,20 +4,19 @@ description: Use when creating, modifying, removing unit tests for the go langua
 ---
 
 # Unit testing context
-Unit test is a test that checks the result of method.
-Unit is a go file with the same receiver.
+Figure out the methods that implements the main responsibility of the class.
+To figure out such methods build a stacktrace and find the root underlying methods which are 
+implement the business logic 
 
-To create a find all the stacktrace with in the module, then identify the business 
-logic footprint for each method.
 
-For every method identify pre conditions, post conditions and type invariant, methods 
-which make invariant incorrect for a while with in a method, or a stack trace should be checked.
-Pre and post conditions maybe checked once or omitted
+# Unit test approach 
 
-You have no need to every time test all the hidden (encapsulated methods) one test is enough.
-So consider the example (Method1 calls method2, method2 calls method3 ) and Method21 calls method2, 
-and it calls method3.
+For every method identify pre conditions, post conditions and type invariant, 
+only cover what is not covered  by other tests in the same module 
 
-So it's enough to create only one pack of tests for Method1, test for Method21 should only cover what is not covered in test for Method1
-
+On assertions follow the code structure, and methods, including unexported should be 
+in the relation to method they cover.
+E.g. if two different methods calls same method and the result of the upper methods contains 
+the result of underlying, the underlying result should be covered only by one assert.
+                                                    
 

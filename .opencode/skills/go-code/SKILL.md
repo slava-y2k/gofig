@@ -4,7 +4,6 @@ description: Use when creating or editing go code in compilable go files.
 ---
 
 
-
 ## Code style rules
 - Use explicit type declarations where it is possible.
 - Naming: `MixedCaps`, no underscores.
@@ -15,9 +14,6 @@ description: Use when creating or editing go code in compilable go files.
 - Errors: return `error` as the last result. Wrap with `fmt.Errorf("...: %w", err)`.
   Use sentinel errors (`var ErrUnsupportedData = errors.New(...)`) for expected
   conditions; never `panic` for recoverable failures.
-
-## Code logic tips
-
 
 
 ### Code blocks formatting

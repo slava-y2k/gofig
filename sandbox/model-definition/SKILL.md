@@ -24,7 +24,7 @@ Read them in this order; earlier sources win when they overlap:
 | `../../docs/design.md` | Terms (glossary), the data model, entity contracts, data flow |
 | `../../docs/code.md` | Code conventions and API notes |
 | `../../docs/_index.md` | Directory tree, documents index, generated-output policy |
-| `../../docs/roadmap.md` | Planned work |
+| `../../docs/backlog.md` | Planned work |
 | `../../README.md` | Public self-description: what the library is, how it is used |
 | `../../AGENTS.md` | Working rules for the repository |
 

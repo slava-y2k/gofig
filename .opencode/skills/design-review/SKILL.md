@@ -23,7 +23,7 @@ For every check, cite `docs/…:line` for both sides of every finding.
 2. **Cross-document agreement** — a contract quoted in several docs must be
    identical everywhere: same method names, same signatures, same behavior
    claims. Compare `design.md`, `code.md`, `_index.md`,
-   `roadmap.md`, and `README.md` pairwise.
+   `backlog.md`, and `README.md` pairwise.
 3. **Diagram versus prose** — every class, method, and relation in the
    Mermaid diagrams must match the prose. Flag members that appear in only
    one of the two.

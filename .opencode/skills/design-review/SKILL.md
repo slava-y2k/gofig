@@ -1,6 +1,8 @@
 ---
 name: design-review
-description: Reviews the design docs for internal consistency — cross-document contradictions, diagram-versus-prose mismatches, stale references, and glossary discipline. Use it as the second step of a model-consistency check, after the model inventory exists.
+description: Reviews the design docs for internal consistency — cross-document contradictions,
+   diagram-versus-prose mismatches, stale references, and glossary discipline.
+   Use it as the second step of a model-consistency check, after the model inventory exists.
 ---
 
 # Design Review

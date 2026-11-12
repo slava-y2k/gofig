@@ -1,17 +1,17 @@
 ---
-name: Go code 
+name: Go code
 description: Use when creating or editing go code in compilable go files.
 ---
 
 
 
 ## Code style rules
-- use explicit type declaration where it is possible.
+- Use explicit type declarations where it is possible.
 - Naming: `MixedCaps`, no underscores.
 - Avoid package/name stutter at call sites; prefer `gonfig.New()` over `gonfig.NewGonfig()`.
-- specify types explicitly for the variables, except obvious cases, when type can be inferred from the line 
-- As the receiver use 2-3 chars.
-- Don't use single char for arguments and variables naming, use more meaningful names
+- Specify types explicitly for the variables, except in obvious cases where the type can be inferred from the line.
+- Use 2-3 characters for the receiver.
+- Don't use single characters for arguments and variable names; use more meaningful names.
 - Errors: return `error` as the last result. Wrap with `fmt.Errorf("...: %w", err)`.
   Use sentinel errors (`var ErrUnsupportedData = errors.New(...)`) for expected
   conditions; never `panic` for recoverable failures.
@@ -20,15 +20,13 @@ description: Use when creating or editing go code in compilable go files.
 
 
 
- 
-
 ### Code blocks formatting
-Declare types and assignment in one block and usage of them in another separating with space comments 
-in the code snippet is for you shouldn't put them into editing code
-Declaration and usage block should be separated by empty line
-```	
+Declare types and assignments in one block and their usage in another block, separating the blocks
+with a blank line. The comments in the code snippet are for you; don't put them into the edited code.
+The declaration and usage blocks should be separated by an empty line.
+```
 // --- declaration and assignment block----
-var variable1 VariablType1
+var variable1 VariableType1
 var err error
 variable1, err = keyValue.Read()
 if err != nil {

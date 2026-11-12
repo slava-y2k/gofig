@@ -1,7 +1,7 @@
- ---
+---
 name: code-implementation-review
-description: Reviews the Go implementation against the model inventory 
-— contract match, layout rules, behavior guarantees, tests, and build health. 
+description: Reviews the Go implementation against the model inventory
+— contract match, layout rules, behavior guarantees, tests, and build health.
 Use it as the final step of a model-consistency check, after the model inventory exists.
 ---
 
@@ -9,18 +9,18 @@ Use it as the final step of a model-consistency check, after the model inventory
 
 ## Purpose
 
-Verify the implementation is relevant to the model: 
-it implements everything the model defines, nothing the model does not define, 
-and it behaves the way the model promises. 
+Verify the implementation is relevant to the model:
+it implements everything the model defines, nothing the model does not define,
+and it behaves the way the model promises.
 The input is the model inventory from the model-definition skill.
 
 ## Checks
 
-1. **Contract match** — every entity in the inventory exists in the code with the exact contract: 
-   type name, file, kind, and method signatures. Public surface beyond the inventory 
+1. **Contract match** — every entity in the inventory exists in the code with the exact contract:
+   type name, file, kind, and method signatures. Public surface beyond the inventory
    is undocumented code; an inventory item without code is an unimplemented model.
 2. **Layout match** — the repository follows the layout rules: module
-   structure and import paths, `go.work` registration, one module per
+   structure and import paths, `../../go.work` registration, one module per
    provider, `replace` directives for standalone builds.
 3. **Semantics match** — behavior the model promises is behavior the code
    guarantees: deep copies at boundaries, nil normalization, concurrency

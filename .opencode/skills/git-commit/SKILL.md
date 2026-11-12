@@ -1,6 +1,6 @@
 ---
 name: git-commit
-description: Creates a git commit when the user asks to commit changes, to create a git
+description: Creates a git commit when the user asks to commit changes, asks to create a git
     commit, or mentions "/commit".
 allowed-tools: Bash
 ---

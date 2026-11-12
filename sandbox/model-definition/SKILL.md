@@ -1,6 +1,6 @@
 ---
 name: model-definition
-description: Extracts the canonical model definition from the project's design docs into a structured 
+description: Extracts the canonical model definition from the project's design docs into a structured
   inventory of terms, entities, contracts, and rules.
   Use it as the first step of a model-consistency check, or whenever the authoritative statement of what
   the project is supposed to be is needed.
@@ -21,18 +21,18 @@ Read them in this order; earlier sources win when they overlap:
 
 | Source | Defines |
 | ------ | ------ |
-| `docs/design.md` | Terms (glossary), the data model, entity contracts, data flow |
-| `docs/code.md` | Code conventions and API notes |
-| `docs/_index.md` | Directory tree, documents index, generated-output policy |
-| `docs/roadmap.md` | Planned work |
-| `README.md` | Public self-description: what the library is, how it is used |
-| `AGENTS.md` | Working rules for the repository |
+| `../../docs/design.md` | Terms (glossary), the data model, entity contracts, data flow |
+| `../../docs/code.md` | Code conventions and API notes |
+| `../../docs/_index.md` | Directory tree, documents index, generated-output policy |
+| `../../docs/roadmap.md` | Planned work |
+| `../../README.md` | Public self-description: what the library is, how it is used |
+| `../../AGENTS.md` | Working rules for the repository |
 
 ## Process
 
 1. Read every source in full.
 2. Extract, with a `file:line` reference for every item:
-   - **Glossary** — one term per entity. `docs/design.md` promises exactly one
+   - **Glossary** — one term per entity. `../../docs/design.md` promises exactly one
      term per entity; note every synonym you meet.
    - **Entities and contracts** — for each type: name, file, kind (struct,
      interface, module), and its public contract (method names and exact

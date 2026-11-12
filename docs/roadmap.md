@@ -1,2 +1,4 @@
-add struct tag
-prepare provider list for the implementation
+# Roadmap
+
+- Add struct tag.
+- Prepare the provider list for the implementation.

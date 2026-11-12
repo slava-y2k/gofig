@@ -1,6 +1,6 @@
 ---
 name: grammar-check-code
-description: "Identify and fix typos, grammar, logical, and flow errors in text, 
+description: "Identify and fix typos, grammar, logical, and flow errors in text,
     code comments, and other documents. Use this skill only when the user explicitly requests a grammar check."
 ---
 

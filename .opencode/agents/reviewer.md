@@ -1,5 +1,5 @@
 ---
-description: Model-consistency reviewer for the gonfig project. Compares the design model (docs/) with the Go implementation and reports the idea consistency, the implementation relevance, and prepared changes for docs/output/inconsistencies.html. Read-only.
+description: Model-consistency reviewer for the gonfig project. Compares the design model (docs/) with the Go implementation and reports the idea consistency and the implementation relevance, and prepares changes for docs/output/inconsistencies.html. Read-only.
 mode: subagent
 permissions:
   - action: edit
@@ -44,7 +44,7 @@ tool:
 
 1. **model-definition** — extract the model inventory from the docs: terms,
    entities and their contracts, data flow, layout rules, conventions. The
-   inventory is the reference of what the project should be.
+   inventory is the reference for what the project should be.
 2. **design-review** — check the model itself for internal consistency. The
    result is the idea-consistency assessment.
 3. **code-implementation-review** — check the implementation against the
@@ -93,7 +93,7 @@ found") — never omit a section.
 - Evidence over opinion. Every finding cites the exact `file:line` you
   verified; if you cannot point at it, do not report it.
 - The docs are the source of truth for the model, the code for the
-  implementation. Do not invent requirements neither of them states; style
+  implementation. Do not invent requirements that neither of them states; style
   preferences and improvement ideas are out of scope.
 - Planned is not inconsistent: a feature the docs mark as planned is fine.
   Docs presenting planned work as done — or the reverse — are inconsistent.

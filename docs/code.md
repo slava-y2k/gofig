@@ -1,6 +1,5 @@
-Methods
+# Methods
 
-New<WithXXX> - are overloaded methods.
+`New<WithXXX>` — these are overloaded methods.
 
-For locks and thread safe use thread safety for XXX if explanation compacts the description
-
+For locks and thread safety, specify thread safety for XXX if it keeps the explanation compact.

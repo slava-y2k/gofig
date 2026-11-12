@@ -4,21 +4,21 @@ description: Use when creating, modifying, removing unit tests for the go langua
 ---
 
 # Unit testing context
-Figure out the methods that implements the main responsibility of the class.
-To figure out such methods build a stacktrace and find the root underlying methods which are 
-implement the business logic 
+Figure out the methods that implement the main responsibility of the class.
+To figure out such methods, build a stack trace and find the root underlying methods that
+implement the business logic
 
 
-# Unit test approach 
+# Unit test approach
 
-For every method identify pre conditions, post conditions and type invariant, 
-only cover what is not covered  by other tests in the same module 
+For every method, identify preconditions, postconditions, and type invariants;
+cover only what is not covered by other tests in the same module.
 
-On assertions follow the code structure, and methods, including unexported should be 
-in the relation to method they cover.
-E.g. if two different methods calls same method and the result of the upper methods contains 
-the result of underlying, the underlying result should be covered only by one assert.
-                                                    
+For assertions, follow the code structure; methods, including unexported ones, should be
+in relation to the method they cover.
+E.g. if two different methods call the same method and the result of the upper methods contains
+the result of the underlying one, the underlying result should be covered by only one assertion.
 
-# Unit test formating
-don't explain the test suits 
+
+# Unit test formatting
+Don't explain the test suites.

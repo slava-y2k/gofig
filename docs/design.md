@@ -1,37 +1,37 @@
 
 # Design Idea
-Main doc that describes the main idea from the technical perspective.
+Main doc that describes the idea from a technical perspective.
 
 # Domain terms
-- **key value(s)** - refers to the configuration key-value pair or pairs.
-- **Gonfig** - refers to the `Gonfig` struct and its functions.
-- **Provider** - an abstraction of a KeyValue collection for Gonfig.
+- **key value(s)** — refers to the configuration key-value pair or pairs.
+- **Gonfig** — refers to the `Gonfig` struct and its functions.
+- **Provider** — an abstraction of a KeyValue collection for Gonfig.
 
 
 # Gonfig module
-Gonfig provides bound safety. All methods that accepts a key-value collection creates an internal copy, 
-to protect changes by passed reference. 
-Same approach is applied to the outbound methods - every method makes a copy for a reference type, 
-to protect internal changes for outgoing values.
+Gonfig provides bound safety. All methods that accept a key-value collection create an internal copy
+to protect against changes through the passed reference.
+The same approach is applied to outbound methods: every method makes a copy for a reference type
+to protect internal state from changes to outgoing values.
 
 
 ## Collection methods
-- `NewXXX` - inbound constructor functions, creates the Gonfig struct and fills it with the initial or provided
-  **key value(s)**. 
-- `MergeXXX` - inbound instance functions (functions with receiver) that accepts the value for current `gonfig` struct.
+- `NewXXX` — inbound constructor functions that create the `Gonfig` struct and fill it with the initial or provided
+  **key value(s)**.
+- `MergeXXX` — inbound instance functions (functions with a receiver) that accept the value for the current `Gonfig` struct.
 
-Main difference `NewXXX` vs `MergeXXX` is than new creates and initializes `Gonfig` struct, 
-whereas `MergeXXX` applies provided key values to the existing `Gonfig` struct.
+The main difference between `NewXXX` and `MergeXXX` is that `NewXXX` creates and initializes the `Gonfig` struct,
+whereas `MergeXXX` applies the provided key values to the existing `Gonfig` struct.
 
-- `Raw()` - returns the copy of the internal map 
+- `Raw()` — returns a copy of the internal map.
 
 
 ## Key methods
-all these methods accepts key as an argument, on empty key nill will be retuned  
+All these methods accept a key as an argument; on an empty key, nil will be returned.
 
-- `Get` - returns key values by provided key, empty .
-- `Set` - set value by provided key.
-- `Delete` - set value by provided key.
+- `Get` — returns the key values for the provided key; empty if the key is missing.
+- `Set` — sets a value by the provided key.
+- `Delete` — deletes the value by the provided key.
 
 
 ## Gonfig internal storage
@@ -50,10 +50,8 @@ Each provider should be implemented as a separate module.
 
 
 # Questions to answer later
-- Should provider interface return the error, will empty map will be enough
+- Should the provider interface return an error, or will an empty map be enough?
 
 
 
 ## Code layout
-
-

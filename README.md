@@ -1,15 +1,15 @@
 # Gonfig
 
-Gonfig (Go + config) is a micromodule extensible config library to deal with configuration in Go.
+Gonfig (Go + config) is a micromodular, extensible configuration library for Go.
 
 
 # Design Brief
 
-Library is implemented with micro modular approach to reduce coupling and to use only the modules it needs:
-- `Gonfig` is the core module for working with KeyValues and defines the `Provider` interface for KeyValues.
-- `Providers` modules - each data provider is a separate module and uses only the dependencies it needs.
+The library uses a micromodular approach to reduce coupling and to include only the modules it needs:
+- `Gonfig` is the core module for working with KeyValues and defines the `Provider` interface for them.
+- `Provider` modules — each data provider is a separate module and uses only the dependencies it needs.
 
-for detail design please refer to ...
+For detailed design, please refer to ...
 
 # Quick start
 
@@ -29,6 +29,5 @@ import (
 # Examples
 
 # See more
-
 
 

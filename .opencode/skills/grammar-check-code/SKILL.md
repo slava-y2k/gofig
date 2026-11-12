@@ -175,6 +175,8 @@ Brief assessment of how well the text achieves its objective ($OBJECTIVE) and wh
 - **Include rationale**: Explain why each fix matters. This helps the author understand the principle, not just the rule.
 - **Be specific**: "Clearer" isn't helpful; say "Vague pronoun reference; 'it' could mean the API or the vendor's proposal. Change to: 'The vendor's API proved too complex.'"
 - **Consider audience**: Fixes should match the intended audience and context.
+- **Preserve the context structure**: A fix may change wording, never the document's structure. 
+  Keep headings, list nesting, code fences, tables, and tags as they are. Follow context formatting
 
 ---
 
@@ -197,6 +199,7 @@ Use this checklist to ensure thorough review:
 - [ ] Look for redundant words or phrases
 - [ ] Check for overly complex sentences; can they be simplified?
 - [ ] Verify that claims support the stated objective
+- [ ] Check that each fix preserves the document structure (headings, lists, code fences, YAML indentation)
 
 ---
 

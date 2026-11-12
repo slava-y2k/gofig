@@ -52,6 +52,5 @@ Read() map[string]any
 ```
 Each provider module is a separate package.
 
-
 # Questions to answer later
 - Should the provider interface return an error, or will an empty map be enough?

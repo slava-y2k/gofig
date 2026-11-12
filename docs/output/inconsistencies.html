@@ -62,7 +62,7 @@
     <p class="sub">Registry of divergences between the design model (<code>docs/</code>) and the implementation,
       maintained by <code>/model-consistency-check</code> - generated 2026-11-11 00:46:17 -
       file pattern <code>docs/output/inconsistencies.html</code></p>
-    <div class="cards"><div class="card"><b>4</b><span>open entries</span></div><div class="card"><b>0</b><span>major</span></div><div class="card"><b>4</b><span>minor</span></div><div class="card"><b>0</b><span>critical</span></div><div class="card"><b>9</b><span>struck entries</span></div></div>
+    <div class="cards"><div class="card"><b>2</b><span>open entries</span></div><div class="card"><b>0</b><span>major</span></div><div class="card"><b>2</b><span>minor</span></div><div class="card"><b>0</b><span>critical</span></div><div class="card"><b>11</b><span>struck entries</span></div></div>
   </div>
 </header>
 <main>
@@ -73,10 +73,10 @@
       <tr><th>ID</th><th>Title</th><th>Severity</th><th>Kind</th><th>Status</th></tr>
       <tr class="struck"><td class="num"><a href="#ic-004">IC-004</a></td><td><s>"gonfig tag" entity not implemented and not marked planned</s></td><td><span class="tag sev-major">Major</span></td><td><code>unimplemented-model</code></td><td><span class="tag resolved">not actual</span></td></tr>
       <tr><td class="num"><a href="#ic-005">IC-005</a></td><td>Get signature in the model diagram omits the found result</td><td><span class="tag sev-minor">Minor</span></td><td><code>contradiction</code></td><td><span class="tag open">open</span></td></tr>
-      <tr><td class="num"><a href="#ic-006">IC-006</a></td><td>Provider method shown as lowercase <code>read()</code> in the diagram</td><td><span class="tag sev-minor">Minor</span></td><td><code>idea-inconsistency</code></td><td><span class="tag open">open</span></td></tr>
+      <tr class="struck"><td class="num"><a href="#ic-006">IC-006</a></td><td><s>Provider method shown as lowercase <code>read()</code> in the diagram</s></td><td><span class="tag sev-minor">Minor</span></td><td><code>idea-inconsistency</code></td><td><span class="tag resolved">fixed</span></td></tr>
       <tr class="struck"><td class="num"><a href="#ic-007">IC-007</a></td><td><s>docs/parser.md is a stale reference</s></td><td><span class="tag sev-minor">Minor</span></td><td><code>idea-inconsistency</code></td><td><span class="tag resolved">not actual</span></td></tr>
       <tr class="struck"><td class="num"><a href="#ic-008">IC-008</a></td><td><s>parser/ directory listed as present but does not exist</s></td><td><span class="tag sev-minor">Minor</span></td><td><code>idea-inconsistency</code></td><td><span class="tag resolved">not actual</span></td></tr>
-      <tr><td class="num"><a href="#ic-009">IC-009</a></td><td>New() and ErrNilProvider are undocumented public surface</td><td><span class="tag sev-minor">Minor</span></td><td><code>undocumented-code</code></td><td><span class="tag open">open</span></td></tr>
+      <tr class="struck"><td class="num"><a href="#ic-009">IC-009</a></td><td><s>New() and ErrNilProvider are undocumented public surface</s></td><td><span class="tag sev-minor">Minor</span></td><td><code>undocumented-code</code></td><td><span class="tag resolved">fixed</span></td></tr>
       <tr class="struck"><td class="num"><a href="#ic-010">IC-010</a></td><td><s>Gonfig "writing" responsibility has no API and no Planned entry</s></td><td><span class="tag sev-major">Major</span></td><td><code>unimplemented-model</code></td><td><span class="tag resolved">not actual</span></td></tr>
       <tr class="struck"><td class="num"><a href="#ic-011">IC-011</a></td><td><s>Key normalization for nested non-string keys specified but unimplemented</s></td><td><span class="tag sev-major">Major</span></td><td><code>unimplemented-model</code></td><td><span class="tag resolved">not actual</span></td></tr>
       <tr class="struck"><td class="num"><a href="#ic-012">IC-012</a></td><td><s>Diagram shows constructor results as "error, Gonfig" instead of "(*Gonfig, error)"</s></td><td><span class="tag sev-minor">Minor</span></td><td><code>contradiction</code></td><td><span class="tag resolved">fixed</span></td></tr>
@@ -135,13 +135,14 @@
 <li><span class="k">Prepared change</span><span class="v">Update the design.md:29 diagram to <code>+Get(parts ...string) (any, bool)</code>.</span></li>
 </ul>
 </section>
-<section class="entry" id="ic-006">
-<h3><span class="eid">[IC-006]</span> Provider method shown as lowercase <code>read()</code> in the diagram</h3>
+<section class="entry struck" id="ic-006">
+<h3><span class="eid">[IC-006]</span> <s>Provider method shown as lowercase <code>read()</code> in the diagram</s></h3>
 <ul class="fields">
 <li><span class="k">Severity</span><span class="v"><span class="tag sev-minor">Minor</span></span></li>
 <li><span class="k">Kind</span><span class="v"><code>idea-inconsistency</code></span></li>
-<li><span class="k">Status</span><span class="v"><span class="tag open">open</span></span></li>
-<li><span class="k">Model says</span><span class="v">docs/design.md:35 — <code>+read() map[string, any]</code> in the <code>class IProvider</code> block (lowercase <code>read</code>, malformed <code>map[string, any]</code> type).</span></li>
+<li><span class="k">Status</span><span class="v"><span class="tag resolved">fixed</span></span></li>
+<li><span class="k">Verdict</span><span class="v verdict">Fixed in docs/design.md:35 — the diagram now reads <code>+Read() map[string]any</code>, matching the prose block at docs/design.md:90-92 and provider.go:6.</span></li>
+<li><span class="k">Model says</span><span class="v">docs/design.md:35 — was <code>+read() map[string, any]</code> in the <code>class IProvider</code> block (lowercase <code>read</code>, malformed <code>map[string, any]</code> type).</span></li>
 <li><span class="k">Reality</span><span class="v">docs/design.md:90-92 declares <code>Read() map[string]any</code>, and provider.go:6 matches it. The missing error result is no longer part of the divergence: <code>Provider.Read</code> dropped the error result (commit 3e0cc93).</span></li>
 <li><span class="k">Prepared change</span><span class="v">Update the design.md:35 diagram to <code>+Read() map[string]any</code>.</span></li>
 </ul>
@@ -170,13 +171,14 @@
 <li><span class="k">Prepared change</span><span class="v">Reword code-layout.md:96 and :114-115 to state that parser modules will live under <code>parser/</code> once the first parser module is added, and drop the claim that the directory currently exists.</span></li>
 </ul>
 </section>
-<section class="entry" id="ic-009">
-<h3><span class="eid">[IC-009]</span> New() and ErrNilProvider are undocumented public surface</h3>
+<section class="entry struck" id="ic-009">
+<h3><span class="eid">[IC-009]</span> <s>New() and ErrNilProvider are undocumented public surface</s></h3>
 <ul class="fields">
 <li><span class="k">Severity</span><span class="v"><span class="tag sev-minor">Minor</span></span></li>
 <li><span class="k">Kind</span><span class="v"><code>undocumented-code</code></span></li>
-<li><span class="k">Status</span><span class="v"><span class="tag open">open</span></span></li>
-<li><span class="k">Model says</span><span class="v">docs/design.md:7 and :56-58 — constructors are covered only by the generic <code>NewWithXXX</code>; neither <code>New()</code> nor <code>ErrNilProvider</code> appears in <code>docs/design.md</code> or <code>docs/code.md</code>.</span></li>
+<li><span class="k">Status</span><span class="v"><span class="tag resolved">fixed</span></span></li>
+<li><span class="k">Verdict</span><span class="v verdict">Fixed in docs/design.md — the Gonfig term at :7 lists <code>New</code> among the constructors, the diagram at :25 shows <code>+New()$ *Gonfig</code>, the Collection methods at :58-59 define <code>New()</code>, and :64-65 defines the <code>ErrNilProvider</code> result of <code>NewWithProvider</code>.</span></li>
+<li><span class="k">Model says</span><span class="v">docs/design.md:7 and :56-58 — constructors were covered only by the generic <code>NewWithXXX</code>; neither <code>New()</code> nor <code>ErrNilProvider</code> appeared in <code>docs/design.md</code> or <code>docs/code.md</code>.</span></li>
 <li><span class="k">Reality</span><span class="v">gonfig.go:10 <code>var ErrNilProvider</code> and gonfig.go:21 <code>func New() *Gonfig</code> are exported — <code>New</code> backs every <code>NewWith*</code> (gonfig.go:27) — and used by tests (e.g. gonfig_test.go:128, :149), with no model definition.</span></li>
 <li><span class="k">Prepared change</span><span class="v">Document <code>New()</code> and <code>ErrNilProvider</code> in docs/design.md (Gonfig module) or docs/code.md (Methods).</span></li>
 </ul>

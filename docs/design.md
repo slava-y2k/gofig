@@ -4,7 +4,7 @@ Main doc that describes the idea from a technical perspective.
 
 # Domain terms
 - **key-value pair(s)** — refers to a configuration key together with its value.
-- **Gonfig** — the configuration container type; its methods are listed under Collection methods and Access methods by key, and its constructors are `NewWithXXX`.
+- **Gonfig** — the configuration container type; its methods are listed under Collection methods and Access methods by key, and its constructors are `New` and `NewWithXXX`.
 - **Provider** — an abstraction of a collection of key-value pairs for Gonfig.
 - **copy-contract** — the rule for every value that crosses the `Gonfig` boundary: inbound collections are
   deep-copied, `Raw()` returns a deep copy, and `Get` returns live values; a returned map is a mutable entity
@@ -22,6 +22,7 @@ classDiagram
     namespace gonfig_pkg ["Gonfig package"] {
         class Gonfig["Gonfig"] {
             -kvMap map[string]any
+            +New()$ *Gonfig
             +NewWithXXX()$ (*Gonfig, error)
             +MergeXXX(other Gonfig) Gonfig
             +Set(parts []string, value any) Gonfig
@@ -32,7 +33,7 @@ classDiagram
 
         class IProvider["Provider"] {
             <<interface>>
-            +read() map[string, any]
+            +Read() map[string]any
         }
     }
 
@@ -54,9 +55,14 @@ values, so a returned map is a mutable entity shared with the container and must
 
 
 ## Collection methods
+- `New()` — creates an empty `Gonfig`; the zero value is already ready to use, so it is optional and
+  exists for symmetry with the `NewWithXXX` family.
 - `NewWithXXX` — inbound constructor functions that create the `Gonfig` struct and fill it with the initial or provided
   **key-value pair(s)**.
 - `MergeXXX` — inbound instance functions (functions with a receiver) that accept the value for the current `Gonfig` struct.
+
+`NewWithProvider` returns the `ErrNilProvider` sentinel when its provider argument is nil, so a wiring mistake
+cannot be mistaken for an empty configuration.
 
 The `XXX` suffix only emulates overloading; Go has no method overloading.
 

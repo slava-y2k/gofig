@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Gonfig Roadmap — Nearest Work</title>
+<style>
+  :root { color-scheme: light dark; }
+  body { font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+         line-height: 1.55; max-width: 960px; margin: 2rem auto; padding: 0 1rem; color: #1a1a1a; }
+  h1 { border-bottom: 2px solid #333; padding-bottom: .3rem; }
+  h2 { margin-top: 2.2rem; border-bottom: 1px solid #999; padding-bottom: .2rem; }
+  h3 { margin-top: 1.4rem; }
+  code { background: #f0f0f0; padding: .1rem .35rem; border-radius: 4px; font-size: .92em; }
+  pre { background: #f6f6f6; padding: .8rem; border-radius: 6px; overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+  th, td { border: 1px solid #ccc; padding: .45rem .6rem; text-align: left; vertical-align: top; }
+  th { background: #eee; }
+  .meta { color: #666; font-size: .9rem; }
+  .phase { border-left: 4px solid #333; padding-left: 1rem; margin: 1.2rem 0; }
+  .phase.now { border-left-color: #2e7d32; }
+  .trivial { background: #e8f5e9; border: 1px solid #a5d6a7; border-radius: 6px; padding: .6rem .9rem; margin: .5rem 0; }
+  .sev-critical { color: #b71c1c; font-weight: 600; }
+  .sev-major { color: #e65100; font-weight: 600; }
+  .sev-minor { color: #6a5acd; font-weight: 600; }
+  ul { margin: .4rem 0; }
+  .mono { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: .9em; }
+</style>
+</head>
+<body>
+
+<h1>Gonfig Roadmap — Nearest Work</h1>
+<p class="meta">Generated from <code>docs/backlog.md</code> (Nov 12 2026). This is a planning snapshot;
+see <code>docs/_index.md</code> for the convention that <code>docs/output</code> is generated HTML.</p>
+
+<h2>1. Summary</h2>
+<p>The backlog has three feature/decision items, one prepared doc-fix item, and a set of
+model↔implementation consistency findings:</p>
+<ul>
+  <li><strong>Feature / decision items</strong> (3): implement <code>gonfig</code> tag,
+    prepare the provider list, drop the <code>bool</code> return from <code>Get</code>.</li>
+  <li><strong>Prepared doc fix</strong> (1): <code>IC-015</code> “deep copy” wording.</li>
+  <li><strong>Consistency findings</strong>: 1 Critical, 4 Major, 8 Minor (all documentation gaps
+    or wording drift — none are behavior bugs).</li>
+  <li><strong>Model gaps</strong> (2): no method signatures in prose; zero value / errors / helpers undefined.</li>
+</ul>
+<p>Key insight: the code and tests already agree with each other and pin the intended behavior
+(live <code>Get</code>, map-level <code>Raw</code>/<code>DeepCopyMap</code>). The findings are
+<em>model text lagging behind code</em>, so the nearest work is documentation alignment — cheap,
+low-risk, and it unblocks the real feature work.</p>
+
+<h2>2. The most trivial fixes (do first)</h2>
+<p>These are comment/doc-only edits. No behavior change, no test change, no API change.
+They can be applied in one pass and lower the “noise” before the feature work.</p>
+
+<h3>2.1 Apply the prepared <code>IC-015</code> rewording</h3>
+<p>Replace the “deep copy” promise with “map-level copy”: nested <code>map[string]any</code> levels are
+copied, slices and typed maps are shared. Tests already pin this
+(<code>gonfig_test.go:678</code>, <code>:748</code>).</p>
+<table>
+  <tr><th>File:line</th><th>Current wording</th><th>Change to</th></tr>
+  <tr><td class="mono">gonfig.go:140</td><td>“Raw returns a deep copy per the copy-contract”</td><td>“Raw returns a map-level copy … slices and typed maps are shared”</td></tr>
+  <tr><td class="mono">gonfig.go:13</td><td>“copy-contract deep-copies inbound collections and Raw results”</td><td>“copy-contract copies inbound collections and Raw results at map level”</td></tr>
+  <tr><td class="mono">docs/design.md:72</td><td>“returns a deep copy of the internal map”</td><td>“returns a map-level copy of the internal map”</td></tr>
+  <tr><td class="mono">docs/code.md:11</td><td>“Raw() deep-copies its result”</td><td>“Raw() returns a map-level copy”</td></tr>
+  <tr><td class="mono">docs/design.md:9-10</td><td>copy-contract term (“deep-copied … deep copy”)</td><td>map-level copy wording</td></tr>
+</table>
+
+<h3>2.2 Fix the wording contradictions (doc side only)</h3>
+<table>
+  <tr><th>Sev</th><th>Ref</th><th>Doc location</th><th>Fix</th></tr>
+  <tr><td class="sev-critical">Critical</td><td>copy-contract vs live <code>Get</code></td>
+      <td class="mono">docs/design.md copy-contract / Gonfig module prose</td>
+      <td>State explicitly that <code>Get</code> is the <em>only</em> outbound exception: it returns live
+          state (whole map with no parts; map values by reference). Code already documents this
+          (<code>gonfig.go:55-56</code>) and tests pin it (<code>gonfig_test.go:140, :161</code>).</td></tr>
+  <tr><td class="sev-major">Major</td><td>copy depth of <code>DeepCopyMap</code></td>
+      <td class="mono">docs/design.md:12-13</td><td>Same as 2.1 — “internal copy for any accepted collection” → “map-level copy”.</td></tr>
+  <tr><td class="sev-major">Major</td><td><code>Delete</code> described as “set value”</td>
+      <td class="mono">docs/design.md:86</td><td>“Delete — removes the leaf at the key path (no-op on missing/non-map segments)”.</td></tr>
+  <tr><td class="sev-major">Major</td><td>“empty key → nil” wording</td>
+      <td class="mono">docs/design.md:77-78</td><td><code>Set</code>/<code>Delete</code> return <code>*Gonfig</code>, not nil;
+          <code>Get()</code> with no parts returns the root map with <code>true</code>. Fix the prose (also fix the typo “nill”).</td></tr>
+  <tr><td class="sev-major">Major</td><td>“overloaded methods”</td>
+      <td class="mono">docs/code.md:3</td><td>“constructor variants” — Go has no overloading (already correct at <code>docs/design.md:67</code>).</td></tr>
+</table>
+
+<h3>2.3 Close the Minor undocumented-code gaps</h3>
+<p>Add short model entries (a sentence each) so the model covers what the code exposes. These are
+purely additive documentation:</p>
+<ul>
+  <li class="mono">gonfig.go:9-10 — public <code>ErrNilProvider</code> sentinel and its nil-provider contract.</li>
+  <li class="mono">gonfig.go:12-22 — usable zero value and <code>New()</code>.</li>
+  <li class="mono">gonfig.go:25-57 — <code>NewWithMap</code>/<code>NewWithProvider</code>/<code>NewWithGonfig</code>
+      semantics (nil→empty, error propagation, snapshot).</li>
+  <li class="mono">gonfig.go:61 — <code>Get</code> returns <code>(any, bool)</code> (see §3 before finalizing).</li>
+  <li class="mono">gonfig.go:77-142 — fluent <code>*Gonfig</code> returns and the deep-merge rule (“later sources win”, recursive).</li>
+  <li class="mono">gonfig.go:144-155 — <code>Raw</code> never returns nil; map-level copy only.</li>
+  <li class="mono">gonfig_util.go:4 — exported <code>DeepCopyMap</code>.</li>
+  <li class="mono">provider/keyvalue/keyvalue.go:8-34 — <code>KeyValue</code>, <code>New</code>, <code>WithDeepCopy</code>, <code>Read</code>.</li>
+</ul>
+
+<h2>3. Nearest feature work (in order)</h2>
+
+<div class="phase">
+<h3>Phase A — Decide and apply the <code>Get</code> signature</h3>
+<p><strong>Backlog item:</strong> “In Get method bool return is not required”. The model prose
+(<code>docs/design.md:77-78</code>) already describes value-only returns (“nil when missing”), while the
+diagram and code return <code>(any, bool)</code>. Decide and make all sides agree.</p>
+<ul>
+  <li>If dropping <code>bool</code>: update <code>gonfig.go:57</code>, <code>getPath</code>, the diagram
+      (<code>docs/design.md:30</code>), <code>gonfig_test.go</code> call sites, and the README quick-start.</li>
+  <li>If keeping <code>bool</code>: reword the model prose to match the diagram instead.</li>
+</ul>
+<p class="meta">Not trivial — this touches the public API, tests, and examples.</p>
+</div>
+
+<div class="phase">
+<h3>Phase B — Prepare the provider list</h3>
+<p><strong>Backlog item:</strong> “Prepare the provider list for the implementation.” Produce a short
+ranked list of provider packages (e.g. <code>env</code>, <code>file/json</code>, <code>file/yaml</code>,
+<code>flags</code>) with their dependencies and a first-implementation target. Then implement the first one
+following the existing <code>provider/keyvalue</code> pattern (separate module, <code>Read() map[string]any</code>).</p>
+</div>
+
+<div class="phase">
+<h3>Phase C — Implement the <code>gonfig</code> struct tag</h3>
+<p><strong>Backlog item:</strong> “implement gonfig tag”. Map structs to configuration via a struct tag
+(like <code>envconfig</code>/<code>mapstructure</code>). Largest item; defer until A and B land so the
+copy-contract and <code>Get</code> semantics are stable.</p>
+</div>
+
+<h2>4. Suggested sequence</h2>
+<ol>
+  <li><strong>Now (trivial):</strong> apply §2.1–2.3 doc fixes — zero behavior/test risk.</li>
+  <li><strong>Next:</strong> Phase A — settle the <code>Get</code> signature.</li>
+  <li><strong>Then:</strong> Phase B — provider list + first provider.</li>
+  <li><strong>Last:</strong> Phase C — <code>gonfig</code> tag.</li>
+</ol>
+
+</body>
+</html>

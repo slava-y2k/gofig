@@ -10,8 +10,14 @@ description: "Identify and fix typos, grammar, logical, and flow errors in text,
 Analyze text for typos and for grammar, logic, and flow errors. Provide specific, focused suggestions on how to fix each issue. Focus on clarity, correctness, and readability.
 
 ## Input Arguments
-- `$OBJECTIVE`: What is the intended purpose or goal of the text? (e.g., "persuade investors to fund our Series A," "explain product features to new users," "communicate company values to employees")
+- `$OBJECTIVE`: What is the intended purpose or goal of the text? (e.g., "persuade investors to fund our Series A,"
+"explain product features to new users," "communicate company values to employees")
 - `$TEXT`: The text to review
+
+## Exceptions
+
+Avoid changing format for the code constructions, code is specified in ```this is a code``` or `this is a code`, but comments in code are also 
+object for the skill application.
 
 ## Process
 

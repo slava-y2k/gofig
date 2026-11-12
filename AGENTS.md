@@ -4,7 +4,6 @@ Use English (American dialect) only.
 
 ## Info
 - skill directory location: `.opencode/skills`
-- ignore files and directories specified in the `.gitignore` file
 - When the user mentions the root directory, treat it as the directory where this file is located.
 - .work is a directory for the current working context
 - docs/code repeats the code directory structure and is an additional context for generation, which complements

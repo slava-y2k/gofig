@@ -9,9 +9,9 @@ description: Reviews the design docs for internal consistency — cross-document
 
 ## Purpose
 
-Check the model itself: is the idea coherent? The design docs are reviewed
-against each other, never against the code. The input is the model
-inventory from the model-definition skill.
+Check the model itself: is the idea coherent? 
+The design docs are reviewed against each other, never against the code. 
+The input is the model inventory from the model-definition skill.
 
 ## Checks
 

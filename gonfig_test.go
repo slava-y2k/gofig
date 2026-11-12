@@ -40,10 +40,9 @@ func TestNewWithMapNilIsEmpty(t *testing.T) {
 // stubProvider is a Provider returning a fixed result.
 type stubProvider struct {
 	keyValues map[string]any
-	err       error
 }
 
-func (sp stubProvider) Read() (map[string]any, error) { return sp.keyValues, sp.err }
+func (sp stubProvider) Read() map[string]any { return sp.keyValues }
 
 // TestNewWithProviderCopiesProviderMap asserts that a provider's aliasing
 // choice cannot reach the new container; the read also proves the happy path.
@@ -72,18 +71,6 @@ func TestNewWithProviderNilMapIsEmpty(t *testing.T) {
 	gfg, err = NewWithProvider(provider)
 
 	assertContainerContract(t, gfg, err, map[string]any{})
-}
-
-// TestNewWithProviderReturnsProviderError covers error propagation: the
-// provider's error is returned and no partially built container escapes.
-func TestNewWithProviderReturnsProviderError(t *testing.T) {
-	var wantErr error = errors.New("boom")
-
-	var gfg *Gonfig
-	var err error
-	gfg, err = NewWithProvider(stubProvider{err: wantErr})
-
-	assertConstructorError(t, gfg, err, wantErr)
 }
 
 // TestNewWithProviderNilProvider covers the non-nil provider precondition.

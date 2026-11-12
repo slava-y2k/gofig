@@ -23,11 +23,11 @@ with a blank line. The comments in the code snippet are for you; don't put them 
 The declaration and usage blocks should be separated by an empty line.
 ```
 // --- declaration and assignment block ---
-var variable1 VariableType1
+var firstValues map[string]any
 var err error
-variable1, err = keyValue.Read()
+firstValues, err = loadValues(path)
 if err != nil {
-    t.Fatalf("Read() error = %v, want nil", err)
+    t.Fatalf("loadValues() error = %v, want nil", err)
 }
 
 // --- actual usage block ---

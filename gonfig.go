@@ -36,12 +36,7 @@ func NewWithProvider(provider Provider) (*Gonfig, error) {
 		return nil, ErrNilProvider
 	}
 
-	var keyValues map[string]any
-	var err error
-	keyValues, err = provider.Read()
-	if err != nil {
-		return nil, err
-	}
+	var keyValues map[string]any = provider.Read()
 
 	return NewWithMap(keyValues)
 }

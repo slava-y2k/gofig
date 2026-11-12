@@ -26,10 +26,10 @@ func (kv *KeyValue) WithDeepCopy(isEnabled bool) *KeyValue {
 	return kv
 }
 
-// Read never fails; the error result only keeps the Provider signature.
-func (kv *KeyValue) Read() (map[string]any, error) {
+// Read returns the served map itself, or a fresh copy when WithDeepCopy is on.
+func (kv *KeyValue) Read() map[string]any {
 	if !kv.deepCopy {
-		return kv.keyValues, nil
+		return kv.keyValues
 	}
-	return gonfig.DeepCopyMap(kv.keyValues), nil
+	return gonfig.DeepCopyMap(kv.keyValues)
 }

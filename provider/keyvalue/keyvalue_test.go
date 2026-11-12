@@ -14,12 +14,7 @@ func TestReadReturnsMapAsIs(t *testing.T) {
 	testValues := map[string]any{"key": "value"}
 	var keyValue *KeyValue = New(testValues)
 
-	var actualValues map[string]any
-	var err error
-	actualValues, err = keyValue.Read()
-	if err != nil {
-		t.Fatalf("Read() error = %v, want nil", err)
-	}
+	var actualValues map[string]any = keyValue.Read()
 
 	if !reflect.DeepEqual(actualValues, testValues) {
 		t.Errorf("Read() = %v, want %v", actualValues, testValues)
@@ -29,12 +24,7 @@ func TestReadReturnsMapAsIs(t *testing.T) {
 func TestNewNilMapServedAsEmpty(t *testing.T) {
 	var keyValue *KeyValue = New(nil)
 
-	var emptyMap map[string]any
-	var err error
-	emptyMap, err = keyValue.Read()
-	if err != nil {
-		t.Fatalf("Read() error = %v, want nil", err)
-	}
+	var emptyMap map[string]any = keyValue.Read()
 
 	if emptyMap == nil {
 		t.Fatal("Read() = nil, want an empty map (a nil map is normalized)")
@@ -48,12 +38,7 @@ func TestReadWithoutCopyAliasesSource(t *testing.T) {
 	testData := map[string]any{"a": 1}
 	var keyValue *KeyValue = New(testData)
 
-	var actualValues map[string]any
-	var err error
-	actualValues, err = keyValue.Read()
-	if err != nil {
-		t.Fatalf("Read() error = %v, want nil", err)
-	}
+	var actualValues map[string]any = keyValue.Read()
 
 	actualValues["b"] = 2
 	if testData["b"] != 2 {
@@ -65,22 +50,12 @@ func TestWithDeepCopyReturnsIndependentCopies(t *testing.T) {
 	sourceValues := map[string]any{"a": map[string]any{"b": 1}}
 	var keyValue *KeyValue = New(sourceValues).WithDeepCopy(true)
 
-	var firstValues map[string]any
-	var err error
-	firstValues, err = keyValue.Read()
-
-	if err != nil {
-		t.Fatalf("Read() error = %v, want nil", err)
-	}
+	var firstValues map[string]any = keyValue.Read()
 
 	firstValues["a"].(map[string]any)["b"] = 99
 	firstValues["new"] = true
 
-	var secondValues map[string]any
-	secondValues, err = keyValue.Read()
-	if err != nil {
-		t.Fatalf("Read() error = %v, want nil", err)
-	}
+	var secondValues map[string]any = keyValue.Read()
 
 	if got := secondValues["a"].(map[string]any)["b"]; got != 1 {
 		t.Errorf("second Read() = %v, want 1 (every Read must return a fresh copy)", got)
@@ -96,12 +71,7 @@ func TestWithDeepCopyReturnsIndependentCopies(t *testing.T) {
 func TestCreateKeyValueProvider(t *testing.T) {
 	var keyValue *KeyValue = New(map[string]any{"key": "value"})
 
-	var actualValues map[string]any
-	var err error
-	actualValues, err = keyValue.Read()
-	if err != nil {
-		t.Fatalf("Read() error = %v, want nil", err)
-	}
+	var actualValues map[string]any = keyValue.Read()
 
 	if actualValues["key"] != "value" {
 		t.Errorf("Read()[key] = %v, want %q", actualValues["key"], "value")
@@ -114,12 +84,7 @@ func TestWithDeepCopyToggleOffRestoresAliasing(t *testing.T) {
 	sourceValues := map[string]any{"a": 1}
 	var keyValue *KeyValue = New(sourceValues).WithDeepCopy(true)
 
-	var copied map[string]any
-	var err error
-	copied, err = keyValue.Read()
-	if err != nil {
-		t.Fatalf("Read() error = %v, want nil", err)
-	}
+	var copied map[string]any = keyValue.Read()
 
 	copied["b"] = 2
 	if _, ok := sourceValues["b"]; ok {
@@ -128,11 +93,7 @@ func TestWithDeepCopyToggleOffRestoresAliasing(t *testing.T) {
 
 	keyValue.WithDeepCopy(false)
 
-	var served map[string]any
-	served, err = keyValue.Read()
-	if err != nil {
-		t.Fatalf("Read() error = %v, want nil", err)
-	}
+	var served map[string]any = keyValue.Read()
 
 	served["c"] = 3
 	if sourceValues["c"] != 3 {

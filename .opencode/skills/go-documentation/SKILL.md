@@ -7,7 +7,7 @@ description: Use when documenting go code in compilable go files
 # Documentation
 
 Code documentation (in this skill, documentation refers to code documentation/docs unless stated otherwise, e.g.
-model documentation) is an additional text explanation that describes what happens here to code.
+model documentation) is an additional textual explanation that describes what happens in the code.
 Documentation should not repeat terms from the code.
 Documentation should only explain why it was implemented in the following form or what the tricky case is.
 Prefer the declarative form and statements.
@@ -19,7 +19,7 @@ should be omitted.
 Proof means there is no source other than documentation where this information can be obtained — neither code
 nor model documentation, test documentation, or other project documentation.
 
-Do not add unnecessary line breaks and keep lines to 110 characters.
+Do not add unnecessary line breaks and keep lines within 110 characters.
 
 If a struct implements an interface entirely (the whole contract), specify the implemented interface in the
 documentation at the struct level.
@@ -35,7 +35,7 @@ sss - milliseconds</llm-debug>
 Form a documentation context from the following sources:
 - the method instructions themselves
 - other methods that are invoked internally, keeping the stack depth equal to 3 methods
-- model information. The information about how it actually should work
+- model information: how it actually should work
 
 
 # Documentation structure

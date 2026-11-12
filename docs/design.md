@@ -11,7 +11,7 @@ Main doc that describes the idea from a technical perspective.
 # Gonfig module
 Gonfig provides bound safety. All methods that accept a key-value collection create an internal copy
 to protect against changes through the passed reference.
-The same approach is applied to outbound methods: every method makes a copy for a reference type
+The same approach is applied to outbound methods: every method makes a copy for reference types
 to protect internal state from changes to outgoing values.
 
 
@@ -27,7 +27,7 @@ whereas `MergeXXX` applies the provided key values to the existing `Gonfig` stru
 
 
 ## Key methods
-All these methods accept a key as an argument; on an empty key, nil will be returned.
+All these methods accept a key as an argument; for an empty key, nil will be returned.
 
 - `Get` — returns the key values for the provided key; empty if the key is missing.
 - `Set` — sets a value by the provided key.
@@ -40,7 +40,7 @@ The internal storage of `Gonfig` is a nested `map[string]any`, guarded by a `syn
 
 # Provider
 
-The main source of key-value pairs is the `Provider` abstraction, with the single function:
+The main source of key-value pairs is the `Provider` abstraction, with a single function:
 ```go
 type Provider interface {
     Read() (map[string]any, error)

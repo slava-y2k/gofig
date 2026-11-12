@@ -7,7 +7,7 @@ description: "Identify and fix typos, grammar, logical, and flow errors in text,
 # Typos and Grammar Check
 
 ## Purpose
-Analyze text for typos and for grammar, logical, and flow errors. Provide specific, focused suggestions on how to fix each issue. Focus on clarity, correctness, and readability.
+Analyze text for typos and for grammar, logic, and flow errors. Provide specific, focused suggestions on how to fix each issue. Focus on clarity, correctness, and readability.
 
 ## Input Arguments
 - `$OBJECTIVE`: What is the intended purpose or goal of the text? (e.g., "persuade investors to fund our Series A," "explain product features to new users," "communicate company values to employees")
@@ -175,8 +175,8 @@ Brief assessment of how well the text achieves its objective ($OBJECTIVE) and wh
 - **Include rationale**: Explain why each fix matters. This helps the author understand the principle, not just the rule.
 - **Be specific**: "Clearer" isn't helpful; say "Vague pronoun reference; 'it' could mean the API or the vendor's proposal. Change to: 'The vendor's API proved too complex.'"
 - **Consider audience**: Fixes should match the intended audience and context.
-- **Preserve the context structure**: A fix may change wording, never the document's structure. 
-  Keep headings, list nesting, code fences, tables, and tags as they are. Follow context formatting
+- **Preserve the context structure**: A fix may change wording, never the document's structure.
+  Keep headings, list nesting, code fences, tables, and tags as they are. Follow context formatting.
 
 ---
 

@@ -87,6 +87,7 @@ Template:
 ```
 
 ### 6. Push commit if user specifies it explicitly
+
 ```bash
 # Push committed changes to the remote
 git push

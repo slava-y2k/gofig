@@ -1,6 +1,9 @@
 ---
 name: model-definition
-description: Extracts the canonical model definition from the project's design docs into a structured inventory of terms, entities, contracts, and rules. Use it as the first step of a model-consistency check, or whenever the authoritative statement of what the project is supposed to be is needed.
+description: Extracts the canonical model definition from the project's design docs into a structured 
+  inventory of terms, entities, contracts, and rules.
+  Use it as the first step of a model-consistency check, or whenever the authoritative statement of what
+  the project is supposed to be is needed.
 ---
 
 # Model Definition

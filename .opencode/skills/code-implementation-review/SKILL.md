@@ -1,6 +1,8 @@
  ---
 name: code-implementation-review
-description: Reviews the Go implementation against the model inventory — contract match, layout rules, behavior guarantees, tests, and build health. Use it as the final step of a model-consistency check, after the model inventory exists.
+description: Reviews the Go implementation against the model inventory 
+— contract match, layout rules, behavior guarantees, tests, and build health. 
+Use it as the final step of a model-consistency check, after the model inventory exists.
 ---
 
 # Code Implementation Review

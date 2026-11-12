@@ -8,7 +8,12 @@ For locks and thread safety, specify thread safety for XXX if it keeps the expla
 - `Delete` — deletes the value by the provided key.
 
 # Copy-contract
-Every inbound collection is deep-copied before it is stored, and `Raw()` deep-copies its result;
-`Get` is the only method that returns live values, so a returned map stays read-only for the caller.
-A method must keep its documented side of the copy-contract when its arguments or results 
-are maps or any other struct that can be mutated outside.
+
+**Copy-contract** — every accepted or returned item should be a deep copy, to prevent implicit
+modifications.
+**Deep copy** — if a value is a map or a reference type, a new copy is created for it.
+
+`Get` and `Raw` return deep copies, so a returned map can be modified without affecting the container.
+
+A method must keep its documented side of the copy-contract when its arguments or results are maps or any
+other struct that can be mutated outside.

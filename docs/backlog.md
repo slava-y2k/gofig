@@ -3,8 +3,15 @@
 - implement "gonfig tag"
 - Prepare the provider list for the implementation.
 - In Get method bool return is not required
+- [Get-copy] Make `Get` return a full deep copy instead of a live reference, so callers cannot mutate the
+  container's internal map through the returned map. Requires a full deep copy (maps and reference types such
+  as slices and typed maps) — the current `DeepCopyMap` copies only nested `map[string]any` levels and shares
+  slices/typed maps. Also update `Get`'s doc comments and the copy-contract wording in `gonfig.go`.
+- [Get-copy] Test the deep copy: mutating a `Get` result (whole map, map-valued key, slice/typed-map value)
+  must not change the container. Update `TestGetWholeConfigReturnsLiveMap` and
+  `TestGetMapValueReturnsReference`, which currently pin the live-reference behavior.
 - [IC-015] Raw "deep copy" wording ignores shared slices and typed maps
-  Severity| Minor, Kind| contradiction, Status| open, 
+  Severity| Minor, Kind| contradiction, Status| implemented (see "# Implemented"),
   Model says | gonfig.go:140 — "Raw returns a deep copy per the copy-contract"; docs/design.md:72 — "returns a deep copy of the internal map"; docs/code.md:11 — "Raw() deep-copies its result".
   Reality | DeepCopyMap copies map[string]any levels only and shares every other value (gonfig_util.go:3-19); a slice obtained from Raw still points at the container's backing array (gonfig_test.go:678, TestRawSliceSharesBackingArray), and typed maps stay shared (gonfig_test.go:748, TestDeepCopyMapSharesTypedMap).
   Prepared change | Reword gonfig.go:140, docs/design.md:72 and docs/code.md:11 to "map-level copy": nested map[string]any levels are copied, slices and typed maps are shared.
@@ -29,3 +36,15 @@ Minor	undocumented-code	provider/keyvalue/keyvalue.go:8-34 — KeyValue, New, Wi
 Model gaps · not findings by themselves
 gap No method signatures or return types for Gonfig (docs/design.md:19-38).
 gap No definition of the zero value, errors, or helper functions.
+
+# Implemented
+
+- [IC-015] "deep copy" wording replaced with "map-level copy"; nested `map[string]any` levels are copied,
+  slices and typed maps are shared. No behavior change, no test change.
+  Applied | `gonfig.go:13` — copy-contract copies inbound collections and Raw results at map level;
+  `gonfig.go:140-142` — Raw returns a map-level copy, slices and typed maps stay shared, result is never nil;
+  `docs/design.md:9-13` — copy-contract term reworded, **map-level copy** term added to the glossary;
+  `docs/design.md:74` — Raw returns a map-level copy of the internal map;
+  `docs/code.md:11` — Raw() returns a map-level copy.
+  Not covered | The inbound "deep-copied" claim in `docs/code.md:11` stays as is; it belongs to the separate
+  Major code item about the copy depth of `DeepCopyMap`.

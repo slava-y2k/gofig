@@ -6,9 +6,9 @@ Main doc that describes the idea from a technical perspective.
 - **key-value pair(s)** — refers to a configuration key together with its value.
 - **Gonfig** — the configuration container type; its methods are listed under Collection methods and Access methods by key, and its constructors are `New` and `NewWithXXX`.
 - **Provider** — an abstraction of a collection of key-value pairs for Gonfig.
-- **copy-contract** — the rule for every value that crosses the `Gonfig` boundary: inbound collections are
-  deep-copied, `Raw()` returns a deep copy, and `Get` returns live values; a returned map is a mutable entity
-  shared with the container, so the caller must treat it as read-only.
+- **copy-contract** — the rule for every value that crosses the `Gonfig` boundary: every accepted or returned
+  item is a deep copy, so no caller can modify the container's internal state through a reference.
+- **deep copy** — if a value is a map or another reference type, a new copy is created for it.
 
 ## Diagram
 
@@ -48,10 +48,10 @@ classDiagram
 ```
 
 # Gonfig module
-Gonfig provides isolation through its **copy-contract**. All methods that accept a collection of key-value
-pairs create an internal copy to protect against changes through the passed reference.
-`Raw()` returns a copy for the same reason, whereas `Get` is the documented exception: it returns live
-values, so a returned map is a mutable entity shared with the container and must not be modified.
+Gonfig provides isolation through its **copy-contract**. Every method that accepts or returns a collection of
+key-value pairs creates a deep copy to protect against changes through the passed or returned reference.
+`Raw()` and `Get` return deep copies for the same reason, so a returned map can be modified without affecting
+the container.
 
 
 ## Collection methods
@@ -74,14 +74,14 @@ whereas `MergeXXX` applies the provided key-value pairs to the existing `Gonfig`
 
 ## Access methods by key
 
-If key is empty, nil or not specified, nill will be returned,
+If key is empty, nil or not specified, nil will be returned,
 otherwise the specified value.
 
-`Get` is the live-value exception of the copy-contract: a returned map stays shared with the container,
-so the caller must treat it as read-only.
+`Get` returns a deep copy of the value at the key, together with whether the key was found; a returned map
+can be modified without affecting the container.
 
-- `Get` — live value by the provided key, together with whether the key was found; a returned map must not
-  be modified
+- `Get` — deep copy of the value by the provided key, together with whether the key was found; a returned
+  map may be modified freely
 - `Set` — value which was set by the provided key
 - `Delete` — value which were removed by the provided key 
 

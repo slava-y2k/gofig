@@ -36,5 +36,3 @@ Use HTML unless another format is specified.
 - [roadmap.md](roadmap.md) — planned work
 
 - [code.md](code.md) — code conventions and the method that specifies several aspects of code generation by the LLM
-
-- [output/inconsistencies.html](output/inconsistencies.html) — model-vs-code inconsistency registry is an artifact of design-review skill.

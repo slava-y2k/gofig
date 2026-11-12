@@ -6,6 +6,9 @@ Main doc that describes the idea from a technical perspective.
 - **key-value pair(s)** — refers to a configuration key together with its value.
 - **Gonfig** — the configuration container type; its methods are listed under Collection methods and Access methods by key, and its constructors are `NewWithXXX`.
 - **Provider** — an abstraction of a collection of key-value pairs for Gonfig.
+- **copy-contract** — the rule for every value that crosses the `Gonfig` boundary: inbound collections are
+  deep-copied, `Raw()` returns a deep copy, and `Get` returns live values; a returned map is a mutable entity
+  shared with the container, so the caller must treat it as read-only.
 
 ## Diagram
 
@@ -44,10 +47,10 @@ classDiagram
 ```
 
 # Gonfig module
-Gonfig provides bound safety. All methods that accept a collection of key-value pairs create an internal copy
-to protect against changes through the passed reference.
-The same approach is applied to outbound methods: every method makes a copy for reference types
-to protect internal state from changes to outgoing values.
+Gonfig provides isolation through its **copy-contract**. All methods that accept a collection of key-value
+pairs create an internal copy to protect against changes through the passed reference.
+`Raw()` returns a copy for the same reason, whereas `Get` is the documented exception: it returns live
+values, so a returned map is a mutable entity shared with the container and must not be modified.
 
 
 ## Collection methods
@@ -60,15 +63,18 @@ The `XXX` suffix only emulates overloading; Go has no method overloading.
 The main difference between `NewWithXXX` and `MergeXXX` is that `NewWithXXX` creates and initializes the `Gonfig` struct,
 whereas `MergeXXX` applies the provided key-value pairs to the existing `Gonfig` struct.
 
-- `Raw()` — returns a copy of the internal map.
+- `Raw()` — returns a deep copy of the internal map, as the copy-contract requires.
 
 
 ## Access methods by key
 
 If key is empty, nil or not specified, nill will be returned,
-otherwise the specified value
+otherwise the specified value.
 
-- `Get` — value by the provided key
+`Get` is the live-value exception of the copy-contract: a returned map stays shared with the container,
+so the caller must treat it as read-only.
+
+- `Get` — live value by the provided key; a returned map must not be modified
 - `Set` — value which was set by the provided key
 - `Delete` — value which were removed by the provided key 
 

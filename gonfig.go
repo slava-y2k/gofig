@@ -10,6 +10,7 @@ import (
 var ErrNilProvider = errors.New("gonfig: nil provider")
 
 // Gonfig is a concurrency-safe hierarchical key-value container. Its zero value is ready to use.
+// Its copy-contract deep-copies inbound collections and Raw results, while Get returns live values.
 type Gonfig struct {
 	rwMutex sync.RWMutex
 	kvMap   map[string]any
@@ -51,7 +52,7 @@ func NewWithGonfig(other *Gonfig) (*Gonfig, error) {
 	return NewWithMap(other.Raw())
 }
 
-// Get returns live configuration values: no parts give the whole map,
+// Get returns live configuration values per the copy-contract: no parts give the whole map,
 // and a map-valued key comes back by reference, so do not mutate results.
 func (gfg *Gonfig) Get(parts ...string) (any, bool) {
 	gfg.rwMutex.RLock()
@@ -136,7 +137,8 @@ func (gfg *Gonfig) MergeMap(keyValues map[string]any) *Gonfig {
 	return gfg
 }
 
-// Raw returns a deep copy, never nil; a snapshot is safe to mutate. Empty state needs no nil check.
+// Raw returns a deep copy per the copy-contract, never nil; a snapshot is safe to mutate.
+// Empty state needs no nil check.
 func (gfg *Gonfig) Raw() map[string]any {
 	gfg.rwMutex.RLock()
 	defer gfg.rwMutex.RUnlock()

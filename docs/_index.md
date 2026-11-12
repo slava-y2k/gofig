@@ -25,9 +25,9 @@ gonfig/                           # repository root
 `gonfig_util.go`, `/...` — wildcard to stop adding the sub-items. </llm-tip>
 
 ## docs/output
-Generated documents that are current at a specific project state: treat them as an audit snapshot and
-technical debt, so they can be replaced at once.
-HTML should be used if another format is not specified.
+Generated documents capture the project at a specific state. Treat them as an audit snapshot and as
+technical debt: they can be replaced wholesale whenever the project state changes.
+Use HTML unless another format is specified.
 
 
 # Documents and read order

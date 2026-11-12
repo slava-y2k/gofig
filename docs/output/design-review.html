@@ -50,8 +50,8 @@
 
 <section>
 <h2>Idea-consistency findings</h2>
-<div class="verdict"><strong>Verdict: Inconsistent</strong> — the README is a placeholder, the docs call the constructors "overloaded", and the Provider question at design.md:55 is answered but still listed.</div>
-<div class="verdict">Struck-through items were fixed after this review: the key-method contracts, the constructor naming, and the empty <code>Code layout</code> section in 95a40c8; the garbled <code>code.md</code> rule in 2d83dec; the glossary and the stale <code>directory-structure.md</code> tree entry in bdf9f25; the <code>Set</code> return contract, the provider layout wording, and the stale <code>/model-consistency-check</code> reference in the current working tree.</div>
+<div class="verdict"><strong>Verdict: Inconsistent</strong> — the README is a placeholder and the Provider question at design.md:57 is answered but still listed.</div>
+<div class="verdict">Struck-through items were fixed after this review: the key-method contracts, the constructor naming, and the empty <code>Code layout</code> section in 95a40c8; the garbled <code>code.md</code> rule in 2d83dec; the glossary and the stale <code>directory-structure.md</code> tree entry in bdf9f25; the <code>Set</code> return contract, the provider layout wording, the stale <code>/model-consistency-check</code> reference, and the constructor wording, now stating that the <code>XXX</code> suffix only emulates overloading, in the current working tree.</div>
 <table>
 <tr><th>Severity</th><th>Sides</th><th>What contradicts what</th></tr>
 <tr class="fixed"><td><span class="tag critical">Critical</span> <span class="tag fixed">fixed</span></td><td>docs/design.md:34 vs docs/design.md:29-34</td><td><code>Delete</code> is described as "set value by provided key", contradicting its name and its membership in the key-method group. A reader following the doc would implement <code>Delete</code> as a setter.</td></tr>
@@ -63,9 +63,9 @@
 <tr><td><span class="tag minor">Minor</span></td><td>README.md:12, 26, 29, 31</td><td>README honesty: "for detail design please refer to ..." has no target; the quick start is only <code>// TODO</code>; "Examples" and "See more" are empty headings.</td></tr>
 <tr class="fixed"><td><span class="tag minor">Minor</span> <span class="tag fixed">fixed</span></td><td>docs/code.md:5</td><td>Garbled convention text ("For locks and thread safe use thread safety for XXX if explanation compacts the description") — an unusable rule rather than a contradiction.</td></tr>
 <tr class="fixed"><td><span class="tag major">Major</span> <span class="tag fixed">fixed</span></td><td>docs/design.md:33 vs docs/design.md:30, 32, 34</td><td><code>Set</code> "returns the set key, nil if the key is missing", while the group rule promises nil for an empty key and <code>Get</code> returns a value. A mutator that returns a key and reports a "missing key" has no usable contract.</td></tr>
-<tr><td><span class="tag minor">Minor</span></td><td>docs/code.md:3 vs docs/design.md:19</td><td>Both docs call the constructors "overloaded" (code.md: "overloaded methods", design.md: "overloaded constructor functions"). They agree, but Go has no method overloading. <code>.opencode/skills/go-code/SKILL.md:40</code> now explains that suffixes emulate it, yet code.md and design.md never qualify the term, so a reader can still take "overloaded" literally.</td></tr>
+<tr class="fixed"><td><span class="tag minor">Minor</span> <span class="tag fixed">fixed</span></td><td>docs/code.md:3 vs docs/design.md:19</td><td>Both docs call the constructors "overloaded" (code.md: "overloaded methods", design.md: "overloaded constructor functions"). They agree, but Go has no method overloading. <code>.opencode/skills/go-code/SKILL.md:40</code> now explains that suffixes emulate it, yet code.md and design.md never qualify the term, so a reader can still take "overloaded" literally.</td></tr>
 <tr class="fixed"><td><span class="tag minor">Minor</span> <span class="tag fixed">fixed</span></td><td>docs/design.md:49 vs docs/_index.md:9</td><td>Provider layout: "a separate module" in design.md (and README.md:10) vs "each module is a separate package" in _index.md.</td></tr>
-<tr><td><span class="tag minor">Minor</span></td><td>docs/design.md:55 vs docs/design.md:46-49</td><td>An open question asks whether the provider interface should return an error, while the interface above already settles it as <code>Read() map[string]any</code>.</td></tr>
+<tr><td><span class="tag minor">Minor</span></td><td>docs/design.md:57 vs docs/design.md:48-51</td><td>An open question asks whether the provider interface should return an error, while the interface above already settles it as <code>Read() map[string]any</code>.</td></tr>
 <tr class="fixed"><td><span class="tag minor">Minor</span> <span class="tag fixed">fixed</span></td><td>docs/_index.md:40-41 vs repository</td><td><code>output/inconsistencies.html</code> is said to be maintained by <code>/model-consistency-check</code>, but <code>.opencode/commands/</code> contains no such command.</td></tr>
 </table>
 </section>
@@ -75,10 +75,10 @@
 <table>
 <tr><th>Check</th><th>Result</th></tr>
 <tr><td>1. Glossary discipline</td><td>Pass — one term per entity: <code>key-value pair(s)</code>, <code>Gonfig</code>, <code>Provider</code>.</td></tr>
-<tr><td>2. Cross-document agreement</td><td>Pass — the provider layout ("each provider module is a separate package") and the key-method wording now match across design.md, _index.md, and README.md. The "overloaded" term is used by both docs; that is a language-accuracy issue listed above, not a cross-doc disagreement.</td></tr>
+<tr><td>2. Cross-document agreement</td><td>Pass — the provider layout ("each provider module is a separate package"), the key-method wording, and the constructor description ("the XXX suffix only emulates overloading") now match across design.md, code.md, _index.md, and README.md.</td></tr>
 <tr><td>3. Diagram versus prose</td><td>Not applicable — no Mermaid diagram exists in the docs; <code>_index.md</code> contains only a text tree.</td></tr>
 <tr><td>4. Stale references</td><td>Pass — no missing file or command is referenced; <code>directory-structure.md</code> and <code>/model-consistency-check</code> are both gone.</td></tr>
-<tr><td>5. Planned versus done</td><td>Fail — design.md:55 still asks about the Provider error policy that design.md:46-49 already settles. The empty "Code layout" section is gone; roadmap items are marked as plans.</td></tr>
+<tr><td>5. Planned versus done</td><td>Fail — design.md:57 still asks about the Provider error policy that design.md:48-51 already settles. The empty "Code layout" section is gone; roadmap items are marked as plans.</td></tr>
 <tr><td>6. README honesty</td><td>Fail — placeholder targets and TODO quick start (above).</td></tr>
 <tr><td>7. Model gaps</td><td>Listed below; the fixed gaps are struck through, the rest stay open.</td></tr>
 </table>
@@ -88,7 +88,7 @@
 <h2>Model gaps <small>· not findings by themselves</small></h2>
 <div class="pad">
 <ul>
-<li><span class="tag gap">gap</span> No method signatures or return types for <code>Gonfig</code> (docs/design.md:19-36).</li>
+<li><span class="tag gap">gap</span> No method signatures or return types for <code>Gonfig</code> (docs/design.md:19-38).</li>
 <li><span class="tag gap">gap</span> No definition of the zero value, errors, or helper functions.</li>
 <li class="fixed"><span class="tag gap">gap</span> <span class="tag fixed">fixed</span> The declared source <code>docs/directory-structure.md</code> is missing; the layout only exists as a tree in <code>docs/_index.md</code>.</li>
 <li class="fixed"><span class="tag gap">gap</span> <span class="tag fixed">fixed</span> Empty-key semantics are stated for the whole key-method group without per-method behavior (docs/design.md:30).</li>

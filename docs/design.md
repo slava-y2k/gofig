@@ -16,9 +16,11 @@ to protect internal state from changes to outgoing values.
 
 
 ## Collection methods
-- `NewWithXXX` — inbound constructor (overloaded constructor) functions that create the `Gonfig` struct and fill it with the initial or provided
+- `NewWithXXX` — inbound constructor functions that create the `Gonfig` struct and fill it with the initial or provided
   **key-value pair(s)**.
 - `MergeXXX` — inbound instance functions (functions with a receiver) that accept the value for the current `Gonfig` struct.
+
+The `XXX` suffix only emulates overloading; Go has no method overloading.
 
 The main difference between `NewWithXXX` and `MergeXXX` is that `NewWithXXX` creates and initializes the `Gonfig` struct,
 whereas `MergeXXX` applies the provided key-value pairs to the existing `Gonfig` struct.

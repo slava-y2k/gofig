@@ -37,8 +37,8 @@ firstValues["new"] = true
 
 ## Method overloading
 
-Go has no method overloading, so this limitation is overcome by adding a suffix to the method name;
-the suffix should be 1-2 words long. In the patterns below, XXX is the overload suffix that mirrors
+Go has no method overloading, so the `XXX` suffix only emulates it. Add the suffix to the method name;
+it should be 1-2 words long. In the patterns below, `XXX` is the overload suffix that mirrors
 the argument signature.
 - For constructors, the typical signature is `NewWith<XXX>`.
 - For methods, use the pattern `MethodName<XXX>`.

@@ -6,7 +6,7 @@ gonfig/                           # repository root
 ├── README.md                     # project frontpage
 ├── gonfig.go                     # Gonfig container and main business logic
 ├── provider.go                   # Provider interface
-├── provider/...                  # provider implementations, each module is a separate package
+├── provider/...                  # provider implementations, each provider module is a separate package
 ├── example/...                   # examples module (not published)
 ├── docs/                         # design documentation
 │   ├── _index.md                 # documentation entry point
@@ -37,5 +37,4 @@ HTML should be used if another format is not specified.
 
 - [code.md](code.md) — code conventions and the method that specifies several aspects of code generation by the LLM
 
-- [output/inconsistencies.html](output/inconsistencies.html) — model-vs-code inconsistency registry,
-  maintained by `/model-consistency-check`
+- [output/inconsistencies.html](output/inconsistencies.html) — model-vs-code inconsistency registry is an artifact of design-review skill.

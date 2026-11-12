@@ -16,7 +16,7 @@ to protect internal state from changes to outgoing values.
 
 
 ## Collection methods
-- `NewWithXXX` — inbound constructor functions that create the `Gonfig` struct and fill it with the initial or provided
+- `NewWithXXX` — inbound constructor (overloaded constructor) functions that create the `Gonfig` struct and fill it with the initial or provided
   **key-value pair(s)**.
 - `MergeXXX` — inbound instance functions (functions with a receiver) that accept the value for the current `Gonfig` struct.
 
@@ -26,12 +26,14 @@ whereas `MergeXXX` applies the provided key-value pairs to the existing `Gonfig`
 - `Raw()` — returns a copy of the internal map.
 
 
-## Key methods
-All these methods accept a key as an argument; for an empty key, nil will be returned.
+## Access methods by key
 
-- `Get` — returns the value for the provided key; nil if the key is missing.
-- `Set` — sets a value by the provided key, returns the set key, nil if the key is missing.
-- `Delete` — deletes the value by the provided key, nil if the key is missing.
+If key is empty, nil or not specified, nill will be returned,
+otherwise the specified value
+
+- `Get` — value by the provided key
+- `Set` — value which was set by the provided key
+- `Delete` — value which were removed by the provided key 
 
 
 ## Gonfig internal storage
@@ -46,7 +48,7 @@ type Provider interface {
 Read() map[string]any
 }
 ```
-Each provider should be implemented as a separate module.
+Each provider module is a separate package.
 
 
 # Questions to answer later

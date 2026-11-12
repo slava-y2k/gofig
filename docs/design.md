@@ -27,7 +27,7 @@ classDiagram
             +MergeXXX(other Gonfig) Gonfig
             +Set(parts []string, value any) Gonfig
             +Delete(parts ...string) Gonfig
-            +Get(parts ...string) any
+            +Get(parts ...string) (any, bool)
             +Raw() map[string]any
         }
 
@@ -80,7 +80,8 @@ otherwise the specified value.
 `Get` is the live-value exception of the copy-contract: a returned map stays shared with the container,
 so the caller must treat it as read-only.
 
-- `Get` — live value by the provided key; a returned map must not be modified
+- `Get` — live value by the provided key, together with whether the key was found; a returned map must not
+  be modified
 - `Set` — value which was set by the provided key
 - `Delete` — value which were removed by the provided key 
 

@@ -62,7 +62,7 @@
     <p class="sub">Registry of divergences between the design model (<code>docs/</code>) and the implementation,
       maintained by <code>/model-consistency-check</code> - generated 2026-11-11 00:46:17 -
       file pattern <code>docs/output/inconsistencies.html</code></p>
-    <div class="cards"><div class="card"><b>2</b><span>open entries</span></div><div class="card"><b>0</b><span>major</span></div><div class="card"><b>2</b><span>minor</span></div><div class="card"><b>0</b><span>critical</span></div><div class="card"><b>11</b><span>struck entries</span></div></div>
+    <div class="cards"><div class="card"><b>0</b><span>open entries</span></div><div class="card"><b>0</b><span>major</span></div><div class="card"><b>0</b><span>minor</span></div><div class="card"><b>0</b><span>critical</span></div><div class="card"><b>13</b><span>struck entries</span></div></div>
   </div>
 </header>
 <main>
@@ -72,7 +72,7 @@
     <table>
       <tr><th>ID</th><th>Title</th><th>Severity</th><th>Kind</th><th>Status</th></tr>
       <tr class="struck"><td class="num"><a href="#ic-004">IC-004</a></td><td><s>"gonfig tag" entity not implemented and not marked planned</s></td><td><span class="tag sev-major">Major</span></td><td><code>unimplemented-model</code></td><td><span class="tag resolved">not actual</span></td></tr>
-      <tr><td class="num"><a href="#ic-005">IC-005</a></td><td>Get signature in the model diagram omits the found result</td><td><span class="tag sev-minor">Minor</span></td><td><code>contradiction</code></td><td><span class="tag open">open</span></td></tr>
+      <tr class="struck"><td class="num"><a href="#ic-005">IC-005</a></td><td><s>Get signature in the model diagram omits the found result</s></td><td><span class="tag sev-minor">Minor</span></td><td><code>contradiction</code></td><td><span class="tag resolved">fixed</span></td></tr>
       <tr class="struck"><td class="num"><a href="#ic-006">IC-006</a></td><td><s>Provider method shown as lowercase <code>read()</code> in the diagram</s></td><td><span class="tag sev-minor">Minor</span></td><td><code>idea-inconsistency</code></td><td><span class="tag resolved">fixed</span></td></tr>
       <tr class="struck"><td class="num"><a href="#ic-007">IC-007</a></td><td><s>docs/parser.md is a stale reference</s></td><td><span class="tag sev-minor">Minor</span></td><td><code>idea-inconsistency</code></td><td><span class="tag resolved">not actual</span></td></tr>
       <tr class="struck"><td class="num"><a href="#ic-008">IC-008</a></td><td><s>parser/ directory listed as present but does not exist</s></td><td><span class="tag sev-minor">Minor</span></td><td><code>idea-inconsistency</code></td><td><span class="tag resolved">not actual</span></td></tr>
@@ -82,7 +82,7 @@
       <tr class="struck"><td class="num"><a href="#ic-012">IC-012</a></td><td><s>Diagram shows constructor results as "error, Gonfig" instead of "(*Gonfig, error)"</s></td><td><span class="tag sev-minor">Minor</span></td><td><code>contradiction</code></td><td><span class="tag resolved">fixed</span></td></tr>
       <tr class="struck"><td class="num"><a href="#ic-013">IC-013</a></td><td><s>"Bound safety" copy claim contradicts Get references and map-level copy depth</s></td><td><span class="tag sev-major">Major</span></td><td><code>contradiction</code></td><td><span class="tag resolved">not actual</span></td></tr>
       <tr class="struck"><td class="num"><a href="#ic-014">IC-014</a></td><td><s>READMEnew.md documents a Load/MergeProvider API that does not exist</s></td><td><span class="tag sev-major">Major</span></td><td><code>unimplemented-model</code></td><td><span class="tag resolved">not actual</span></td></tr>
-      <tr><td class="num"><a href="#ic-015">IC-015</a></td><td>Raw "deep copy" wording ignores shared slices and typed maps</td><td><span class="tag sev-minor">Minor</span></td><td><code>contradiction</code></td><td><span class="tag open">open</span></td></tr>
+      <tr class="struck"><td class="num"><a href="#ic-015">IC-015</a></td><td><s>Raw "deep copy" wording ignores shared slices and typed maps</s></td><td><span class="tag sev-minor">Minor</span></td><td><code>contradiction</code></td><td><span class="tag resolved">moved</span></td></tr>
       <tr class="struck"><td class="num"><a href="#ic-016">IC-016</a></td><td><s>Two competing READMEs with no canonical choice</s></td><td><span class="tag sev-minor">Minor</span></td><td><code>idea-inconsistency</code></td><td><span class="tag resolved">not actual</span></td></tr>
     </table>
   </section>
@@ -103,7 +103,7 @@
 &lt;ul class="fields"&gt;
 &lt;li&gt;&lt;span class="k"&gt;Severity&lt;/span&gt;&lt;span class="v"&gt;Critical | Major | Minor&lt;/span&gt;&lt;/li&gt;
 &lt;li&gt;&lt;span class="k"&gt;Kind&lt;/span&gt;&lt;span class="v"&gt;idea-inconsistency | undocumented-code | unimplemented-model | contradiction&lt;/span&gt;&lt;/li&gt;
-&lt;li&gt;&lt;span class="k"&gt;Status&lt;/span&gt;&lt;span class="v"&gt;open | not actual | fixed&lt;/span&gt;&lt;/li&gt;
+&lt;li&gt;&lt;span class="k"&gt;Status&lt;/span&gt;&lt;span class="v"&gt;open | not actual | fixed | moved&lt;/span&gt;&lt;/li&gt;
 &lt;li&gt;&lt;span class="k"&gt;Verdict&lt;/span&gt;&lt;span class="v"&gt;optional; only on struck entries — the evidence that the finding no longer reproduces&lt;/span&gt;&lt;/li&gt;
 &lt;li&gt;&lt;span class="k"&gt;Model says&lt;/span&gt;&lt;span class="v"&gt;&lt;code&gt;docs/…:line&lt;/code&gt; — quote or reference&lt;/span&gt;&lt;/li&gt;
 &lt;li&gt;&lt;span class="k"&gt;Reality&lt;/span&gt;&lt;span class="v"&gt;&lt;code&gt;file:line&lt;/code&gt; — quote, diagram, or verification result&lt;/span&gt;&lt;/li&gt;
@@ -124,14 +124,15 @@
 <li><span class="k">Prepared change</span><span class="v">Either implement struct-tag binding (tag parsing + mapping into Gonfig), or move it into code-layout.md's Planned section and reword model.md:7 to present the gonfig tag as a future entity rather than a current main entity.</span></li>
 </ul>
 </section>
-<section class="entry" id="ic-005">
-<h3><span class="eid">[IC-005]</span> Get signature in the model diagram omits the found result</h3>
+<section class="entry struck" id="ic-005">
+<h3><span class="eid">[IC-005]</span> <s>Get signature in the model diagram omits the found result</s></h3>
 <ul class="fields">
 <li><span class="k">Severity</span><span class="v"><span class="tag sev-minor">Minor</span></span></li>
 <li><span class="k">Kind</span><span class="v"><code>contradiction</code></span></li>
-<li><span class="k">Status</span><span class="v"><span class="tag open">open</span></span></li>
-<li><span class="k">Model says</span><span class="v">docs/design.md:29 — <code>+Get(parts ...string) any</code> in the <code>class Gonfig</code> block.</span></li>
-<li><span class="k">Reality</span><span class="v">gonfig.go:57 — <code>func (gfg *Gonfig) Get(parts ...string) (any, bool)</code>; the tests bind the bool result (gonfig_test.go:127 and :148).</span></li>
+<li><span class="k">Status</span><span class="v"><span class="tag resolved">fixed</span></span></li>
+<li><span class="k">Verdict</span><span class="v verdict">Fixed in docs/design.md — the diagram at :30 now reads <code>+Get(parts ...string) (any, bool)</code>, and the Access methods bullet at :83-84 states that <code>Get</code> also reports whether the key was found.</span></li>
+<li><span class="k">Model says</span><span class="v">docs/design.md:29 — was <code>+Get(parts ...string) any</code> in the <code>class Gonfig</code> block.</span></li>
+<li><span class="k">Reality</span><span class="v">gonfig.go:57 — <code>func (gfg *Gonfig) Get(parts ...string) (any, bool)</code>; the tests bind the bool result (gonfig_test.go:132 and :153).</span></li>
 <li><span class="k">Prepared change</span><span class="v">Update the design.md:29 diagram to <code>+Get(parts ...string) (any, bool)</code>.</span></li>
 </ul>
 </section>
@@ -243,15 +244,16 @@
 <li><span class="k">Prepared change</span><span class="v">Replace <code>Load</code>/<code>MergeProvider</code> in READMEnew.md with the real constructor flow (<code>gonfig.NewWithProvider(keyvalue.New(src).WithDeepCopy(true))</code>); add the three <code>NewWith*</code> constructors to the API list; update the table row at :72 and the sentences at :81 and :86.</span></li>
 </ul>
 </section>
-<section class="entry" id="ic-015">
-<h3><span class="eid">[IC-015]</span> Raw "deep copy" wording ignores shared slices and typed maps</h3>
+<section class="entry struck" id="ic-015">
+<h3><span class="eid">[IC-015]</span> <s>Raw "deep copy" wording ignores shared slices and typed maps</s></h3>
 <ul class="fields">
 <li><span class="k">Severity</span><span class="v"><span class="tag sev-minor">Minor</span></span></li>
 <li><span class="k">Kind</span><span class="v"><code>contradiction</code></span></li>
-<li><span class="k">Status</span><span class="v"><span class="tag open">open</span></span></li>
-<li><span class="k">Model says</span><span class="v">gonfig.go:140 — "Raw returns a deep copy per the copy-contract"; docs/design.md:66 — "returns a deep copy of the internal map"; docs/code.md:11 — "<code>Raw()</code> deep-copies its result".</span></li>
+<li><span class="k">Status</span><span class="v"><span class="tag resolved">moved</span></span></li>
+<li><span class="k">Verdict</span><span class="v verdict">Transferred to <code>docs/roadmap.md:6-10</code> as planned work. The wording still says "deep copy" while <code>DeepCopyMap</code> shares slices and typed maps, but the registry no longer tracks it as an open divergence.</span></li>
+<li><span class="k">Model says</span><span class="v">gonfig.go:140 — "Raw returns a deep copy per the copy-contract"; docs/design.md:72 — "returns a deep copy of the internal map"; docs/code.md:11 — "<code>Raw()</code> deep-copies its result".</span></li>
 <li><span class="k">Reality</span><span class="v"><code>DeepCopyMap</code> copies <code>map[string]any</code> levels only and shares every other value (gonfig_util.go:3-19); a slice obtained from <code>Raw</code> still points at the container's backing array (gonfig_test.go:678, <code>TestRawSliceSharesBackingArray</code>), and typed maps stay shared (gonfig_test.go:748, <code>TestDeepCopyMapSharesTypedMap</code>).</span></li>
-<li><span class="k">Prepared change</span><span class="v">Reword gonfig.go:140, docs/design.md:66 and docs/code.md:11 to "map-level copy": nested <code>map[string]any</code> levels are copied, slices and typed maps are shared.</span></li>
+<li><span class="k">Prepared change</span><span class="v">Reword gonfig.go:140, docs/design.md:72 and docs/code.md:11 to "map-level copy": nested <code>map[string]any</code> levels are copied, slices and typed maps are shared.</span></li>
 </ul>
 </section>
 <section class="entry struck" id="ic-016">

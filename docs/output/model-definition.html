@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>gonfig - Model Inventory (model-definition)</title>
+<style>
+  :root { --ink:#1f2430; --muted:#5b6472; --line:#e3e7ee; --paper:#fff; --wash:#f6f8fb;
+          --accent:#2b6cb0; --ok:#2f855a; --temp:#b7791f; --plan:#6b46c1; }
+  * { box-sizing:border-box; }
+  body { margin:0; font:15px/1.55 -apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; color:var(--ink); background:var(--wash); }
+  header { background:var(--paper); border-bottom:1px solid var(--line); padding:28px 0 22px; }
+  .wrap { max-width:1050px; margin:0 auto; padding:0 24px; }
+  h1 { margin:0 0 4px; font-size:24px; }
+  .sub { color:var(--muted); font-size:13.5px; }
+  code { font:12.5px ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; background:#eef2f7; border-radius:4px; padding:1px 5px; }
+  main { padding:26px 0 40px; }
+  section { background:var(--paper); border:1px solid var(--line); border-radius:8px; margin:0 0 18px; overflow:hidden; }
+  section > h2 { margin:0; padding:12px 16px; font-size:16px; border-bottom:1px solid var(--line); background:#fafbfd; }
+  section > h2 small { color:var(--muted); font-weight:400; }
+  table { width:100%; border-collapse:collapse; font-size:13.5px; }
+  th,td { text-align:left; padding:8px 10px; border-bottom:1px solid var(--line); vertical-align:top; }
+  th { font-size:12px; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); background:#fafbfd; }
+  tr:last-child td { border-bottom:none; }
+  td:first-child { width:190px; }
+  ul { margin:6px 0; padding-left:20px; }
+  li { margin:4px 0; }
+  .pad { padding:12px 16px; }
+  .tag { display:inline-block; border-radius:10px; padding:0 8px; font-size:11.5px; white-space:nowrap; }
+  .tag.gap { color:var(--plan); background:#f0eafc; }
+  footer { color:var(--muted); font-size:12.5px; padding:0 0 30px; }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1>gonfig - Model Inventory</h1>
+    <p class="sub">Skill: <code>model-definition</code> · sources: <code>docs/design.md</code>, <code>docs/code.md</code>,
+      <code>docs/directory-structure.md</code> (missing), <code>docs/roadmap.md</code>, <code>README.md</code>,
+      <code>AGENTS.md</code> · generated 2026-11-12 03:29:37</p>
+  </div>
+</header>
+<main>
+<div class="wrap">
+
+<section>
+<h2>Glossary <small>· one term per entity</small></h2>
+<table>
+<tr><th>Term</th><th>Definition and reference</th></tr>
+<tr><td><code>key value(s)</code></td><td>"refers to the configuration key-value pair or pairs" (docs/design.md:6)</td></tr>
+<tr><td><code>Gonfig</code></td><td>"refers to the <code>Gonfig</code> struct and its functions" (docs/design.md:7)</td></tr>
+<tr><td><code>Provider</code></td><td>"an abstraction of a KeyValue collection for Gonfig" (docs/design.md:8)</td></tr>
+</table>
+<p class="pad">Synonyms observed: "KeyValues" (README.md:9), "key-value pairs" (docs/design.md:6), "KeyValue collection" (docs/design.md:8), "Providers modules" (README.md:10).</p>
+</section>
+
+<section>
+<h2>Entities and contracts</h2>
+<table>
+<tr><th>Entity</th><th>Kind, contract, reference</th></tr>
+<tr><td><code>Gonfig</code></td><td>Struct. Internal storage is "a nested <code>map[string]any</code>, guarded by a <code>sync.RWMutex</code>" (docs/design.md:37-38). Methods:
+<ul>
+<li><code>NewXXX</code> — inbound constructor functions that "create[] the Gonfig struct and fill[] it with the initial or provided key value(s)" (docs/design.md:19-20); no signatures given.</li>
+<li><code>MergeXXX</code> — inbound instance functions that accept the value for the current struct (docs/design.md:21); no signatures given.</li>
+<li><code>Raw()</code> — "returns the copy of the internal map" (docs/design.md:26).</li>
+<li><code>Get</code> — "returns key values by provided key" (docs/design.md:32).</li>
+<li><code>Set</code> — "set value by provided key" (docs/design.md:33).</li>
+<li><code>Delete</code> — "set value by provided key" (docs/design.md:34).</li>
+</ul>
+Copy contract: inbound methods create an internal copy; outbound methods "make[] a copy for a reference type" (docs/design.md:12-15).</td></tr>
+<tr><td><code>Provider</code></td><td>Interface. Contract: <code>Read() (map[string]any, error)</code> (docs/design.md:45-47); "Each provider should be implemented as a separate module" (docs/design.md:49).</td></tr>
+<tr><td colspan="2"><em>Not defined by the model:</em> the key-value provider type and its contract, <code>DeepCopyMap</code>, error values, the zero value, fluent return values.</td></tr>
+</table>
+</section>
+
+<section>
+<h2>Data flow</h2>
+<div class="pad">
+Providers produce key-value pairs; constructors (<code>NewXXX</code>) create a container and merge functions (<code>MergeXXX</code>) fold values into an existing one (docs/design.md:11-24). Values cross boundaries as <code>map[string]any</code> (docs/design.md:38, 45-47). Outbound reads are <code>Get</code>/<code>Raw</code> (docs/design.md:26, 29-34). The module split is restated in README.md:8-10.
+</div>
+</section>
+
+<section>
+<h2>Layout rules</h2>
+<div class="pad">
+<ul>
+<li>Micro-modular library: core module plus one module per provider (README.md:8-10; docs/design.md:49).</li>
+<li>The skill's declared source <code>docs/directory-structure.md</code> is absent; the current directory tree is in <code>docs/_index.md:1-23</code>, which still lists <code>directory-structure.md</code> (docs/_index.md:15).</li>
+</ul>
+</div>
+</section>
+
+<section>
+<h2>Conventions</h2>
+<div class="pad">
+<ul>
+<li>Data crosses boundaries as <code>map[string]any</code> (docs/design.md:38, 45-47).</li>
+<li>Concurrency: internal storage guarded by <code>sync.RWMutex</code> (docs/design.md:38); locking note in docs/code.md:5.</li>
+<li>Return values, error conventions, and compile-time interface checks are not stated.</li>
+</ul>
+</div>
+</section>
+
+<section>
+<h2>Planned items</h2>
+<div class="pad">
+<ul>
+<li>Struct tag support — "add struct tag" (docs/roadmap.md:1).</li>
+<li>Provider list — "prepare provider list for the implementation" (docs/roadmap.md:2).</li>
+<li>"## Code layout" is announced but empty (docs/design.md:57).</li>
+</ul>
+</div>
+</section>
+
+<section>
+<h2>Model gaps <small>· not findings by themselves</small></h2>
+<div class="pad">
+<ul>
+<li><span class="tag gap">gap</span> <code>docs/directory-structure.md</code> is a declared source but does not exist.</li>
+<li><span class="tag gap">gap</span> No method signatures or return types for <code>Gonfig</code> (docs/design.md:19-34).</li>
+<li><span class="tag gap">gap</span> Constructor naming disagrees: <code>NewXXX</code>/<code>MergeXXX</code> (docs/design.md:19, 21) vs <code>New&lt;WithXXX&gt;</code> (docs/code.md:3).</li>
+<li><span class="tag gap">gap</span> docs/code.md is a placeholder; its second sentence is garbled (docs/code.md:5).</li>
+<li><span class="tag gap">gap</span> README leaves the public entry incomplete: "refer to ..." (README.md:12), quick start is <code>// TODO</code> (README.md:26), empty "Examples"/"See more" (README.md:29, 31).</li>
+<li><span class="tag gap">gap</span> No model definition for the zero value, <code>ErrNilProvider</code>, <code>DeepCopyMap</code>, or the key-value provider contract.</li>
+<li><span class="tag gap">gap</span> The empty-key clause "on empty key nill will be retuned" (docs/design.md:30) has no per-method return contract to attach to.</li>
+</ul>
+</div>
+</section>
+
+</div>
+</main>
+<footer><div class="wrap">gonfig model inventory · model-definition skill · generated 2026-11-12 03:29:37</div></footer>
+</body>
+</html>

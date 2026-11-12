@@ -1,28 +1,34 @@
-# gonfig
+# Gonfig
 
-Go configuration library. Configuration is represented as key-value pairs
-(`map[string]any`): providers feed them in, and the `Gonfig` container
-merges and manages them.
+Gonfig (Go + config) is a micromodule extensible config library to deal with configuration in Go.
 
-## Development
 
-The repository is a multi-module Go workspace — the core library, one module
-per provider (and later per parser), and runnable examples, independently
-referenceable:
+# Design Brief
 
-| Module       | Import path                                |
-| ------------ | ------------------------------------------ |
-| Core         | `github.com/slava-y2k/gonfig`               |
-| Key-value provider | `github.com/slava-y2k/gonfig/provider/keyvalue` |
-| Examples     | `github.com/slava-y2k/gonfig/example`       |
+Library is implemented with micro modular approach to reduce coupling and to use only the modules it needs:
+- `Gonfig` is the core module for working with KeyValues and defines the `Provider` interface for KeyValues.
+- `Providers` modules - each data provider is a separate module and uses only the dependencies it needs.
 
-Build, test, and run everything from the repository root:
+for detail design please refer to ...
 
-```sh
-go build github.com/slava-y2k/gonfig/...
-go test github.com/slava-y2k/gonfig/...
-go run ./example/basic
+# Quick start
+
+```go
+package main
+
+import (
+  "fmt"
+  "log"
+
+  "github.com/slava-y2k/gonfig"
+)
+
+// TODO
 ```
 
-See [docs/code-layout.md](docs/code-layout.md) for the layout rules and
-[docs/model.md](docs/model.md) for the data model.
+# Examples
+
+# See more
+
+
+

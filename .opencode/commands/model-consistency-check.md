@@ -1,7 +1,7 @@
 ---
 description: 
   Check the design model (docs/) and the implementation for mutual consistency via the reviewer agent, 
-  and record the findings in docs/inconsistencies.html
+  and record the findings in docs/output/inconsistencies.html
 ---
 
 Run a model-consistency check: the design model in `docs/` versus the Go
@@ -13,11 +13,11 @@ implementation.
    prompt include:
    - the scope: the user's arguments, or the whole project;
    - any specific concern the user raised;
-   - the instruction to read `docs/inconsistencies.html` first, for the entry
+   - the instruction to read `docs/output/inconsistencies.html` first, for the entry
      format and for the entries that are already open.
 2. Present the reviewer's three-part report to the user as received: idea
    consistency, implementation relevance, prepared changes.
-3. Apply the prepared changes to `docs/inconsistencies.html`:
+3. Apply the prepared changes to `docs/output/inconsistencies.html`:
    - read the document first, then append each prepared entry exactly as
      written as an HTML `<section class="entry">` block, keeping the
      `IC-###` numbering;

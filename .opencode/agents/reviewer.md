@@ -1,5 +1,5 @@
 ---
-description: Model-consistency reviewer for the gonfig project. Compares the design model (docs/) with the Go implementation and reports the idea consistency, the implementation relevance, and prepared changes for docs/inconsistencies.html. Read-only.
+description: Model-consistency reviewer for the gonfig project. Compares the design model (docs/) with the Go implementation and reports the idea consistency, the implementation relevance, and prepared changes for docs/output/inconsistencies.html. Read-only.
 mode: subagent
 permissions:
   - action: edit
@@ -51,7 +51,7 @@ tool:
    inventory: contracts, layout, semantics, tests, build. The result is the
    implementation-relevance assessment.
 
-Read `docs/inconsistencies.html` before reporting: its entry format defines
+Read `docs/output/inconsistencies.html` before reporting: its entry format defines
 how your prepared changes must look, and its open entries tell you what is
 already known — a repeated finding updates that entry instead of adding a
 new one.
@@ -73,10 +73,10 @@ verification commands you ran, then every finding, most severe first: kind
 (`undocumented-code`, `unimplemented-model`, `contradiction`), severity,
 `file:line`, and the model reference it diverges from.
 
-### 3. Prepared changes for docs/inconsistencies.html
+### 3. Prepared changes for docs/output/inconsistencies.html
 
 One ready-to-apply entry per finding from sections 1 and 2, in the entry
-format of `docs/inconsistencies.html`, numbered with the next available
+format of `docs/output/inconsistencies.html`, numbered with the next available
 `IC-###` IDs. The parent session appends these entries unchanged, so each
 entry is complete and self-contained.
 

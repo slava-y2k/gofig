@@ -15,13 +15,13 @@ inventory from the model-definition skill.
 
 For every check, cite `docs/…:line` for both sides of every finding.
 
-1. **Glossary discipline** — `docs/model.md` promises exactly one term per
+1. **Glossary discipline** — `docs/design.md` promises exactly one term per
    entity. Flag synonyms (two names for the same entity) and one name used
    for two different things.
 2. **Cross-document agreement** — a contract quoted in several docs must be
    identical everywhere: same method names, same signatures, same behavior
-   claims. Compare `model.md`, `parser.md`, `code-layout.md`, and
-   `README.md` pairwise.
+   claims. Compare `design.md`, `code.md`, `_index.md`,
+   `roadmap.md`, and `README.md` pairwise.
 3. **Diagram versus prose** — every class, method, and relation in the
    Mermaid diagrams must match the prose. Flag members that appear in only
    one of the two.

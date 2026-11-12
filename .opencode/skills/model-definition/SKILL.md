@@ -18,9 +18,10 @@ Read them in this order; earlier sources win when they overlap:
 
 | Source | Defines |
 | ------ | ------ |
-| `docs/model.md` | Terms (glossary), the data model, entity contracts, data flow |
-| `docs/parser.md` | The class diagram of the configuration model |
-| `docs/code-layout.md` | Module layout rules, directory tree, core abstractions, conventions |
+| `docs/design.md` | Terms (glossary), the data model, entity contracts, data flow |
+| `docs/code.md` | Code conventions and API notes |
+| `docs/_index.md` | Directory tree, documents index, generated-output policy |
+| `docs/roadmap.md` | Planned work |
 | `README.md` | Public self-description: what the library is, how it is used |
 | `AGENTS.md` | Working rules for the repository |
 
@@ -28,7 +29,7 @@ Read them in this order; earlier sources win when they overlap:
 
 1. Read every source in full.
 2. Extract, with a `file:line` reference for every item:
-   - **Glossary** — one term per entity. `docs/model.md` promises exactly one
+   - **Glossary** — one term per entity. `docs/design.md` promises exactly one
      term per entity; note every synonym you meet.
    - **Entities and contracts** — for each type: name, file, kind (struct,
      interface, module), and its public contract (method names and exact
@@ -50,7 +51,7 @@ A single inventory block:
 
 ```md
 ## Model inventory
-- Glossary: ... (docs/model.md:N)
+- Glossary: ... (docs/design.md:N)
 - Entities: <name> — <kind>, <file>; contract: <signatures> (docs/…:N)
 - Data flow: ... (docs/…:N)
 - Layout rules: ... (docs/…:N)

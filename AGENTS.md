@@ -18,5 +18,10 @@ skills/agents and a fine tune items
 `<llm-debug>debug instructions</llm-debug>`
 
 If prompt contains `llm-debug=true` or `llm-debug:true` then follow instructions in the tag,
-otherwise skip them. 
+otherwise skip them.
+
+
+## LLM Notes 
+direct small notes for the LLM usage, marked with <llm-tip/>
+
 

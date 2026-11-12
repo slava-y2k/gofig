@@ -14,7 +14,7 @@ Analyze the actual diff to determine the appropriate type, scope, and message.
 
 ## Create Git Commit According to Project Structure
 
-Structure the commit body by the project's directory structure (see the project README):
+Structure the commit body by the project's directory structure (see `docs/_index.md`):
 for each affected directory, list its changes under one of these sections:
 - added
 - modified

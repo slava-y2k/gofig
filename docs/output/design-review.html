@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>gonfig - Design Review (design-review)</title>
+<style>
+  :root { --ink:#1f2430; --muted:#5b6472; --line:#e3e7ee; --paper:#fff; --wash:#f6f8fb;
+          --accent:#2b6cb0; --ok:#2f855a; --temp:#b7791f; --plan:#6b46c1; --crit:#c53030; }
+  * { box-sizing:border-box; }
+  body { margin:0; font:15px/1.55 -apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; color:var(--ink); background:var(--wash); }
+  header { background:var(--paper); border-bottom:1px solid var(--line); padding:28px 0 22px; }
+  .wrap { max-width:1050px; margin:0 auto; padding:0 24px; }
+  h1 { margin:0 0 4px; font-size:24px; }
+  .sub { color:var(--muted); font-size:13.5px; }
+  code { font:12.5px ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; background:#eef2f7; border-radius:4px; padding:1px 5px; }
+  main { padding:26px 0 40px; }
+  section { background:var(--paper); border:1px solid var(--line); border-radius:8px; margin:0 0 18px; overflow:hidden; }
+  section > h2 { margin:0; padding:12px 16px; font-size:16px; border-bottom:1px solid var(--line); background:#fafbfd; }
+  table { width:100%; border-collapse:collapse; font-size:13.5px; }
+  th,td { text-align:left; padding:8px 10px; border-bottom:1px solid var(--line); vertical-align:top; }
+  th { font-size:12px; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); background:#fafbfd; }
+  tr:last-child td { border-bottom:none; }
+  .verdict { padding:14px 16px; font-size:15px; }
+  .tag { display:inline-block; border-radius:10px; padding:0 8px; font-size:11.5px; white-space:nowrap; }
+  .tag.critical { color:var(--crit); background:#fde8e8; }
+  .tag.major { color:#9c4221; background:#fdf0e6; }
+  .tag.minor { color:var(--muted); background:#eef0f4; }
+  .tag.gap { color:var(--plan); background:#f0eafc; }
+  ul { margin:6px 0; padding-left:20px; }
+  li { margin:4px 0; }
+  .pad { padding:12px 16px; }
+  footer { color:var(--muted); font-size:12.5px; padding:0 0 30px; }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1>gonfig - Design Review</h1>
+    <p class="sub">Skill: <code>design-review</code> · input: model inventory (model-definition) · docs compared:
+      <code>design.md</code>, <code>code.md</code>, <code>roadmap.md</code>, <code>README.md</code>, <code>_index.md</code> ·
+      generated 2026-11-12 03:29:37</p>
+  </div>
+</header>
+<main>
+<div class="wrap">
+
+<section>
+<h2>Idea-consistency findings</h2>
+<div class="verdict"><strong>Verdict: Inconsistent</strong> — the docs disagree on the key-method contracts and the constructor naming, and several references are stale.</div>
+<table>
+<tr><th>Severity</th><th>Sides</th><th>What contradicts what</th></tr>
+<tr><td><span class="tag critical">Critical</span></td><td>docs/design.md:34 vs docs/design.md:29-34</td><td><code>Delete</code> is described as "set value by provided key", contradicting its name and its membership in the key-method group. A reader following the doc would implement <code>Delete</code> as a setter.</td></tr>
+<tr><td><span class="tag major">Major</span></td><td>docs/design.md:30 vs docs/design.md:32-34</td><td>"all these methods accepts key as an argument, on empty key nill will be retuned" claims a nil return for every key method, while the same section defines <code>Set</code>/<code>Delete</code> as mutators with no return contract and <code>Get</code> as the value reader.</td></tr>
+<tr><td><span class="tag major">Major</span></td><td>docs/design.md:19-21 vs docs/code.md:3</td><td>Constructor/merge naming disagrees: <code>NewXXX</code>/<code>MergeXXX</code> in design.md vs <code>New&lt;WithXXX&gt;</code> in code.md; neither doc lists concrete names, and code.md calls them "overloaded".</td></tr>
+<tr><td><span class="tag minor">Minor</span></td><td>docs/design.md:6, 8 vs README.md:9, 10</td><td>Glossary drift: "key value(s)" vs "KeyValues"; "Provider" (one entity) vs "Providers modules" (plural).</td></tr>
+<tr><td><span class="tag minor">Minor</span></td><td>docs/design.md:57</td><td>"## Code layout" is announced but has no content — a section presented without content, in a document that otherwise defines the module split only via provider modules.</td></tr>
+<tr><td><span class="tag minor">Minor</span></td><td>docs/_index.md:15 vs repository</td><td>The directory tree references <code>docs/directory-structure.md</code>, which does not exist (stale reference).</td></tr>
+<tr><td><span class="tag minor">Minor</span></td><td>README.md:12, 26, 29, 31</td><td>README honesty: "for detail design please refer to ..." has no target; the quick start is only <code>// TODO</code>; "Examples" and "See more" are empty headings.</td></tr>
+<tr><td><span class="tag minor">Minor</span></td><td>docs/code.md:5</td><td>Garbled convention text ("For locks and thread safe use thread safety for XXX if explanation compacts the description") — an unusable rule rather than a contradiction.</td></tr>
+</table>
+</section>
+
+<section>
+<h2>Check coverage</h2>
+<table>
+<tr><th>Check</th><th>Result</th></tr>
+<tr><td>1. Glossary discipline</td><td>Fail — synonyms for the KeyValue entity and the Provider/Providers split (above).</td></tr>
+<tr><td>2. Cross-document agreement</td><td>Fail — key-method contract and constructor naming disagree (above).</td></tr>
+<tr><td>3. Diagram versus prose</td><td>Not applicable — no Mermaid diagram exists in the docs; <code>_index.md</code> contains only a text tree.</td></tr>
+<tr><td>4. Stale references</td><td>Fail — <code>directory-structure.md</code> is referenced but absent.</td></tr>
+<tr><td>5. Planned versus done</td><td>Fail — design.md:57 announces a "Code layout" section with no content; roadmap items are correctly marked as plans.</td></tr>
+<tr><td>6. README honesty</td><td>Fail — placeholder targets and TODO quick start (above).</td></tr>
+<tr><td>7. Model gaps</td><td>Listed below; the gaps that turn into findings are the key-method and naming disagreements.</td></tr>
+</table>
+</section>
+
+<section>
+<h2>Model gaps <small>· not findings by themselves</small></h2>
+<div class="pad">
+<ul>
+<li><span class="tag gap">gap</span> No method signatures or return types for <code>Gonfig</code> (docs/design.md:19-34).</li>
+<li><span class="tag gap">gap</span> No definition of zero value, errors, the key-value provider contract, or helper functions.</li>
+<li><span class="tag gap">gap</span> The declared source <code>docs/directory-structure.md</code> is missing; the layout only exists as a tree in <code>docs/_index.md</code>.</li>
+<li><span class="tag gap">gap</span> Empty-key semantics are stated for the whole key-method group without per-method behavior (docs/design.md:30).</li>
+</ul>
+</div>
+</section>
+
+</div>
+</main>
+<footer><div class="wrap">gonfig design review · design-review skill · generated 2026-11-12 03:29:37</div></footer>
+</body>
+</html>

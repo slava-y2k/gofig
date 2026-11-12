@@ -1,4 +1,4 @@
 # Roadmap
 
-- Add a struct tag.
+- implement "gonfig tag"
 - Prepare the provider list for the implementation.

@@ -22,7 +22,7 @@ classDiagram
     namespace gonfig_pkg ["Gonfig package"] {
         class Gonfig["Gonfig"] {
             -kvMap map[string]any
-            +NewWithXXX()$ error, Gonfig
+            +NewWithXXX()$ (*Gonfig, error)
             +MergeXXX(other Gonfig) Gonfig
             +Set(parts []string, value any) Gonfig
             +Delete(parts ...string) Gonfig

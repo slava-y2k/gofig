@@ -28,6 +28,7 @@
   .pad { padding:12px 16px; }
   .tag { display:inline-block; border-radius:10px; padding:0 8px; font-size:11.5px; white-space:nowrap; }
   .tag.gap { color:var(--plan); background:#f0eafc; }
+  tr.fixed td, li.fixed, p.fixed, td.fixed { text-decoration:line-through; color:var(--muted); }
   footer { color:var(--muted); font-size:12.5px; padding:0 0 30px; }
 </style>
 </head>
@@ -36,8 +37,11 @@
   <div class="wrap">
     <h1>gonfig - Model Inventory</h1>
     <p class="sub">Skill: <code>model-definition</code> · sources: <code>docs/design.md</code>, <code>docs/code.md</code>,
-      <code>docs/directory-structure.md</code> (missing), <code>docs/roadmap.md</code>, <code>README.md</code>,
+      <s><code>docs/directory-structure.md</code> (missing)</s>, <code>docs/roadmap.md</code>, <code>README.md</code>,
       <code>AGENTS.md</code> · generated 2026-11-12 03:29:37</p>
+    <p class="sub">Reviewed against the current sources (working tree): struck-through claims are no longer actual.
+      The docs were rewritten after this snapshot (95a40c8…f2d955e), so live references point to the current
+      <code>docs/design.md</code>, <code>docs/code.md</code>, <code>docs/roadmap.md</code>, and <code>README.md</code>.</p>
   </div>
 </header>
 <main>
@@ -47,28 +51,28 @@
 <h2>Glossary <small>· one term per entity</small></h2>
 <table>
 <tr><th>Term</th><th>Definition and reference</th></tr>
-<tr><td><code>key value(s)</code></td><td>"refers to the configuration key-value pair or pairs" (docs/design.md:6)</td></tr>
-<tr><td><code>Gonfig</code></td><td>"refers to the <code>Gonfig</code> struct and its functions" (docs/design.md:7)</td></tr>
-<tr><td><code>Provider</code></td><td>"an abstraction of a KeyValue collection for Gonfig" (docs/design.md:8)</td></tr>
+<tr class="fixed"><td><code>key value(s)</code></td><td>"refers to the configuration key-value pair or pairs" (docs/design.md:6)</td></tr>
+<tr><td><code>Gonfig</code></td><td>"the configuration container type; its methods are listed under Collection methods and Access methods by key, and its constructors are <code>NewWithXXX</code>" (docs/design.md:7)</td></tr>
+<tr><td><code>Provider</code></td><td><s>"an abstraction of a KeyValue collection for Gonfig" (docs/design.md:8)</s></td></tr>
 </table>
-<p class="pad">Synonyms observed: "KeyValues" (README.md:9), "key-value pairs" (docs/design.md:6), "KeyValue collection" (docs/design.md:8), "Providers modules" (README.md:10).</p>
+<p class="pad fixed">Synonyms observed: "KeyValues" (README.md:9), "key-value pairs" (docs/design.md:6), "KeyValue collection" (docs/design.md:8), "Providers modules" (README.md:10).</p>
 </section>
 
 <section>
 <h2>Entities and contracts</h2>
 <table>
 <tr><th>Entity</th><th>Kind, contract, reference</th></tr>
-<tr><td><code>Gonfig</code></td><td>Struct. Internal storage is "a nested <code>map[string]any</code>, guarded by a <code>sync.RWMutex</code>" (docs/design.md:37-38). Methods:
+<tr><td><code>Gonfig</code></td><td>Struct. Internal storage is "a nested <code>map[string]any</code>, guarded by a <code>sync.RWMutex</code>" (docs/design.md:77-78). Methods:
 <ul>
-<li><code>NewXXX</code> — inbound constructor functions that "create[] the Gonfig struct and fill[] it with the initial or provided key value(s)" (docs/design.md:19-20); no signatures given.</li>
-<li><code>MergeXXX</code> — inbound instance functions that accept the value for the current struct (docs/design.md:21); no signatures given.</li>
-<li><code>Raw()</code> — "returns the copy of the internal map" (docs/design.md:26).</li>
-<li><code>Get</code> — "returns key values by provided key" (docs/design.md:32).</li>
-<li><code>Set</code> — "set value by provided key" (docs/design.md:33).</li>
-<li><code>Delete</code> — "set value by provided key" (docs/design.md:34).</li>
+<li class="fixed"><code>NewXXX</code> — inbound constructor functions that "create[] the Gonfig struct and fill[] it with the initial or provided key value(s)" (docs/design.md:19-20); no signatures given.</li>
+<li><code>MergeXXX</code> — inbound instance functions that accept the value for the current struct (docs/design.md:57); no signatures given.</li>
+<li><code>Raw()</code> — "returns a copy of the internal map" (docs/design.md:64).</li>
+<li class="fixed"><code>Get</code> — "returns key values by provided key" (docs/design.md:32).</li>
+<li class="fixed"><code>Set</code> — "set value by provided key" (docs/design.md:33).</li>
+<li class="fixed"><code>Delete</code> — "set value by provided key" (docs/design.md:34).</li>
 </ul>
 Copy contract: inbound methods create an internal copy; outbound methods "make[] a copy for a reference type" (docs/design.md:12-15).</td></tr>
-<tr><td><code>Provider</code></td><td>Interface. Contract: <code>Read() (map[string]any, error)</code> (docs/design.md:45-47); "Each provider should be implemented as a separate module" (docs/design.md:49).</td></tr>
+<tr class="fixed"><td><code>Provider</code></td><td>Interface. Contract: <code>Read() (map[string]any, error)</code> (docs/design.md:45-47); "Each provider should be implemented as a separate module" (docs/design.md:49).</td></tr>
 <tr><td colspan="2"><em>Not defined by the model:</em> the key-value provider type and its contract, <code>DeepCopyMap</code>, error values, the zero value, fluent return values.</td></tr>
 </table>
 </section>
@@ -76,7 +80,7 @@ Copy contract: inbound methods create an internal copy; outbound methods "make[]
 <section>
 <h2>Data flow</h2>
 <div class="pad">
-Providers produce key-value pairs; constructors (<code>NewXXX</code>) create a container and merge functions (<code>MergeXXX</code>) fold values into an existing one (docs/design.md:11-24). Values cross boundaries as <code>map[string]any</code> (docs/design.md:38, 45-47). Outbound reads are <code>Get</code>/<code>Raw</code> (docs/design.md:26, 29-34). The module split is restated in README.md:8-10.
+Providers produce key-value pairs; constructors (<s><code>NewXXX</code></s>) create a container and merge functions (<code>MergeXXX</code>) fold values into an existing one (docs/design.md:11-15, 54-64). Values cross boundaries as <code>map[string]any</code> (docs/design.md:78, 85-87). Outbound reads are <code>Get</code>/<code>Raw</code> (docs/design.md:64, 67-74). The module split is restated in README.md:8-10.
 </div>
 </section>
 
@@ -84,8 +88,8 @@ Providers produce key-value pairs; constructors (<code>NewXXX</code>) create a c
 <h2>Layout rules</h2>
 <div class="pad">
 <ul>
-<li>Micro-modular library: core module plus one module per provider (README.md:8-10; docs/design.md:49).</li>
-<li>The skill's declared source <code>docs/directory-structure.md</code> is absent; the current directory tree is in <code>docs/_index.md:1-23</code>, which still lists <code>directory-structure.md</code> (docs/_index.md:15).</li>
+<li>Micro-modular library: core module plus one module per provider (README.md:8-10; docs/design.md:89).</li>
+<li class="fixed">The skill's declared source <code>docs/directory-structure.md</code> is absent; the current directory tree is in <code>docs/_index.md:1-23</code>, which still lists <code>directory-structure.md</code> (docs/_index.md:15).</li>
 </ul>
 </div>
 </section>
@@ -94,8 +98,8 @@ Providers produce key-value pairs; constructors (<code>NewXXX</code>) create a c
 <h2>Conventions</h2>
 <div class="pad">
 <ul>
-<li>Data crosses boundaries as <code>map[string]any</code> (docs/design.md:38, 45-47).</li>
-<li>Concurrency: internal storage guarded by <code>sync.RWMutex</code> (docs/design.md:38); locking note in docs/code.md:5.</li>
+<li>Data crosses boundaries as <code>map[string]any</code> (docs/design.md:78, 85-87).</li>
+<li>Concurrency: internal storage guarded by <code>sync.RWMutex</code> (docs/design.md:78); locking note in docs/code.md:5.</li>
 <li>Return values, error conventions, and compile-time interface checks are not stated.</li>
 </ul>
 </div>
@@ -105,9 +109,9 @@ Providers produce key-value pairs; constructors (<code>NewXXX</code>) create a c
 <h2>Planned items</h2>
 <div class="pad">
 <ul>
-<li>Struct tag support — "add struct tag" (docs/roadmap.md:1).</li>
-<li>Provider list — "prepare provider list for the implementation" (docs/roadmap.md:2).</li>
-<li>"## Code layout" is announced but empty (docs/design.md:57).</li>
+<li>Struct tag support — "Add a struct tag." (docs/roadmap.md:3).</li>
+<li>Provider list — "Prepare the provider list for the implementation." (docs/roadmap.md:4).</li>
+<li class="fixed">"## Code layout" is announced but empty (docs/design.md:57).</li>
 </ul>
 </div>
 </section>
@@ -116,13 +120,13 @@ Providers produce key-value pairs; constructors (<code>NewXXX</code>) create a c
 <h2>Model gaps <small>· not findings by themselves</small></h2>
 <div class="pad">
 <ul>
-<li><span class="tag gap">gap</span> <code>docs/directory-structure.md</code> is a declared source but does not exist.</li>
-<li><span class="tag gap">gap</span> No method signatures or return types for <code>Gonfig</code> (docs/design.md:19-34).</li>
-<li><span class="tag gap">gap</span> Constructor naming disagrees: <code>NewXXX</code>/<code>MergeXXX</code> (docs/design.md:19, 21) vs <code>New&lt;WithXXX&gt;</code> (docs/code.md:3).</li>
-<li><span class="tag gap">gap</span> docs/code.md is a placeholder; its second sentence is garbled (docs/code.md:5).</li>
-<li><span class="tag gap">gap</span> README leaves the public entry incomplete: "refer to ..." (README.md:12), quick start is <code>// TODO</code> (README.md:26), empty "Examples"/"See more" (README.md:29, 31).</li>
+<li class="fixed"><span class="tag gap">gap</span> <code>docs/directory-structure.md</code> is a declared source but does not exist.</li>
+<li><span class="tag gap">gap</span> No method signatures or return types for <code>Gonfig</code> (docs/design.md:55-74).</li>
+<li class="fixed"><span class="tag gap">gap</span> Constructor naming disagrees: <code>NewXXX</code>/<code>MergeXXX</code> (docs/design.md:19, 21) vs <code>New&lt;WithXXX&gt;</code> (docs/code.md:3).</li>
+<li class="fixed"><span class="tag gap">gap</span> docs/code.md is a placeholder; its second sentence is garbled (docs/code.md:5).</li>
+<li class="fixed"><span class="tag gap">gap</span> README leaves the public entry incomplete: "refer to ..." (README.md:12), quick start is <code>// TODO</code> (README.md:26), empty "Examples"/"See more" (README.md:29, 31).</li>
 <li><span class="tag gap">gap</span> No model definition for the zero value, <code>ErrNilProvider</code>, <code>DeepCopyMap</code>, or the key-value provider contract.</li>
-<li><span class="tag gap">gap</span> The empty-key clause "on empty key nill will be retuned" (docs/design.md:30) has no per-method return contract to attach to.</li>
+<li><span class="tag gap">gap</span> The empty-key clause "If key is empty, nil or not specified, nill will be returned" (docs/design.md:69) has no per-method return contract to attach to.</li>
 </ul>
 </div>
 </section>

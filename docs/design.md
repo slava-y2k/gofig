@@ -4,9 +4,44 @@ Main doc that describes the idea from a technical perspective.
 
 # Domain terms
 - **key-value pair(s)** — refers to a configuration key together with its value.
-- **Gonfig** — refers to the `Gonfig` struct and its functions.
+- **Gonfig** — the configuration container type; its methods are listed under Collection methods and Access methods by key, and its constructors are `NewWithXXX`.
 - **Provider** — an abstraction of a collection of key-value pairs for Gonfig.
 
+## Diagram
+
+```mermaid
+---
+title: Gonfig library design
+---
+classDiagram
+    direction LR
+
+    namespace gonfig_pkg ["Gonfig package"] {
+        class Gonfig["Gonfig"] {
+            -kvMap map[string]any
+            +NewWithXXX()$ error, Gonfig
+            +MergeXXX(other Gonfig) Gonfig
+            +Set(parts []string, value any) Gonfig
+            +Delete(parts ...string) Gonfig
+            +Get(parts ...string) any
+            +Raw() map[string]any
+        }
+
+        class IProvider["Provider"] {
+            <<interface>>
+            +read() map[string, any]
+        }
+    }
+
+    namespace Provider ["Provider package"] {
+        class ConcreteProvider
+    }
+
+    Gonfig --> IProvider
+    IProvider <|-- ConcreteProvider
+
+
+```
 
 # Gonfig module
 Gonfig provides bound safety. All methods that accept a collection of key-value pairs create an internal copy

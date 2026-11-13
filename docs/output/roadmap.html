@@ -29,27 +29,25 @@
 <body>
 
 <h1>Gonfig Roadmap — Nearest Work</h1>
-<p class="meta">Generated from <code>docs/backlog.md</code> (Nov 12 2026). This is a planning snapshot;
+<p class="meta">Generated from <code>docs/backlog.md</code> (Nov 13 2026). This is a planning snapshot;
 see <code>docs/_index.md</code> for the convention that <code>docs/output</code> is generated HTML.</p>
 
 <h2>1. Summary</h2>
-<p>The backlog has five feature/decision items, one applied doc-fix item, and a set of
+<p>The backlog has three feature/decision items, two applied items, and a set of
 model↔implementation consistency findings:</p>
 <ul>
-  <li><strong>Feature / decision items</strong> (5): implement <code>gonfig</code> tag, prepare the
-    provider list, drop the <code>bool</code> return from <code>Get</code>, make <code>Get</code> return a
-    full deep copy, and test that deep copy.</li>
-  <li><strong>Applied doc fix</strong> (1): <code>IC-015</code> “deep copy” wording — done, then superseded
-    by the deep-copy direction (see §2).</li>
-  <li><strong>Consistency findings</strong>: 1 Critical, 4 Major, 8 Minor.</li>
+  <li><strong>Feature / decision items</strong> (3): implement <code>gonfig</code> tag, prepare the
+    provider list, and drop the <code>bool</code> return from <code>Get</code>.</li>
+  <li><strong>Applied</strong> (2): <code>IC-015</code> “deep copy” wording and <code>[Get-copy]</code> — the
+    full deep copy for <code>Get</code> — both done (see §2).</li>
+  <li><strong>Consistency findings</strong>: 0 Critical, 3 Major, 8 Minor.</li>
   <li><strong>Model gaps</strong> (2): no method signatures in prose; zero value / errors / helpers undefined.</li>
 </ul>
-<p>Key insight: the model now specifies a full <em>deep-copy</em> contract — <code>Get</code> and
-<code>Raw</code> both return deep copies, and every accepted or returned item is a deep copy. The code
-still returns <em>live</em> values from <code>Get</code> and <em>map-level</em> copies from
-<code>Raw</code>/<code>DeepCopyMap</code> (nested <code>map[string]any</code> only; slices and typed maps
-shared). The nearest work is therefore a small behavior change — implement the full deep copy for
-<code>Get</code> plus tests — followed by the remaining doc-only wording fixes.</p>
+<p>Key insight: the model specifies a full <em>deep-copy</em> contract — <code>Get</code> and
+<code>Raw</code> both return deep copies, and every accepted or returned item is a deep copy. The code now
+implements that contract: <code>Get</code> returns a full deep copy, and <code>Raw</code>/<code>DeepCopyMap</code>
+deep-copy maps, slices, arrays, pointers, and structs. The remaining work is the <code>Get</code> signature
+decision and the doc-only wording fixes.</p>
 
 <h2>2. Applied</h2>
 <div class="trivial">
@@ -60,29 +58,21 @@ changed to a full <em>deep-copy</em> contract, so that rewording is now supersed
 is created for it”). No behavior change either way.</p>
 </div>
 
+<div class="trivial">
+<p><strong>[Get-copy]</strong> — <code>Get</code> now returns a full deep copy instead of a live reference,
+so a caller that keeps a result cannot mutate the container’s internal map through it.
+<code>DeepCopyMap</code> deep-copies maps, slices, arrays, pointers, and structs via reflection;
+<code>Get</code> returns the deep copy for both the whole map and a path hit; <code>setPath</code> deep-copies
+any leaf. The live-reference and sharing tests were rewritten as copy tests
+(<code>TestGetWholeConfigReturnsCopy</code>, <code>TestGetMapValueReturnsCopy</code>,
+<code>TestGetSliceReturnsCopy</code>, <code>TestGetTypedMapReturnsCopy</code>, plus <code>DeepCopyMap</code>
+slice/typed-map/pointer/struct cases).</p>
+</div>
+
 <h2>3. Nearest work</h2>
 
 <div class="phase now">
-<h3>3.1 Make <code>Get</code> return a deep copy (behavior change)</h3>
-<p><strong>Backlog items:</strong> <code>[Get-copy]</code> implementation and tests. Today <code>Get</code>
-returns live state: the whole map when no parts are given, and map values by reference. A caller that keeps
-the result can mutate the container’s internal map through it. Change <code>Get</code> to return a full deep
-copy instead.</p>
-<ul>
-  <li>Implement a full deep copy: maps and reference types (slices, typed maps) get new copies. The current
-      <code>DeepCopyMap</code> copies only nested <code>map[string]any</code> levels and shares
-      slices/typed maps, so it is not enough.</li>
-  <li>Update <code>Get</code>’s doc comments and the copy-contract wording in <code>gonfig.go</code>
-      (currently “live values” / “map-level copy”).</li>
-  <li>Rewrite the two tests that pin the live-reference behavior —
-      <code>TestGetWholeConfigReturnsLiveMap</code> and <code>TestGetMapValueReturnsReference</code> — to
-      assert that mutating a <code>Get</code> result does not change the container.</li>
-</ul>
-<p class="meta">Behavior + API contract change; touches <code>gonfig.go</code> and tests, not just docs.</p>
-</div>
-
-<div class="phase">
-<h3>3.2 Decide the <code>Get</code> signature</h3>
+<h3>3.1 Decide the <code>Get</code> signature</h3>
 <p><strong>Backlog item:</strong> “In Get method bool return is not required”. The model prose
 (<code>docs/design.md</code>) already describes value-only returns (“nil when missing”), while the diagram
 and code return <code>(any, bool)</code>. Decide and make all sides agree.</p>
@@ -94,20 +84,11 @@ and code return <code>(any, bool)</code>. Decide and make all sides agree.</p>
 <p class="meta">Not trivial — this touches the public API, tests, and examples.</p>
 </div>
 
-<h3>3.3 Remaining doc-only fixes</h3>
+<h3>3.2 Remaining doc-only fixes</h3>
 <p>These are comment/doc-only edits. No behavior change, no test change, no API change.</p>
 
 <table>
   <tr><th>Sev</th><th>Ref</th><th>Doc location</th><th>Fix</th></tr>
-  <tr><td class="sev-critical">Critical</td><td>copy-contract vs live <code>Get</code></td>
-      <td class="mono">docs/design.md copy-contract / Gonfig module prose</td>
-      <td>Now a behavior change, not a doc fix — implement the deep copy for <code>Get</code> (§3.1). The
-          model already says <code>Get</code> returns a deep copy; the code returns live state (whole map with
-          no parts; map values by reference). Tests pin it (<code>gonfig_test.go:140, :161</code>).</td></tr>
-  <tr><td class="sev-major">Major</td><td>copy depth of <code>DeepCopyMap</code></td>
-      <td class="mono">docs/design.md</td><td>The model now promises a deep copy for every accepted collection;
-          implement a full deep copy (maps and reference types) to replace the map-level-only
-          <code>DeepCopyMap</code>. Covered by §3.1.</td></tr>
   <tr><td class="sev-major">Major</td><td><code>Delete</code> described as “set value”</td>
       <td class="mono">docs/design.md</td><td>“Delete — removes the leaf at the key path (no-op on missing/non-map
           segments)”.</td></tr>
@@ -119,7 +100,7 @@ and code return <code>(any, bool)</code>. Decide and make all sides agree.</p>
           <code>docs/design.md</code>).</td></tr>
 </table>
 
-<h3>3.4 Close the Minor undocumented-code gaps</h3>
+<h3>3.3 Close the Minor undocumented-code gaps</h3>
 <p>Add short model entries (a sentence each) so the model covers what the code exposes. These are purely
 additive documentation:</p>
 <ul>
@@ -127,7 +108,7 @@ additive documentation:</p>
   <li class="mono">gonfig.go — usable zero value and <code>New()</code>.</li>
   <li class="mono">gonfig.go — <code>NewWithMap</code>/<code>NewWithProvider</code>/<code>NewWithGonfig</code>
       semantics (nil→empty, error propagation, snapshot).</li>
-  <li class="mono">gonfig.go — <code>Get</code> returns <code>(any, bool)</code> (see §3.2 before finalizing).</li>
+  <li class="mono">gonfig.go — <code>Get</code> returns <code>(any, bool)</code> (see §3.1 before finalizing).</li>
   <li class="mono">gonfig.go — fluent <code>*Gonfig</code> returns and the deep-merge rule (“later sources
       win”, recursive).</li>
   <li class="mono">gonfig.go — <code>Raw</code> never returns nil.</li>
@@ -136,7 +117,7 @@ additive documentation:</p>
       <code>WithDeepCopy</code>, <code>Read</code>.</li>
 </ul>
 
-<h3>3.5 Feature work (in order)</h3>
+<h3>3.4 Feature work (in order)</h3>
 
 <div class="phase">
 <h4>Phase B — Prepare the provider list</h4>
@@ -149,16 +130,14 @@ following the existing <code>provider/keyvalue</code> pattern (separate module, 
 <div class="phase">
 <h4>Phase C — Implement the <code>gonfig</code> struct tag</h4>
 <p><strong>Backlog item:</strong> “implement gonfig tag”. Map structs to configuration via a struct tag
-(like <code>envconfig</code>/<code>mapstructure</code>). Largest item; defer until the deep-copy contract,
-the <code>Get</code> signature, and the provider list are settled.</p>
+(like <code>envconfig</code>/<code>mapstructure</code>). Largest item; defer until the
+<code>Get</code> signature, the doc-only fixes, and the provider list are settled.</p>
 </div>
 
 <h2>4. Suggested sequence</h2>
 <ol>
-  <li><strong>Now:</strong> implement the <code>Get</code> deep copy + tests (§3.1) — the only item that
-    changes behavior, and it pins the copy-contract the rest depends on.</li>
-  <li><strong>Next:</strong> settle the <code>Get</code> signature (§3.2).</li>
-  <li><strong>Then:</strong> the remaining doc-only fixes (§3.3–3.4).</li>
+  <li><strong>Next:</strong> settle the <code>Get</code> signature (§3.1).</li>
+  <li><strong>Then:</strong> the remaining doc-only fixes (§3.2–3.3).</li>
   <li><strong>Then:</strong> Phase B — provider list + first provider.</li>
   <li><strong>Last:</strong> Phase C — <code>gonfig</code> tag.</li>
 </ol>

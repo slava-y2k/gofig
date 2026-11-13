@@ -10,7 +10,6 @@ import (
 var ErrNilProvider = errors.New("gonfig: nil provider")
 
 // Gonfig is a concurrency-safe hierarchical key-value container. Its zero value is ready to use.
-// Its copy-contract copies inbound collections and Raw results at map level, while Get returns live values.
 type Gonfig struct {
 	rwMutex sync.RWMutex
 	kvMap   map[string]any
@@ -52,8 +51,7 @@ func NewWithGonfig(other *Gonfig) (*Gonfig, error) {
 	return NewWithMap(other.Raw())
 }
 
-// Get returns live configuration values per the copy-contract: no parts give the whole map,
-// and a map-valued key comes back by reference, so do not mutate results.
+// Get returns a deep copy per the copy-contract; with no parts it returns the whole map.
 func (gfg *Gonfig) Get(parts ...string) (any, bool) {
 	gfg.rwMutex.RLock()
 	defer gfg.rwMutex.RUnlock()
@@ -62,10 +60,17 @@ func (gfg *Gonfig) Get(parts ...string) (any, bool) {
 		return nil, false
 	}
 	if len(parts) == 0 {
-		return gfg.kvMap, true
+		return DeepCopyMap(gfg.kvMap), true
 	}
 
-	return getPath(gfg.kvMap, parts)
+	var value any
+	var ok bool
+	value, ok = getPath(gfg.kvMap, parts)
+	if !ok {
+		return nil, false
+	}
+
+	return deepCopyValue(value), true
 }
 
 // Set writes along the key path parts. With no parts it replaces the root;
@@ -137,9 +142,7 @@ func (gfg *Gonfig) MergeMap(keyValues map[string]any) *Gonfig {
 	return gfg
 }
 
-// Raw returns a map-level copy per the copy-contract: nested map[string]any levels are copied,
-// slices and typed maps stay shared with the container. The result is never nil; empty state
-// needs no nil check.
+// Raw returns a deep copy per the copy-contract, never nil.
 func (gfg *Gonfig) Raw() map[string]any {
 	gfg.rwMutex.RLock()
 	defer gfg.rwMutex.RUnlock()
@@ -162,7 +165,7 @@ func (gfg *Gonfig) ensureMapInitialized() *Gonfig {
 
 // setPath replaces a non-map value that blocks the path;
 // a nested write therefore discards whatever that position held before.
-// A typed nil map counts as absent, so it is replaced instead of panicking.
+// A typed nil map leaf becomes an empty map, not a stored nil.
 func setPath(kvMap map[string]any, parts []string, value any) {
 	for _, part := range parts[:len(parts)-1] {
 		next, ok := kvMap[part].(map[string]any)
@@ -174,15 +177,12 @@ func setPath(kvMap map[string]any, parts []string, value any) {
 	}
 
 	last := parts[len(parts)-1]
-	if valueMap, ok := value.(map[string]any); ok {
-		copied := DeepCopyMap(valueMap)
-		if copied == nil {
-			copied = make(map[string]any)
-		}
-		kvMap[last] = copied
+	if valueMap, ok := value.(map[string]any); ok && valueMap == nil {
+		kvMap[last] = make(map[string]any)
 		return
 	}
-	kvMap[last] = value
+
+	kvMap[last] = deepCopyValue(value)
 }
 
 // deletePath stops at a non-map segment; setPath would replace it instead.

@@ -111,7 +111,8 @@ func TestNewWithGonfigNilIsEmpty(t *testing.T) {
 	assertContainerContract(t, gfg, err, map[string]any{})
 }
 
-// Get — RLock → getPath; the traversal branches live in the getPath pack.
+// Get — RLock → [whole map: DeepCopyMap | getPath → deep copy]; the traversal
+// branches live in the getPath pack.
 
 // TestGetZeroValueReturnsNotFound covers Get's own nil-root branch.
 func TestGetZeroValueReturnsNotFound(t *testing.T) {
@@ -121,47 +122,90 @@ func TestGetZeroValueReturnsNotFound(t *testing.T) {
 	assertValue(t, &gfg, nil, false, "a")
 }
 
-// TestGetWholeConfigReturnsLiveMap covers the no-parts branch and the
-// live-reference invariant; this observes the documented reference so a future
-// copy becomes a visible contract change.
-func TestGetWholeConfigReturnsLiveMap(t *testing.T) {
+// TestGetWholeConfigReturnsCopy covers the no-parts branch and the copy
+// invariant: mutating the returned map never reaches the container.
+func TestGetWholeConfigReturnsCopy(t *testing.T) {
 	var gfg *Gonfig = New().Set([]string{"a", "b"}, 1)
 
 	var got any
 	var ok bool
 	got, ok = gfg.Get()
 
-	var live map[string]any
+	var copied map[string]any
 	var isMap bool
-	live, isMap = got.(map[string]any)
+	copied, isMap = got.(map[string]any)
 	if !ok || !isMap {
 		t.Fatalf("Get() = %v, %v; want whole map, true", got, ok)
 	}
 
-	live["a"].(map[string]any)["b"] = 99
+	copied["a"].(map[string]any)["b"] = 99
+	copied["new"] = true
 
-	assertValue(t, gfg, 99, true, "a", "b")
+	assertValue(t, gfg, 1, true, "a", "b")
+	assertValue(t, gfg, nil, false, "new")
 }
 
-// TestGetMapValueReturnsReference covers the reference invariant through the
-// path branch: a map-valued key is returned by reference.
-func TestGetMapValueReturnsReference(t *testing.T) {
+// TestGetMapValueReturnsCopy covers the path branch: a map-valued key comes
+// back as a fresh copy.
+func TestGetMapValueReturnsCopy(t *testing.T) {
 	var gfg *Gonfig = New().Set([]string{"a"}, map[string]any{"b": 1})
 
 	var got any
 	var ok bool
 	got, ok = gfg.Get("a")
 
-	var live map[string]any
+	var copied map[string]any
 	var isMap bool
-	live, isMap = got.(map[string]any)
+	copied, isMap = got.(map[string]any)
 	if !ok || !isMap {
 		t.Fatalf("Get(a) = %v, %v; want map, true", got, ok)
 	}
 
-	live["b"] = 99
+	copied["b"] = 99
 
-	assertValue(t, gfg, 99, true, "a", "b")
+	assertValue(t, gfg, 1, true, "a", "b")
+}
+
+// TestGetSliceReturnsCopy covers a slice-valued key: the returned slice keeps
+// no backing array in common with the container.
+func TestGetSliceReturnsCopy(t *testing.T) {
+	var gfg *Gonfig = New().Set([]string{"list"}, []string{"a"})
+
+	var got any
+	var ok bool
+	got, ok = gfg.Get("list")
+
+	var copied []string
+	var isSlice bool
+	copied, isSlice = got.([]string)
+	if !ok || !isSlice {
+		t.Fatalf("Get(list) = %v, %v; want []string, true", got, ok)
+	}
+
+	copied[0] = "b"
+
+	assertValue(t, gfg, []string{"a"}, true, "list")
+}
+
+// TestGetTypedMapReturnsCopy covers a typed map value: the returned map keeps
+// no entries in common with the container.
+func TestGetTypedMapReturnsCopy(t *testing.T) {
+	var gfg *Gonfig = New().Set([]string{"cfg"}, map[string]string{"a": "1"})
+
+	var got any
+	var ok bool
+	got, ok = gfg.Get("cfg")
+
+	var copied map[string]string
+	var isMap bool
+	copied, isMap = got.(map[string]string)
+	if !ok || !isMap {
+		t.Fatalf("Get(cfg) = %v, %v; want map[string]string, true", got, ok)
+	}
+
+	copied["a"] = "2"
+
+	assertValue(t, gfg, map[string]string{"a": "1"}, true, "cfg")
 }
 
 // TestGetKeysAreLiteral pins that parts are literal keys, not dot-split paths:
@@ -372,17 +416,17 @@ func TestSetPathTypedNilLeafBecomesEmptyMap(t *testing.T) {
 	}
 }
 
-// TestSetPathSharesNonMapValues pins the copy depth: a non-map leaf such as a
-// slice is stored as is and keeps the caller's backing array.
-func TestSetPathSharesNonMapValues(t *testing.T) {
+// TestSetPathCopiesNonMapValues covers the copy depth: a non-map leaf such as a
+// slice is copied, so the caller keeps its own backing array.
+func TestSetPathCopiesNonMapValues(t *testing.T) {
 	var kvMap map[string]any = map[string]any{}
 	var value []string = []string{"a"}
 	setPath(kvMap, []string{"list"}, value)
 
 	value[0] = "b"
 
-	if got := kvMap["list"].([]string)[0]; got != "b" {
-		t.Errorf("stored slice = %q, want the caller's shared backing array", got)
+	if got := kvMap["list"].([]string)[0]; got != "a" {
+		t.Errorf("stored slice = %q, want an independent copy %q", got, "a")
 	}
 }
 
@@ -660,8 +704,8 @@ func TestMergeMapsDoesNotCopySource(t *testing.T) {
 // Raw — RLock → DeepCopyMap → nil normalization; the copy depth lives in the
 // DeepCopyMap pack.
 
-// TestRawReturnsCopy asserts the map-level copy boundary: mutating the
-// snapshot at top or nested level never reaches the container.
+// TestRawReturnsCopy asserts the deep-copy boundary: mutating the snapshot at
+// top or nested level never reaches the container.
 func TestRawReturnsCopy(t *testing.T) {
 	var gfg *Gonfig = New().Set([]string{"a"}, map[string]any{"b": 1})
 
@@ -673,15 +717,15 @@ func TestRawReturnsCopy(t *testing.T) {
 	assertValue(t, gfg, nil, false, "new")
 }
 
-// Raw copies nested maps but shares every other value, so a slice obtained
-// from Raw still points at the container's backing array.
-func TestRawSliceSharesBackingArray(t *testing.T) {
+// TestRawSliceReturnsCopy covers the slice depth: a slice obtained from Raw
+// keeps no backing array in common with the container.
+func TestRawSliceReturnsCopy(t *testing.T) {
 	var gfg *Gonfig = New().Set([]string{"list"}, []string{"a"})
 
 	var raw map[string]any = gfg.Raw()
 	raw["list"].([]string)[0] = "b"
 
-	assertValue(t, gfg, []string{"b"}, true, "list")
+	assertValue(t, gfg, []string{"a"}, true, "list")
 }
 
 // TestRawNeverReturnsNil covers the nil normalization on the empty state.
@@ -731,28 +775,72 @@ func TestDeepCopyMapCopiesNestedMaps(t *testing.T) {
 	}
 }
 
-// TestDeepCopyMapSharesSlices pins the copy depth: slices share the backing array.
-func TestDeepCopyMapSharesSlices(t *testing.T) {
-	src := map[string]any{"list": []string{"a"}}
+// TestDeepCopyMapCopiesSlices asserts the slice depth: the copied slice keeps
+// its own backing array.
+func TestDeepCopyMapCopiesSlices(t *testing.T) {
+	var src map[string]any = map[string]any{"list": []string{"a"}}
 	var copied map[string]any = DeepCopyMap(src)
 
 	src["list"].([]string)[0] = "b"
 
-	if got := copied["list"].([]string)[0]; got != "b" {
-		t.Errorf("copied slice = %q, want shared mutation %q", got, "b")
+	if got := copied["list"].([]string)[0]; got != "a" {
+		t.Errorf("copied slice = %q, want an independent copy %q", got, "a")
 	}
 }
 
-// Typed maps other than map[string]any are shared, matching the documented
-// copy depth; only map[string]any levels are copied.
-func TestDeepCopyMapSharesTypedMap(t *testing.T) {
+// TestDeepCopyMapCopiesTypedMaps asserts the typed-map depth: maps other than
+// map[string]any are copied too.
+func TestDeepCopyMapCopiesTypedMaps(t *testing.T) {
 	var src map[string]any = map[string]any{"cfg": map[string]string{"a": "1"}}
 	var copied map[string]any = DeepCopyMap(src)
 
 	src["cfg"].(map[string]string)["a"] = "2"
 
-	if got := copied["cfg"].(map[string]string)["a"]; got != "2" {
-		t.Errorf("copied typed map = %q, want shared mutation %q", got, "2")
+	if got := copied["cfg"].(map[string]string)["a"]; got != "1" {
+		t.Errorf("copied typed map = %q, want an independent copy %q", got, "1")
+	}
+}
+
+// TestDeepCopyMapCopiesPointers asserts the pointer depth: the copy points at
+// a fresh value.
+func TestDeepCopyMapCopiesPointers(t *testing.T) {
+	var srcValue int = 1
+	var src map[string]any = map[string]any{"ptr": &srcValue}
+	var copied map[string]any = DeepCopyMap(src)
+
+	*src["ptr"].(*int) = 2
+
+	if got := *copied["ptr"].(*int); got != 1 {
+		t.Errorf("copied pointer value = %d, want an independent copy 1", got)
+	}
+}
+
+// TestDeepCopyMapCopiesStructFields covers the struct branch: exported
+// reference fields are copied with the struct value.
+func TestDeepCopyMapCopiesStructFields(t *testing.T) {
+	type payload struct {
+		Values []string
+	}
+
+	var src map[string]any = map[string]any{"cfg": payload{Values: []string{"a"}}}
+	var copied map[string]any = DeepCopyMap(src)
+
+	src["cfg"].(payload).Values[0] = "b"
+
+	if got := copied["cfg"].(payload).Values[0]; got != "a" {
+		t.Errorf("copied struct field = %q, want an independent copy %q", got, "a")
+	}
+}
+
+// TestDeepCopyMapCopiesUnexportedStructFields covers a struct type with
+// unexported fields: the copy must not panic on the fields it cannot set.
+func TestDeepCopyMapCopiesUnexportedStructFields(t *testing.T) {
+	var moment time.Time = time.Date(2026, time.January, 2, 3, 4, 5, 0, time.UTC)
+	var src map[string]any = map[string]any{"moment": moment}
+	var copied map[string]any = DeepCopyMap(src)
+
+	if got := copied["moment"].(time.Time); !got.Equal(moment) {
+		t.Errorf("copied time = %v, want %v", got, moment)
 	}
 }
 

@@ -28,6 +28,7 @@ classDiagram
             +Set(parts []string, value any) Gonfig
             +Delete(parts ...string) Gonfig
             +Get(parts ...string) (any, bool)
+            +Exists(parts ...string) bool
             +Raw() map[string]any
         }
 
@@ -64,7 +65,7 @@ the container.
 `NewWithProvider` returns the `ErrNilProvider` sentinel when its provider argument is nil, so a wiring mistake
 cannot be mistaken for an empty configuration.
 
-The `XXX` suffix only emulates overloading; Go has no method overloading.
+The `XXX` suffix emulates method overloading: Go has no overloading, so each variant is a distinct function.
 
 The main difference between `NewWithXXX` and `MergeXXX` is that `NewWithXXX` creates and initializes the `Gonfig` struct,
 whereas `MergeXXX` applies the provided key-value pairs to the existing `Gonfig` struct.
@@ -74,16 +75,20 @@ whereas `MergeXXX` applies the provided key-value pairs to the existing `Gonfig`
 
 ## Access methods by key
 
-If key is empty, nil or not specified, nil will be returned,
-otherwise the specified value.
+Calling a method with no key parts targets the root: `Get()` returns the whole map with `true`, `Set`
+replaces the root when the value is a map, `Delete` clears it, and `Exists()` reports whether the root
+map is present. `Set` and `Delete` return the `*Gonfig` receiver, never nil; `Get` reports a missing key
+as `nil, false`.
 
 `Get` returns a deep copy of the value at the key, together with whether the key was found; a returned map
 can be modified without affecting the container.
 
 - `Get` — deep copy of the value by the provided key, together with whether the key was found; a returned
   map may be modified freely
-- `Set` — value which was set by the provided key
-- `Delete` — value which were removed by the provided key 
+- `Exists` — whether a value is stored at the provided key path; returns a `bool` and needs no copy,
+  because no reference crosses the boundary
+- `Set` — writes the value and returns the `*Gonfig` receiver
+- `Delete` — removes the value and returns the `*Gonfig` receiver
 
 
 ## Gonfig internal storage

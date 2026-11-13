@@ -1,6 +1,7 @@
 # Methods
 
-`NewWithXXX` — constructor variants; the `XXX` suffix only emulates overloading, which Go does not support.
+`NewWithXXX` — an emulation of method overloading: Go has no method overloading, so each variant is a
+distinct, separately named function.
 
 For locks and thread safety, specify thread safety for XXX if it keeps the explanation compact.
 

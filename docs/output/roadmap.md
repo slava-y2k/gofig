@@ -12,7 +12,7 @@ model↔implementation consistency findings:
   provider list, and drop the `bool` return from `Get`.
 - **Applied** (2): `IC-015` "deep copy" wording and `[Get-copy]` — the full
   deep copy for `Get` — both done (see §2).
-- **Consistency findings**: 0 Critical, 3 Major, 8 Minor.
+- **Consistency findings**: 0 Critical, 1 Major, 8 Minor.
 - **Model gaps** (2): no method signatures in prose; zero value / errors / helpers undefined.
 
 Key insight: the model specifies a full *deep-copy* contract — `Get` and
@@ -57,8 +57,8 @@ These are comment/doc-only edits. No behavior change, no test change, no API cha
 | Sev | Ref | Doc location | Fix |
 |-----|-----|--------------|-----|
 | **Major** | `Delete` described as "set value" | `docs/design.md` | "Delete — removes the leaf at the key path (no-op on missing/non-map segments)". |
-| **Major** | "empty key → nil" wording | `docs/design.md` | `Set`/`Delete` return `*Gonfig`, not nil; `Get()` with no parts returns the root map with `true`. Fix the prose. |
-| **Major** | "overloaded methods" | `docs/code.md` | "constructor variants" — Go has no overloading (already correct at `docs/design.md`). |
+| ~~**Major**~~ | ~~"empty key → nil" wording~~ | ~~`docs/design.md`~~ | ~~`Set`/`Delete` return `*Gonfig`, not nil; `Get()` with no parts returns the root map with `true`. Fix the prose.~~ **Applied.** |
+| ~~**Major**~~ | ~~"overloaded methods"~~ | ~~`docs/code.md`~~ | ~~"constructor variants" — Go has no overloading (already correct at `docs/design.md`).~~ **Applied** — `docs/code.md:3` now calls `NewWithXXX` "an emulation of method overloading". |
 
 ### 3.3 Close the Minor undocumented-code gaps
 

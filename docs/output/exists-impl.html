@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Exists — implementation and model consistency</title>
+<style>
+  :root { color-scheme: light dark; }
+  body { font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+         line-height: 1.55; max-width: 960px; margin: 2rem auto; padding: 0 1rem; color: #1a1a1a; }
+  h1 { border-bottom: 2px solid #333; padding-bottom: .3rem; }
+  h2 { margin-top: 2.2rem; border-bottom: 1px solid #999; padding-bottom: .2rem; }
+  code { background: #f0f0f0; padding: .1rem .35rem; border-radius: 4px; font-size: .92em; }
+  table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+  th, td { border: 1px solid #ccc; padding: .45rem .6rem; text-align: left; vertical-align: top; }
+  th { background: #eee; }
+  .meta { color: #666; font-size: .9rem; }
+  .mono { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: .9em; }
+  ul { margin: .4rem 0; }
+</style>
+</head>
+<body>
+
+<h1>Exists — implementation and model consistency</h1>
+<p class="meta">Generated for the <code>Gonfig.Exists</code> addition (Nov 13 2026). Companion to
+<code>docs/design.md</code> and <code>docs/code.md</code>.</p>
+
+<h2>1. What was added</h2>
+<p><code>Gonfig.Exists(parts ...string) bool</code> in <code>gonfig.go:77-92</code>:</p>
+<ul>
+  <li>Reuses the same <code>getPath</code> lookup as <code>Get</code>, but returns only the found flag.</li>
+  <li><code>Exists("a", "b")</code> is <code>true</code> exactly when <code>Get("a", "b")</code> would
+      report <code>ok == true</code>, including a stored <code>nil</code> value.</li>
+  <li><code>Exists()</code> with no parts mirrors <code>Get()</code>: <code>true</code> when the root map
+      is present (non-nil), <code>false</code> for the zero value.</li>
+  <li>Reads under <code>RLock</code>, so it is safe alongside writers.</li>
+  <li>Performs no deep copy: a <code>bool</code> is a scalar and cannot alias container state.</li>
+</ul>
+
+<h2>2. Model consistency</h2>
+<table>
+  <tr><th>Model source</th><th>Statement</th><th>Verdict</th></tr>
+  <tr><td class="mono">docs/design.md:31 diagram</td>
+      <td><code>+Exists(parts ...string) bool</code></td>
+      <td><strong>Consistent</strong> — matches the code signature at <code>gonfig.go:77</code>.</td></tr>
+  <tr><td class="mono">docs/design.md:9-11 copy-contract</td>
+      <td>every accepted/returned item is a deep copy; a deep copy applies to maps and other reference
+          types</td>
+      <td><strong>Consistent</strong> — a <code>bool</code> is not a reference type, so the rule does not
+          apply.</td></tr>
+  <tr><td class="mono">docs/design.md:81 access contract</td>
+      <td>a missing key is reported as <code>nil, false</code> by <code>Get</code></td>
+      <td><strong>Consistent</strong> — <code>Exists</code> reports the same condition as
+          <code>false</code>.</td></tr>
+  <tr><td class="mono">docs/design.md:78-82 root behavior</td>
+      <td>a call with no key parts targets the root</td>
+      <td><strong>Consistent</strong> — <code>Exists()</code> reports whether the root map is
+          present.</td></tr>
+  <tr><td class="mono">docs/design.md:88-89 access bullet</td>
+      <td><code>Exists</code> returns a <code>bool</code> and needs no copy</td>
+      <td><strong>Consistent</strong> — added with this change.</td></tr>
+  <tr><td class="mono">docs/design.md:94-95 storage</td>
+      <td>the internal map is guarded by <code>sync.RWMutex</code></td>
+      <td><strong>Consistent</strong> — <code>Exists</code> takes <code>RLock</code>.</td></tr>
+  <tr><td class="mono">docs/code.md:18-19 copy-contract scope</td>
+      <td>the contract applies when results are maps or other mutable structs</td>
+      <td><strong>Consistent</strong> — a <code>bool</code> is neither.</td></tr>
+  <tr><td class="mono">docs/code.md:5 thread-safety guidance</td>
+      <td>document thread safety when it keeps the explanation compact</td>
+      <td><strong>Consistent</strong> — the <code>RLock</code> is visible; the doc comment stays one
+          line.</td></tr>
+</table>
+
+<h2>3. Findings</h2>
+<ul>
+  <li><strong>No contradictions.</strong> The implementation matches the model.</li>
+  <li><strong>Model updated</strong> to include <code>Exists</code>: the class diagram
+      (<code>docs/design.md:31</code>) and the access-methods bullet (<code>docs/design.md:88-89</code>).</li>
+  <li><strong>Deliberate semantic choice:</strong> <code>Exists()</code> with no parts reports the presence
+      of the root map — true for an empty but initialized container, false for the zero value — matching
+      <code>Get()</code>&rsquo;s found flag rather than &ldquo;has any entries&rdquo;. This keeps
+      <code>Exists</code> a pure predicate over <code>Get</code>.</li>
+  <li><strong>No README change:</strong> the README does not enumerate methods, so it needs no entry.</li>
+</ul>
+
+<h2>4. Test coverage (<code>gonfig_test.go</code>)</h2>
+<ul>
+  <li><code>TestExistsZeroValueIsFalse</code> — nil root, both call forms.</li>
+  <li><code>TestExistsNoPartsReportsRoot</code> — initialized empty container.</li>
+  <li><code>TestExistsPresentAndMissingKeys</code> — found and absent paths.</li>
+  <li><code>TestExistsStoredNilIsTrue</code> — a stored <code>nil</code> key still exists.</li>
+  <li><code>TestExistsNonMapSegmentIsFalse</code> — a scalar blocks the path.</li>
+</ul>
+<p>All tests pass under <code>go test -race</code>.</p>
+
+<h2>5. Notes</h2>
+<ul>
+  <li><code>Exists</code> is intentionally copy-free: the copy-contract exists so callers cannot mutate
+      container state through a returned reference. A <code>bool</code> carries no reference, so there is
+      nothing to protect.</li>
+  <li>The method is read-only; it never initializes or mutates the root.</li>
+</ul>
+
+</body>
+</html>

@@ -208,6 +208,63 @@ func TestGetTypedMapReturnsCopy(t *testing.T) {
 	assertValue(t, gfg, map[string]string{"a": "1"}, true, "cfg")
 }
 
+// Exists — RLock → [no parts: root present | getPath found flag]; the bool
+// result needs no copy.
+
+// TestExistsZeroValueIsFalse covers the nil-root branch for both call forms.
+func TestExistsZeroValueIsFalse(t *testing.T) {
+	var gfg Gonfig
+
+	if gfg.Exists() {
+		t.Error("Exists() = true on a zero value, want false")
+	}
+	if gfg.Exists("a") {
+		t.Error("Exists(a) = true on a zero value, want false")
+	}
+}
+
+// TestExistsNoPartsReportsRoot covers the no-parts branch: an initialized root
+// is present even when empty.
+func TestExistsNoPartsReportsRoot(t *testing.T) {
+	var gfg *Gonfig = New()
+
+	if !gfg.Exists() {
+		t.Error("Exists() = false on an initialized container, want true")
+	}
+}
+
+// TestExistsPresentAndMissingKeys covers the path branch for a stored value and
+// an absent key.
+func TestExistsPresentAndMissingKeys(t *testing.T) {
+	var gfg *Gonfig = New().Set([]string{"a", "b"}, 1)
+
+	if !gfg.Exists("a", "b") {
+		t.Error("Exists(a, b) = false, want true")
+	}
+	if gfg.Exists("a", "c") {
+		t.Error("Exists(a, c) = true, want false")
+	}
+}
+
+// TestExistsStoredNilIsTrue covers a key whose value is nil: the key exists even
+// though the value is nil.
+func TestExistsStoredNilIsTrue(t *testing.T) {
+	var gfg *Gonfig = New().Set([]string{"a"}, nil)
+
+	if !gfg.Exists("a") {
+		t.Error("Exists(a) = false for a stored nil, want true")
+	}
+}
+
+// TestExistsNonMapSegmentIsFalse covers a scalar value blocking the path.
+func TestExistsNonMapSegmentIsFalse(t *testing.T) {
+	var gfg *Gonfig = New().Set([]string{"a"}, 1)
+
+	if gfg.Exists("a", "b") {
+		t.Error("Exists(a, b) = true through a scalar, want false")
+	}
+}
+
 // TestGetKeysAreLiteral pins that parts are literal keys, not dot-split paths:
 // a key containing a dot and the empty string are ordinary keys.
 func TestGetKeysAreLiteral(t *testing.T) {

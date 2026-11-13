@@ -6,8 +6,6 @@
 
 # Code items 
 Major	contradiction	gonfig.go:97-111 vs docs/design.md:34 — the model describes Delete as "set value by provided key"; the implementation removes the leaf (gonfig.go:107, deletePath at gonfig.go:191-200).
-Major	contradiction	gonfig.go:61-111 vs docs/design.md:30 — the model says "on empty key nill will be retuned"; the code returns *Gonfig from Set/Delete and replaces the root/clears it (gonfig.go:82-87, :101-104), and Get() returns the root map with true (gonfig.go:68-69).
-Major	contradiction	gonfig.go:20-57 vs docs/code.md:3 — the model says New<WithXXX> are "overloaded methods"; Go has no overloading. The code exposes distinct functions: New (gonfig.go:20), NewWithMap (:25), NewWithProvider (:34), NewWithGonfig (:51).
 Minor	undocumented-code	gonfig.go:9-10 — ErrNilProvider is public and returned on a nil provider (gonfig.go:35-37); the model defines no error value.
 Minor	undocumented-code	gonfig.go:12-22 — the usable zero value and the empty New() constructor are not in the model; only generic NewXXX constructors are mentioned (docs/design.md:19).
 Minor	undocumented-code	gonfig.go:25-57 — concrete constructors and their semantics (nil input to empty, provider error propagation, snapshot of another container) are undefined; the model has only the NewXXX placeholder.
@@ -45,3 +43,14 @@ gap No definition of the zero value, errors, or helper functions.
   `gonfig_test.go` — `TestGetWholeConfigReturnsCopy`, `TestGetMapValueReturnsCopy`, `TestGetSliceReturnsCopy`,
   `TestGetTypedMapReturnsCopy` and the `DeepCopyMap` slice/typed-map/pointer/struct cases replace the
   live-reference and sharing pins.
+
+- "empty key → nil" wording fixed: the access-methods prose now says a call with no key parts targets the
+  root — `Get()` returns the whole map with `true`, `Set` replaces the root (maps only), and `Delete`
+  clears it; `Set`/`Delete` return the `*Gonfig` receiver, never nil.
+  Applied | `docs/design.md:78-80` — access-methods prose rewritten; `docs/design.md:87-88` — the
+  `Set`/`Delete` bullets now state that they return the `*Gonfig` receiver.
+
+- "overloaded methods" wording fixed: the `NewWithXXX` family is now described as an emulation of method
+  overloading — Go has no overloading, so each variant is a distinct, separately named function.
+  Applied | `docs/code.md:3` — the `NewWithXXX` line now reads "an emulation of method overloading";
+  `docs/design.md:67` — aligned to the same wording.

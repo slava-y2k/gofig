@@ -73,6 +73,24 @@ func (gfg *Gonfig) Get(parts ...string) (any, bool) {
 	return deepCopyValue(value), true
 }
 
+// Exists reports whether a value is stored at the key path; a bool result needs no copy.
+func (gfg *Gonfig) Exists(parts ...string) bool {
+	gfg.rwMutex.RLock()
+	defer gfg.rwMutex.RUnlock()
+
+	if gfg.kvMap == nil {
+		return false
+	}
+	if len(parts) == 0 {
+		return true
+	}
+
+	var found bool
+	_, found = getPath(gfg.kvMap, parts)
+
+	return found
+}
+
 // Set writes along the key path parts. With no parts it replaces the root;
 // only a map is accepted, because the root must stay a map.
 func (gfg *Gonfig) Set(parts []string, value any) *Gonfig {

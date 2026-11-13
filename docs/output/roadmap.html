@@ -40,7 +40,7 @@ model↔implementation consistency findings:</p>
     provider list, and drop the <code>bool</code> return from <code>Get</code>.</li>
   <li><strong>Applied</strong> (2): <code>IC-015</code> “deep copy” wording and <code>[Get-copy]</code> — the
     full deep copy for <code>Get</code> — both done (see §2).</li>
-  <li><strong>Consistency findings</strong>: 0 Critical, 3 Major, 8 Minor.</li>
+  <li><strong>Consistency findings</strong>: 0 Critical, 1 Major, 8 Minor.</li>
   <li><strong>Model gaps</strong> (2): no method signatures in prose; zero value / errors / helpers undefined.</li>
 </ul>
 <p>Key insight: the model specifies a full <em>deep-copy</em> contract — <code>Get</code> and
@@ -92,12 +92,13 @@ and code return <code>(any, bool)</code>. Decide and make all sides agree.</p>
   <tr><td class="sev-major">Major</td><td><code>Delete</code> described as “set value”</td>
       <td class="mono">docs/design.md</td><td>“Delete — removes the leaf at the key path (no-op on missing/non-map
           segments)”.</td></tr>
-  <tr><td class="sev-major">Major</td><td>“empty key → nil” wording</td>
-      <td class="mono">docs/design.md</td><td><code>Set</code>/<code>Delete</code> return <code>*Gonfig</code>, not
-          nil; <code>Get()</code> with no parts returns the root map with <code>true</code>. Fix the prose.</td></tr>
-  <tr><td class="sev-major">Major</td><td>“overloaded methods”</td>
-      <td class="mono">docs/code.md</td><td>“constructor variants” — Go has no overloading (already correct at
-          <code>docs/design.md</code>).</td></tr>
+  <tr><td class="sev-major"><s>Major</s></td><td><s>“empty key → nil” wording</s></td>
+      <td class="mono"><s>docs/design.md</s></td><td><s><code>Set</code>/<code>Delete</code> return <code>*Gonfig</code>, not
+          nil; <code>Get()</code> with no parts returns the root map with <code>true</code>. Fix the prose.</s> <strong>Applied.</strong></td></tr>
+  <tr><td class="sev-major"><s>Major</s></td><td><s>“overloaded methods”</s></td>
+      <td class="mono"><s>docs/code.md</s></td><td><s>“constructor variants” — Go has no overloading (already correct at
+          <code>docs/design.md</code>).</s> <strong>Applied</strong> — <code>docs/code.md:3</code> now calls
+          <code>NewWithXXX</code> “an emulation of method overloading”.</td></tr>
 </table>
 
 <h3>3.3 Close the Minor undocumented-code gaps</h3>
